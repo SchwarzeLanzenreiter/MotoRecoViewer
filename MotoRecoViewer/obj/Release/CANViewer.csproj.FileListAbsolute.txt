@@ -1,0 +1,11 @@
+C:\Users\schwarze\source\repos\CANViewer\CANViewer\obj\Release\CANViewer.csprojAssemblyReference.cache
+C:\Users\schwarze\source\repos\CANViewer\CANViewer\obj\Release\CANViewer.FormDecodeOption.resources
+C:\Users\schwarze\source\repos\CANViewer\CANViewer\obj\Release\CANViewer.FormMain.resources
+C:\Users\schwarze\source\repos\CANViewer\CANViewer\obj\Release\CANViewer.Properties.Resources.resources
+C:\Users\schwarze\source\repos\CANViewer\CANViewer\obj\Release\CANViewer.csproj.GenerateResource.cache
+C:\Users\schwarze\source\repos\CANViewer\CANViewer\obj\Release\CANViewer.csproj.CoreCompileInputs.cache
+C:\Users\schwarze\source\repos\CANViewer\CANViewer\bin\Release\CANViewer.exe.config
+C:\Users\schwarze\source\repos\CANViewer\CANViewer\bin\Release\CANViewer.exe
+C:\Users\schwarze\source\repos\CANViewer\CANViewer\bin\Release\CANViewer.pdb
+C:\Users\schwarze\source\repos\CANViewer\CANViewer\obj\Release\CANViewer.exe
+C:\Users\schwarze\source\repos\CANViewer\CANViewer\obj\Release\CANViewer.pdb
