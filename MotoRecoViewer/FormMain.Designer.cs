@@ -271,7 +271,6 @@
             this.GMapControl.EmptyTileColor = System.Drawing.Color.Navy;
             this.GMapControl.GrayScaleMode = false;
             this.GMapControl.HelperLineOption = GMap.NET.WindowsForms.HelperLineOptions.DontShow;
-            this.GMapControl.LevelsKeepInMemmory = 5;
             this.GMapControl.Location = new System.Drawing.Point(0, 0);
             this.GMapControl.Margin = new System.Windows.Forms.Padding(4);
             this.GMapControl.MarkersEnabled = true;
