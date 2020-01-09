@@ -69,7 +69,7 @@ namespace MotoRecoViewer
 
         private const int chartMargin = 10; // グリッドとpictureSubの余白
                
-        private List<String> ListChName;
+        private Dictionary<String, int> DicChName;
         private List<ChData> ListChData;
 
         private float startTime;    //CANデータ最初のタイムスタンプ
@@ -193,12 +193,11 @@ namespace MotoRecoViewer
                 {
                     lock (lockobj)
                     {
-                        //foundIndexのChNameが有るかどうかチェック
+                        //decodeRuleIdxのChNameが登録済かCheck
                         string chName = decodeRule.GetChName(decodeRuleIdx);
-                        idxCh = ListChName.IndexOf(chName);
 
                         //存在しない場合追加する
-                        if (idxCh == -1)
+                        if (!DicChName.ContainsKey(chName))
                         {
                             int chMax = decodeRule.GetChartMax(decodeRuleIdx);
                             int chMin = decodeRule.GetChartMin(decodeRuleIdx);
@@ -206,17 +205,15 @@ namespace MotoRecoViewer
                             int chColor = decodeRule.GetChartColor(decodeRuleIdx);
                             bool chShow = decodeRule.GetChartShow(decodeRuleIdx);
 
-
-                            ListChName.Add(chName);
+                            //DicChNameには、key:chName value:ListChDataのインデックスを登録
+                            DicChName.Add(chName,ListChData.Count);
 
                             ChData newData = new ChData(chName, chMin, chMax, chColor, chPrev, chShow);
 
                             ListChData.Add(newData);
-
-                            //再度idxCh取得
-                            idxCh = ListChName.IndexOf(chName);
-
                         }
+
+                        idxCh = DicChName[chName];
                     }
 
                     double value;
@@ -294,7 +291,7 @@ namespace MotoRecoViewer
 
             for (int i = 0; i < ListViewData.Items.Count; i++)
             {
-                int idx = ListChName.IndexOf(ListViewData.Items[i].Text);
+                int idx = DicChName[ListViewData.Items[i].Text];
 
                 //　該当CAN IDが存在しないケースも有りうることに注意
                 if (idx < 0) { continue; }
@@ -309,7 +306,7 @@ namespace MotoRecoViewer
 
             for (int i = 0; i < ListViewData.Items.Count; i++)
             {
-                int idx = ListChName.IndexOf(ListViewData.Items[i].Text);
+                int idx = DicChName[ListViewData.Items[i].Text];
 
                 //　該当CAN IDが存在しないケースも有りうることに注意
                 if (idx < 0) { continue; }
@@ -330,16 +327,15 @@ namespace MotoRecoViewer
         /// </summary>
         private void UpdateMap()
         {
-            // Latitudeがあるかチェック
-            int idx_lat = ListChName.IndexOf("Latitude");
-            int idx_lon = ListChName.IndexOf("Longitude");
-
             // LatitudeもLongitudeも存在しない場合、何もしない
-            if ((idx_lat < 0) || (idx_lon < 0))
+            if (!DicChName.ContainsKey("Latitude") || (!DicChName.ContainsKey("Longitude")))
             {
                 return;
             }
-            
+
+            int idx_lat = DicChName["Latitude"];
+            int idx_lon = DicChName["Longitude"];
+
             // MainChartの中央に対応するタイムスタンプを計算
             float mainChartCenterTime = subPosTime + (divTime * 20) / 2;
 
@@ -397,15 +393,14 @@ namespace MotoRecoViewer
         /// </summary>
         private void UpdateMapMarker()
         {
-            // Latitudeがあるかチェック
-            int idx_lat = ListChName.IndexOf("Latitude");
-            int idx_lon = ListChName.IndexOf("Longitude");
-
             // LatitudeもLongitudeも存在しない場合、何もしない
-            if ((idx_lat < 0) || (idx_lon < 0))
+            if ( !DicChName.ContainsKey("Latitude") || ( !DicChName.ContainsKey("Longitude")))
             {
                 return;
             }
+
+            int idx_lat = DicChName["Latitude"];
+            int idx_lon = DicChName["Longitude"];
 
             // MainChartのカーソル位置1に対応するタイムスタンプを計算
             float targetTime = subPosTime + (divTime * 20) / (pictureMain.Width - 2 * chartMargin) * mainCur1Pos;
@@ -429,7 +424,7 @@ namespace MotoRecoViewer
         private void DrawChart()
         {
             // ListChNameが0＝CANデータ未読み込み→即抜ける
-            if (ListChName.Count < 1) { return; }
+            if (DicChName.Count < 1) { return; }
 
             // アプリ下部のサブチャートを描画
             DrawSubChart();
@@ -883,7 +878,7 @@ namespace MotoRecoViewer
             InitializeComponent();
 
             // Formコンストラクタで、Private変数のClassをnewしておく
-            ListChName = new List<String>();
+            DicChName = new Dictionary<String, int>();
             ListChData = new List<ChData>();
             decodeRule = new DecodeRule();
             IsReadingCanData = false;
@@ -1053,10 +1048,11 @@ namespace MotoRecoViewer
 
             for (int i = 0; i < ListViewData.Items.Count; i++)
             {
-                int idx = ListChName.IndexOf(ListViewData.Items[i].Text);
+                if (!DicChName.ContainsKey(ListViewData.Items[i].Text)) {
+                    break; 
+                }
 
-                if (idx < 0) { break; }
-
+                int idx = DicChName[ListViewData.Items[i].Text];
                 ListChData[idx].ChShow = ListViewData.Items[i].Checked;
             }
 
@@ -1127,7 +1123,7 @@ namespace MotoRecoViewer
                 }
 
                 ListChData.Clear();
-                ListChName.Clear();
+                DicChName.Clear();
 
                 // バイナリファイルからCANデータ抽出する
                 ReadCANData(openFileDialog.FileName);
@@ -1247,6 +1243,11 @@ namespace MotoRecoViewer
 
             f.ShowDialog(this);
             f.Dispose();
+        }
+
+        private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
+        {
+
         }
     }
 }
