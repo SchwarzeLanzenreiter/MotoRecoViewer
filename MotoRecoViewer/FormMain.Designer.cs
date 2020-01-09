@@ -38,24 +38,24 @@
             this.MenuExit = new System.Windows.Forms.ToolStripMenuItem();
             this.ToolStripMenuItemView = new System.Windows.Forms.ToolStripMenuItem();
             this.cANDecodeSettingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.mapSettingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.pictureMain = new System.Windows.Forms.PictureBox();
-            this.statusStrip = new System.Windows.Forms.StatusStrip();
-            this.progressBar = new System.Windows.Forms.ToolStripProgressBar();
-            this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.pictureSub = new System.Windows.Forms.PictureBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.GMapControl = new GMap.NET.WindowsForms.GMapControl();
-            this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.mapSettingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuMap = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.menuBingMap = new System.Windows.Forms.ToolStripMenuItem();
             this.menuGoogleMap = new System.Windows.Forms.ToolStripMenuItem();
             this.menuOpenCycleMap = new System.Windows.Forms.ToolStripMenuItem();
             this.menuOpenStreetMap = new System.Windows.Forms.ToolStripMenuItem();
             this.menuWikiMapiaMap = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
+            this.statusStrip = new System.Windows.Forms.StatusStrip();
+            this.progressBar = new System.Windows.Forms.ToolStripProgressBar();
+            this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
@@ -66,12 +66,12 @@
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureMain)).BeginInit();
-            this.statusStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureSub)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
             this.contextMenuMap.SuspendLayout();
+            this.statusStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip
@@ -102,34 +102,34 @@
             // 
             this.MenuOpen.Name = "MenuOpen";
             this.MenuOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.MenuOpen.Size = new System.Drawing.Size(224, 26);
+            this.MenuOpen.Size = new System.Drawing.Size(202, 26);
             this.MenuOpen.Text = "Open(&O)";
             this.MenuOpen.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(221, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(199, 6);
             // 
             // MenuConvert
             // 
             this.MenuConvert.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MenuConvertAscii});
             this.MenuConvert.Name = "MenuConvert";
-            this.MenuConvert.Size = new System.Drawing.Size(224, 26);
+            this.MenuConvert.Size = new System.Drawing.Size(202, 26);
             this.MenuConvert.Text = "Export";
             // 
             // MenuConvertAscii
             // 
             this.MenuConvertAscii.Name = "MenuConvertAscii";
-            this.MenuConvertAscii.Size = new System.Drawing.Size(224, 26);
+            this.MenuConvertAscii.Size = new System.Drawing.Size(153, 26);
             this.MenuConvertAscii.Text = "Ascii CSV";
             this.MenuConvertAscii.Click += new System.EventHandler(this.MenuConvertAscii_Click);
             // 
             // MenuExit
             // 
             this.MenuExit.Name = "MenuExit";
-            this.MenuExit.Size = new System.Drawing.Size(224, 26);
+            this.MenuExit.Size = new System.Drawing.Size(202, 26);
             this.MenuExit.Text = "Exit(&X)";
             this.MenuExit.Click += new System.EventHandler(this.終了ToolStripMenuItem_Click);
             // 
@@ -145,9 +145,16 @@
             // cANDecodeSettingToolStripMenuItem
             // 
             this.cANDecodeSettingToolStripMenuItem.Name = "cANDecodeSettingToolStripMenuItem";
-            this.cANDecodeSettingToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.cANDecodeSettingToolStripMenuItem.Size = new System.Drawing.Size(177, 26);
             this.cANDecodeSettingToolStripMenuItem.Text = "Read Setting";
             this.cANDecodeSettingToolStripMenuItem.Click += new System.EventHandler(this.CANDecodeSettingToolStripMenuItem_Click);
+            // 
+            // mapSettingToolStripMenuItem
+            // 
+            this.mapSettingToolStripMenuItem.Name = "mapSettingToolStripMenuItem";
+            this.mapSettingToolStripMenuItem.Size = new System.Drawing.Size(177, 26);
+            this.mapSettingToolStripMenuItem.Text = "Map Setting";
+            this.mapSettingToolStripMenuItem.Click += new System.EventHandler(this.mapSettingToolStripMenuItem_Click);
             // 
             // openFileDialog
             // 
@@ -189,7 +196,6 @@
             // 
             // splitContainer2.Panel2
             // 
-            this.splitContainer2.Panel2.Controls.Add(this.statusStrip);
             this.splitContainer2.Panel2.Controls.Add(this.pictureSub);
             this.splitContainer2.Size = new System.Drawing.Size(1473, 728);
             this.splitContainer2.SplitterDistance = 482;
@@ -208,29 +214,6 @@
             this.pictureMain.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PictureMain_MouseDown);
             this.pictureMain.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureMain_MouseMove);
             this.pictureMain.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PictureMain_MouseUp);
-            // 
-            // statusStrip
-            // 
-            this.statusStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.progressBar,
-            this.statusLabel});
-            this.statusStrip.Location = new System.Drawing.Point(0, 211);
-            this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 19, 0);
-            this.statusStrip.Size = new System.Drawing.Size(1471, 28);
-            this.statusStrip.TabIndex = 1;
-            this.statusStrip.Text = "statusStrip1";
-            // 
-            // progressBar
-            // 
-            this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(133, 20);
-            // 
-            // statusLabel
-            // 
-            this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(0, 22);
             // 
             // pictureSub
             // 
@@ -271,6 +254,7 @@
             this.GMapControl.EmptyTileColor = System.Drawing.Color.Navy;
             this.GMapControl.GrayScaleMode = false;
             this.GMapControl.HelperLineOption = GMap.NET.WindowsForms.HelperLineOptions.DontShow;
+            this.GMapControl.LevelsKeepInMemory = 5;
             this.GMapControl.Location = new System.Drawing.Point(0, 0);
             this.GMapControl.Margin = new System.Windows.Forms.Padding(4);
             this.GMapControl.MarkersEnabled = true;
@@ -290,17 +274,6 @@
             this.GMapControl.TabIndex = 4;
             this.GMapControl.Zoom = 3D;
             // 
-            // saveFileDialog
-            // 
-            this.saveFileDialog.Filter = "CSVファイル|*.csv";
-            // 
-            // mapSettingToolStripMenuItem
-            // 
-            this.mapSettingToolStripMenuItem.Name = "mapSettingToolStripMenuItem";
-            this.mapSettingToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
-            this.mapSettingToolStripMenuItem.Text = "Map Setting";
-            this.mapSettingToolStripMenuItem.Click += new System.EventHandler(this.mapSettingToolStripMenuItem_Click);
-            // 
             // contextMenuMap
             // 
             this.contextMenuMap.ImageScalingSize = new System.Drawing.Size(20, 20);
@@ -316,43 +289,71 @@
             // menuBingMap
             // 
             this.menuBingMap.Name = "menuBingMap";
-            this.menuBingMap.Size = new System.Drawing.Size(210, 24);
+            this.menuBingMap.Size = new System.Drawing.Size(191, 24);
             this.menuBingMap.Text = "Bing Map";
             this.menuBingMap.Click += new System.EventHandler(this.menuBingMap_Click);
             // 
             // menuGoogleMap
             // 
             this.menuGoogleMap.Name = "menuGoogleMap";
-            this.menuGoogleMap.Size = new System.Drawing.Size(210, 24);
+            this.menuGoogleMap.Size = new System.Drawing.Size(191, 24);
             this.menuGoogleMap.Text = "Google Map";
             this.menuGoogleMap.Click += new System.EventHandler(this.menuGoogleMap_Click);
             // 
             // menuOpenCycleMap
             // 
             this.menuOpenCycleMap.Name = "menuOpenCycleMap";
-            this.menuOpenCycleMap.Size = new System.Drawing.Size(210, 24);
+            this.menuOpenCycleMap.Size = new System.Drawing.Size(191, 24);
             this.menuOpenCycleMap.Text = "Open Cycle Map";
             this.menuOpenCycleMap.Click += new System.EventHandler(this.menuOpenCycleMap_Click);
             // 
             // menuOpenStreetMap
             // 
             this.menuOpenStreetMap.Name = "menuOpenStreetMap";
-            this.menuOpenStreetMap.Size = new System.Drawing.Size(210, 24);
+            this.menuOpenStreetMap.Size = new System.Drawing.Size(191, 24);
             this.menuOpenStreetMap.Text = "Open Street Map";
             this.menuOpenStreetMap.Click += new System.EventHandler(this.menuOpenStreetMap_Click);
             // 
             // menuWikiMapiaMap
             // 
             this.menuWikiMapiaMap.Name = "menuWikiMapiaMap";
-            this.menuWikiMapiaMap.Size = new System.Drawing.Size(210, 24);
+            this.menuWikiMapiaMap.Size = new System.Drawing.Size(191, 24);
             this.menuWikiMapiaMap.Text = "Wiki Mapia Map";
             this.menuWikiMapiaMap.Click += new System.EventHandler(this.menuWikiMapiaMap_Click);
+            // 
+            // saveFileDialog
+            // 
+            this.saveFileDialog.Filter = "CSVファイル|*.csv";
+            // 
+            // statusStrip
+            // 
+            this.statusStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.progressBar,
+            this.statusLabel});
+            this.statusStrip.Location = new System.Drawing.Point(0, 728);
+            this.statusStrip.Name = "statusStrip";
+            this.statusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 19, 0);
+            this.statusStrip.Size = new System.Drawing.Size(1904, 28);
+            this.statusStrip.TabIndex = 6;
+            this.statusStrip.Text = "statusStrip1";
+            // 
+            // progressBar
+            // 
+            this.progressBar.Name = "progressBar";
+            this.progressBar.Size = new System.Drawing.Size(133, 20);
+            // 
+            // statusLabel
+            // 
+            this.statusLabel.Name = "statusLabel";
+            this.statusLabel.Size = new System.Drawing.Size(0, 22);
             // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1904, 756);
+            this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.menuStrip);
             this.MainMenuStrip = this.menuStrip;
@@ -368,17 +369,16 @@
             this.splitContainer1.ResumeLayout(false);
             this.splitContainer2.Panel1.ResumeLayout(false);
             this.splitContainer2.Panel2.ResumeLayout(false);
-            this.splitContainer2.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureMain)).EndInit();
-            this.statusStrip.ResumeLayout(false);
-            this.statusStrip.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureSub)).EndInit();
             this.splitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
             this.contextMenuMap.ResumeLayout(false);
+            this.statusStrip.ResumeLayout(false);
+            this.statusStrip.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -398,9 +398,6 @@
         private System.Windows.Forms.SplitContainer splitContainer2;
         private System.Windows.Forms.PictureBox pictureMain;
         private System.Windows.Forms.PictureBox pictureSub;
-        private System.Windows.Forms.StatusStrip statusStrip;
-        private System.Windows.Forms.ToolStripProgressBar progressBar;
-        private System.Windows.Forms.ToolStripStatusLabel statusLabel;
         private System.Windows.Forms.SplitContainer splitContainer3;
         private GMap.NET.WindowsForms.GMapControl GMapControl;
         private System.Windows.Forms.ToolStripMenuItem MenuConvert;
@@ -413,5 +410,8 @@
         private System.Windows.Forms.ToolStripMenuItem menuOpenCycleMap;
         private System.Windows.Forms.ToolStripMenuItem menuOpenStreetMap;
         private System.Windows.Forms.ToolStripMenuItem menuWikiMapiaMap;
+        private System.Windows.Forms.StatusStrip statusStrip;
+        private System.Windows.Forms.ToolStripProgressBar progressBar;
+        private System.Windows.Forms.ToolStripStatusLabel statusLabel;
     }
 }

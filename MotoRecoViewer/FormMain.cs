@@ -195,17 +195,17 @@ namespace MotoRecoViewer
                     {
                         //foundIndexのChNameが有るかどうかチェック
                         string chName = decodeRule.GetChName(decodeRuleIdx);
-                        int chMax = decodeRule.GetChartMax(decodeRuleIdx);
-                        int chMin = decodeRule.GetChartMin(decodeRuleIdx);
-                        bool chPrev = decodeRule.GetChartPreview(decodeRuleIdx);
-                        int chColor = decodeRule.GetChartColor(decodeRuleIdx);
-                        bool chShow = decodeRule.GetChartShow(decodeRuleIdx);
-
                         idxCh = ListChName.IndexOf(chName);
 
                         //存在しない場合追加する
                         if (idxCh == -1)
                         {
+                            int chMax = decodeRule.GetChartMax(decodeRuleIdx);
+                            int chMin = decodeRule.GetChartMin(decodeRuleIdx);
+                            bool chPrev = decodeRule.GetChartPreview(decodeRuleIdx);
+                            int chColor = decodeRule.GetChartColor(decodeRuleIdx);
+                            bool chShow = decodeRule.GetChartShow(decodeRuleIdx);
+
 
                             ListChName.Add(chName);
 
@@ -1134,6 +1134,9 @@ namespace MotoRecoViewer
 
                 // 初回描画する
                 DrawChart();
+                UpdateMap();
+                UpdateMapMarker();
+
                 this.Text = openFileDialog.FileName;
             }
         }
@@ -1153,7 +1156,6 @@ namespace MotoRecoViewer
             {
                 divTime = divTime / 2;
             }
-
 
             DrawChart();
             UpdateMap();
