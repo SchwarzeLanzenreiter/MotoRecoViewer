@@ -32,6 +32,8 @@ using GMap.NET;
 using GMap.NET.MapProviders;
 using System.Net;
 using Microsoft.Win32;
+using GMap.NET.WindowsForms;
+using GMap.NET.WindowsForms.Markers;
 
 namespace MotoRecoViewer
 {
@@ -84,7 +86,9 @@ namespace MotoRecoViewer
         private bool IsReadingCanData;          // 現在CANデータ読み込み中かどうか
 
         private float prev_lon;                // longitude前回値
-        private float prev_lat;                 // latitude前回値
+        private float prev_lat;                // latitude前回値
+        private GMapOverlay GMapOverlayMarker; // GMapに表示するマーカーレイヤー
+        private GMapOverlay GMapOverlayRoute;  // GMapに表示するルート
 
         private string currentDatFile = "";
 
@@ -167,7 +171,6 @@ namespace MotoRecoViewer
                 }
 
                 //１データ読み込んだらデコード処理にわたす
-                //ToDo DecodeDataはどう考えても遅い。予め決め打ちで関数で計算させるようにしつつ、それで対応できない場合にDecodeDataを使う方法にしたい
                 int idxCh;
 
                 //CanDataのCANIDが、DecodeRuleで一致するかチェック
@@ -178,7 +181,9 @@ namespace MotoRecoViewer
                 if (decodeRuleIdx == -1)
                 {
                     // ToDo どう考えても捨てるしかないCANIDは、MotoReco側でフィルターかけるのも有り
+                    // 通常のForループならcontinueとなるが、Parallel.Forの中身はメソッド扱いなのでリターンすれば良い
                     return;
+                    
                 }
 
                 //CAN IDが対象なら、DecodeRuleに従ってデコードする。
@@ -260,10 +265,6 @@ namespace MotoRecoViewer
             //終了時間を計算しておく
             endTime = (float)aryCanData[arySize - 1].timeSec + (float)aryCanData[arySize - 1].timeMSec / 1000;
 
-            //進捗初期化
-            progressBar.Value = 0;
-            this.statusLabel.Text = "";
-
             //スレッド処理した関係でデータがソートできてないのでソートする
             for (int i = 0; i < ListChData.Count; i++)
             {
@@ -274,6 +275,14 @@ namespace MotoRecoViewer
             IsReadingCanData = false;
 
             DrawChart();
+
+            //進捗初期化
+            context.Post(progress =>
+            {
+                this.progressBar.Value = 0;
+                this.statusLabel.Text ="";
+            }, null);
+            //Application.DoEvents();
         }
 
         private void UpdateListViewData()
@@ -331,15 +340,15 @@ namespace MotoRecoViewer
                 return;
             }
             
-            // MainChartのカーソル位置1に対応するタイムスタンプを計算
-            float targetTime = subPosTime + (divTime * 20) / (pictureMain.Width - 2 * chartMargin) * mainCur1Pos;
+            // MainChartの中央に対応するタイムスタンプを計算
+            float mainChartCenterTime = subPosTime + (divTime * 20) / 2;
 
-            // タイムスタンプに応じたデータidx取得
-            int targetIdx = ListChData[idx_lat].FindClosestIndex(targetTime);
+            // MainCharの中央に応じたデータidx取得
+            int mainChartCenterIdx = ListChData[idx_lat].FindClosestIndex(mainChartCenterTime);
 
-            // 緯度経度取得
-            float fl_lon = (float)ListChData[idx_lon].LogData[targetIdx].DataValue;
-            float fl_lat = (float)ListChData[idx_lat].LogData[targetIdx].DataValue;
+            // MainChartの中央に応じた緯度経度取得
+            float fl_lon = (float)ListChData[idx_lon].LogData[mainChartCenterIdx].DataValue;
+            float fl_lat = (float)ListChData[idx_lat].LogData[mainChartCenterIdx].DataValue;
 
             // 緯度経度に変化がなければリターンで抜ける
             if ((fl_lon == prev_lon ) && (fl_lat == prev_lat))
@@ -350,8 +359,68 @@ namespace MotoRecoViewer
                 prev_lat = fl_lat;
             }
 
-            //地図表示
+            //地図中心を、MainChartの中央市に合わせる
             GMapControl.Position = new PointLatLng(fl_lat,fl_lon);
+
+            //現在MainChartに表示されているデータのルートをMapに追加する
+            // MainChartの両端に対応するタイムスタンプを計算
+            // 左端は、subPosTimeそのもの
+            float mainChartRightTime = subPosTime + (divTime * 20);
+
+            // MainChartの両端に対応するデータidx取得。緯度経度はデータ数同等なので、longitudeで代表する
+            int mainChartLeftIdx = ListChData[idx_lat].FindClosestIndex(subPosTime);
+            int mainChartRightIdx = ListChData[idx_lat].FindClosestIndex(mainChartRightTime);
+
+            // ルートをMapに追加
+            // まず既存ルートをクリア
+            GMapOverlayRoute.Routes.Clear();
+
+            // ポイント追加
+            List<PointLatLng> points = new List<PointLatLng>();
+            for (int i = mainChartLeftIdx; i <= mainChartRightIdx; i++)
+            {
+                fl_lon = (float)ListChData[idx_lon].LogData[i].DataValue;
+                fl_lat = (float)ListChData[idx_lat].LogData[i].DataValue;
+
+                points.Add(new PointLatLng(fl_lat, fl_lon));
+            }
+
+            GMapRoute route = new GMapRoute(points, "MainChartRoute");
+            route.Stroke = new Pen(Color.Red, 3);
+            GMapOverlayRoute.Routes.Add(route);
+        }
+
+        /// <summary>
+        /// 地図上のマーカーのみ位置更新する
+        /// 緯度経度のチャンネル名はLatitudeとLongitude固定とする
+        /// マーカー位置はカーソル1位置とする
+        /// </summary>
+        private void UpdateMapMarker()
+        {
+            // Latitudeがあるかチェック
+            int idx_lat = ListChName.IndexOf("Latitude");
+            int idx_lon = ListChName.IndexOf("Longitude");
+
+            // LatitudeもLongitudeも存在しない場合、何もしない
+            if ((idx_lat < 0) || (idx_lon < 0))
+            {
+                return;
+            }
+
+            // MainChartのカーソル位置1に対応するタイムスタンプを計算
+            float targetTime = subPosTime + (divTime * 20) / (pictureMain.Width - 2 * chartMargin) * mainCur1Pos;
+
+            // タイムスタンプに応じたデータidx取得
+            int targetIdx = ListChData[idx_lat].FindClosestIndex(targetTime);
+
+            // 緯度経度取得
+            float fl_lon = (float)ListChData[idx_lon].LogData[targetIdx].DataValue;
+            float fl_lat = (float)ListChData[idx_lat].LogData[targetIdx].DataValue;
+
+            //マーカー更新
+            GMapOverlayMarker.Markers.Clear();
+            GMarkerGoogle marker = new GMarkerGoogle(new PointLatLng(fl_lat, fl_lon), GMarkerGoogleType.green);
+            GMapOverlayMarker.Markers.Add(marker);
         }
 
         /// <summary>
@@ -943,6 +1012,7 @@ namespace MotoRecoViewer
                     this.Cursor = Cursors.Default; // マウスポインタを通常のものに戻す
 
                     DrawChart();
+                    UpdateMapMarker();
                     UpdateMap();
 
                     break;
@@ -974,6 +1044,7 @@ namespace MotoRecoViewer
                 }
 
                 DrawChart();
+                UpdateMapMarker();
             }
         }
         private void ListViewData_ItemChecked(object sender, ItemCheckedEventArgs e)
@@ -1028,7 +1099,7 @@ namespace MotoRecoViewer
                     this.Cursor = Cursors.Default; // マウスポインタを通常のものに戻す
 
                     DrawChart();
-                    UpdateMap();
+                    UpdateMapMarker();
                     break;
 
                 case MouseButtons.Right: // 右クリックの時
@@ -1036,7 +1107,7 @@ namespace MotoRecoViewer
                     this.Cursor = Cursors.Default; // マウスポインタを通常のものに戻す
 
                     DrawChart();
-                    UpdateMap();
+                    UpdateMapMarker();
                     break;
             }
             this.DraggingButton = 0;
@@ -1085,7 +1156,8 @@ namespace MotoRecoViewer
 
 
             DrawChart();
-
+            UpdateMap();
+            UpdateMapMarker();
         }
 
         private void FormMain_Load(object sender, EventArgs e)
@@ -1113,6 +1185,12 @@ namespace MotoRecoViewer
             GMaps.Instance.Mode = AccessMode.ServerOnly;
             GMapControl.SetPositionByKeywords("Iwata, Japan");
             GMapControl.Zoom = 13;
+
+            //マーカー用オーバーレイ生成
+            GMapOverlayMarker = new GMapOverlay("marker");
+            GMapOverlayRoute = new GMapOverlay("route");
+            GMapControl.Overlays.Add(GMapOverlayMarker);
+            GMapControl.Overlays.Add(GMapOverlayRoute);
         }
 
         private void MenuConvertAscii_Click(object sender, EventArgs e)
@@ -1162,6 +1240,7 @@ namespace MotoRecoViewer
 
         private void mapSettingToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            // GoogleApi入力フォーム表示
             FormMapOption f = new FormMapOption();
 
             f.ShowDialog(this);
