@@ -65,30 +65,30 @@ namespace MotoRecoViewer
         //  Private変数
         //
         //==========================
-        private BufferedListView ListViewData;
+        private BufferedListView ListViewData;      // ダブルバッファのListView
 
-        private const double chartMargin = 10; // グリッドとpictureSubの余白
+        private const double chartMargin = 10;      // グリッドとpictureSubの余白
                
-        private Dictionary<String, int> DicChName;
-        private List<ChData> ListChData;
+        private Dictionary<String, int> DicChName;  // ListChDataに格納しているChData.Nameと、ListChData上のインデックスを保持
+        private List<ChData> ListChData;            // ChDataのリスト
 
-        private double startTime;    //CANデータ最初のタイムスタンプ
-        private double endTime;      //CANデータ最終データのタイムスタンプ
-        private double subPosTime;   //サブチャート選択位置、デフォルト0秒
-        private double mainCur1Pos;  //メインチャートカーソル1X位置
-        private double mainCur2Pos;  //メインチャートカーソル2X位置
-        private double divTime;      //メインチャートの1divisionあたり時間、デフォルト1秒
+        private double startTime;                   //CANデータ最初のタイムスタンプ
+        private double endTime;                     //CANデータ最終データのタイムスタンプ
+        private double subPosTime;                  //サブチャート選択位置、デフォルト0秒
+        private double mainCur1Pos;                 //メインチャートカーソル1X位置
+        private double mainCur2Pos;                 //メインチャートカーソル2X位置
+        private double divTime;                     //メインチャートの1divisionあたり時間、デフォルト1秒
 
-        private bool IsDragging;                // 現在ドラッグ中かどうか                                 
-        private MouseButtons DraggingButton;    // どのボタンが押されているのか(右ボタンで別の処理をしたい時に、区別するため)
-        private double DraggingOldX;            // ②呼び出しの直前(前回の②の終了時)のマウスポインタのX座標
-        private double DraggingOldY;            // ②呼び出しの直前(同上)のマウスポインタのY座標
-        private bool IsReadingCanData;          // 現在CANデータ読み込み中かどうか
+        private bool IsDragging;                    // 現在ドラッグ中かどうか                                 
+        private MouseButtons DraggingButton;        // どのボタンが押されているのか(右ボタンで別の処理をしたい時に、区別するため)
+        private double DraggingOldX;                // ②呼び出しの直前(前回の②の終了時)のマウスポインタのX座標
+        private double DraggingOldY;                // ②呼び出しの直前(同上)のマウスポインタのY座標
+        private bool IsReadingCanData;              // 現在CANデータ読み込み中かどうか
 
-        private float prev_lon;                // longitude前回値
-        private float prev_lat;                // latitude前回値
-        private GMapOverlay GMapOverlayMarker; // GMapに表示するマーカーレイヤー
-        private GMapOverlay GMapOverlayRoute;  // GMapに表示するルート
+        private float prev_lon;                     // longitude前回値
+        private float prev_lat;                     // latitude前回値
+        private GMapOverlay GMapOverlayMarker;      // GMapに表示するマーカーレイヤー
+        private GMapOverlay GMapOverlayRoute;       // GMapに表示するルート
 
         private string currentDatFile = "";
 
@@ -286,9 +286,7 @@ namespace MotoRecoViewer
         private void UpdateListViewData()
         {
             // ListViewDataのValue1を更新
-
             // MainChartのカーソル位置1に対応するタイムスタンプを計算
-
             // mainCur1Posは、PictureMain上の絶対的なX座標の為、グラフ描画領域幅に対するポジションに変換する
             double ratioMainCurPos = (mainCur1Pos - chartMargin) / (pictureMain.Width - 2 * chartMargin) ;
             double targetTime = subPosTime + (divTime * 20) * ratioMainCurPos;

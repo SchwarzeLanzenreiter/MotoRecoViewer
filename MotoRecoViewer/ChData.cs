@@ -99,7 +99,8 @@ namespace MotoRecoViewer
         }
 
         /// <summary>
-        /// 引数のtimeに最も近い要素のインデックスを返す
+        /// 引数のtimeに対応した左側インデックスを返す
+        /// 左側とは、時間が若い、という意味になる
         /// </summary>
         /// <param name="time">検索するtime</param>
         /// <returns>要素の位置（見つからなかった場合は配列長）</returns>
@@ -116,8 +117,7 @@ namespace MotoRecoViewer
                 last = this.LogData.Count - 1;
             }
 
-            do
-            {
+            do {
                 mid = first + (last - first) / 2;
 
                 if ((this.LogData[mid].DataTime <= time) && ( time < this.LogData[mid + 1].DataTime ))
@@ -140,7 +140,8 @@ namespace MotoRecoViewer
         }
 
         /// <summary>
-        /// 引数のtimeに最も近い要素のインデックスを返す
+        /// 引数のtimeに対応した左側インデックスを返す
+        /// 左側とは、時間が若い、という意味になる
         /// </summary>
         /// <param name="time">検索するtime</param>
         /// <param name="start">検索開始インデックス</param>
