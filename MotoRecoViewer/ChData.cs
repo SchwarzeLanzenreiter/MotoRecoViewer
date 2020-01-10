@@ -103,21 +103,39 @@ namespace MotoRecoViewer
         /// </summary>
         /// <param name="time">検索するtime</param>
         /// <returns>要素の位置（見つからなかった場合は配列長）</returns>
-        public int FindClosestIndex(double time)
+        public int FindLeftIndex(double time)
         {
             int first = 0;
-            int last = this.LogData.Count - 1;
+            int last;
             int mid;
+
+            if (this.LogData.Count < 3) {
+                return 0;
+            } else
+            {
+                last = this.LogData.Count - 1;
+            }
+
             do
             {
                 mid = first + (last - first) / 2;
-                if (time > this.LogData[mid].DataTime)
-                    first = mid + 1;
-                else
-                    last = mid - 1;
-                if (this.LogData[mid].DataTime == time)
+
+                if ((this.LogData[mid].DataTime <= time) && ( time < this.LogData[mid + 1].DataTime ))
+                {
                     return mid;
+                }
+
+
+                if (time > this.LogData[mid].DataTime)
+                {
+                    first = mid + 1;
+                }
+                else
+                {
+                    last = mid - 1;
+                }
             } while (first <= last);
+
             return mid;
         }
 
@@ -128,7 +146,7 @@ namespace MotoRecoViewer
         /// <param name="start">検索開始インデックス</param>
         /// <param name="end">検索終了インデックス</param>
         /// <returns>要素の位置（見つからなかった場合は配列長）</returns>
-        public int FindClosestIndex(double time, int start, int end)
+        public int FindLeftIndex(double time, int start, int end)
         {
             int first = start;
             int last = end;

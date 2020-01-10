@@ -67,17 +67,17 @@ namespace MotoRecoViewer
         //==========================
         private BufferedListView ListViewData;
 
-        private const int chartMargin = 10; // グリッドとpictureSubの余白
+        private const double chartMargin = 10; // グリッドとpictureSubの余白
                
         private Dictionary<String, int> DicChName;
         private List<ChData> ListChData;
 
-        private float startTime;    //CANデータ最初のタイムスタンプ
-        private float endTime;      //CANデータ最終データのタイムスタンプ
-        private float subPosTime;   //サブチャート選択位置、デフォルト0秒
-        private float mainCur1Pos;  //メインチャートカーソル1X位置
-        private float mainCur2Pos;  //メインチャートカーソル2X位置
-        private float divTime;      //メインチャートの1divisionあたり時間、デフォルト1秒
+        private double startTime;    //CANデータ最初のタイムスタンプ
+        private double endTime;      //CANデータ最終データのタイムスタンプ
+        private double subPosTime;   //サブチャート選択位置、デフォルト0秒
+        private double mainCur1Pos;  //メインチャートカーソル1X位置
+        private double mainCur2Pos;  //メインチャートカーソル2X位置
+        private double divTime;      //メインチャートの1divisionあたり時間、デフォルト1秒
 
         private bool IsDragging;                // 現在ドラッグ中かどうか                                 
         private MouseButtons DraggingButton;    // どのボタンが押されているのか(右ボタンで別の処理をしたい時に、区別するため)
@@ -234,7 +234,8 @@ namespace MotoRecoViewer
 
                     }
                     //時間計算
-                    float second = aryCanData[i].timeSec + (float)aryCanData[i].timeMSec / 1000;
+                    // timeMSecの/1000dは、RAM値→物理値変換
+                    double second = aryCanData[i].timeSec + aryCanData[i].timeMSec / 1000d;
 
                     //データ追加
                     lock (lockobj) { ListChData[idxCh].AddData(second, value); }
@@ -255,12 +256,12 @@ namespace MotoRecoViewer
             });
             
             //開始時間を計算しておく
-            startTime = (float)aryCanData[0].timeSec + (float)aryCanData[0].timeMSec / 1000;
+            startTime = aryCanData[0].timeSec + aryCanData[0].timeMSec / 1000;
             subPosTime = startTime;
             divTime = 1;
                        
             //終了時間を計算しておく
-            endTime = (float)aryCanData[arySize - 1].timeSec + (float)aryCanData[arySize - 1].timeMSec / 1000;
+            endTime = aryCanData[arySize - 1].timeSec + aryCanData[arySize - 1].timeMSec / 1000;
 
             //スレッド処理した関係でデータがソートできてないのでソートする
             for (int i = 0; i < ListChData.Count; i++)
@@ -287,31 +288,42 @@ namespace MotoRecoViewer
             // ListViewDataのValue1を更新
 
             // MainChartのカーソル位置1に対応するタイムスタンプを計算
-            float targetTime = subPosTime + (divTime * 20) / (pictureMain.Width - 2 * chartMargin) * mainCur1Pos;
 
+            // mainCur1Posは、PictureMain上の絶対的なX座標の為、グラフ描画領域幅に対するポジションに変換する
+            double ratioMainCurPos = (mainCur1Pos - chartMargin) / (pictureMain.Width - 2 * chartMargin) ;
+            double targetTime = subPosTime + (divTime * 20) * ratioMainCurPos;
+            
             for (int i = 0; i < ListViewData.Items.Count; i++)
             {
-                int idx = DicChName[ListViewData.Items[i].Text];
-
                 //　該当CAN IDが存在しないケースも有りうることに注意
-                if (idx < 0) { continue; }
+                // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
+                if (!DicChName.ContainsKey(ListViewData.Items[i].Text))
+                {
+                    continue;
+                }
 
-                int targetIdx = ListChData[idx].FindClosestIndex(targetTime);
+                int idx = DicChName[ListViewData.Items[i].Text];
+                int targetIdx = ListChData[idx].FindLeftIndex(targetTime);
 
                 ListViewData.Items[i].SubItems[1].Text = ListChData[idx].LogData[targetIdx].DataValue.ToString();
             }
 
             // MainChartのカーソル位置2に対応するタイムスタンプを計算
-            targetTime = subPosTime + (divTime * 20) / (pictureMain.Width - 2 * chartMargin) * mainCur2Pos;
+            // mainCur1Posは、PictureMain上の絶対的なX座標の為、グラフ描画領域幅に対するポジションに変換する
+            ratioMainCurPos = (mainCur2Pos - chartMargin) / (pictureMain.Width - 2 * chartMargin);
+            targetTime = subPosTime + (divTime * 20) * ratioMainCurPos;
 
             for (int i = 0; i < ListViewData.Items.Count; i++)
             {
-                int idx = DicChName[ListViewData.Items[i].Text];
-
                 //　該当CAN IDが存在しないケースも有りうることに注意
-                if (idx < 0) { continue; }
+                // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
+                if (!DicChName.ContainsKey(ListViewData.Items[i].Text))
+                {
+                    continue;
+                }
 
-                int targetIdx = ListChData[idx].FindClosestIndex(targetTime);
+                int idx = DicChName[ListViewData.Items[i].Text];
+                int targetIdx = ListChData[idx].FindLeftIndex(targetTime);
 
                 ListViewData.Items[i].SubItems[2].Text = ListChData[idx].LogData[targetIdx].DataValue.ToString();
             }
@@ -337,10 +349,10 @@ namespace MotoRecoViewer
             int idx_lon = DicChName["Longitude"];
 
             // MainChartの中央に対応するタイムスタンプを計算
-            float mainChartCenterTime = subPosTime + (divTime * 20) / 2;
+            double mainChartCenterTime = subPosTime + (divTime * 20) / 2;
 
             // MainCharの中央に応じたデータidx取得
-            int mainChartCenterIdx = ListChData[idx_lat].FindClosestIndex(mainChartCenterTime);
+            int mainChartCenterIdx = ListChData[idx_lat].FindLeftIndex(mainChartCenterTime);
 
             // MainChartの中央に応じた緯度経度取得
             float fl_lon = (float)ListChData[idx_lon].LogData[mainChartCenterIdx].DataValue;
@@ -361,11 +373,11 @@ namespace MotoRecoViewer
             //現在MainChartに表示されているデータのルートをMapに追加する
             // MainChartの両端に対応するタイムスタンプを計算
             // 左端は、subPosTimeそのもの
-            float mainChartRightTime = subPosTime + (divTime * 20);
+            double mainChartRightTime = subPosTime + (divTime * 20);
 
             // MainChartの両端に対応するデータidx取得。緯度経度はデータ数同等なので、longitudeで代表する
-            int mainChartLeftIdx = ListChData[idx_lat].FindClosestIndex(subPosTime);
-            int mainChartRightIdx = ListChData[idx_lat].FindClosestIndex(mainChartRightTime);
+            int mainChartLeftIdx = ListChData[idx_lat].FindLeftIndex(subPosTime);
+            int mainChartRightIdx = ListChData[idx_lat].FindLeftIndex(mainChartRightTime);
 
             // ルートをMapに追加
             // まず既存ルートをクリア
@@ -403,10 +415,10 @@ namespace MotoRecoViewer
             int idx_lon = DicChName["Longitude"];
 
             // MainChartのカーソル位置1に対応するタイムスタンプを計算
-            float targetTime = subPosTime + (divTime * 20) / (pictureMain.Width - 2 * chartMargin) * mainCur1Pos;
+            double targetTime = subPosTime + (divTime * 20) / (pictureMain.Width - 2 * chartMargin) * mainCur1Pos;
 
             // タイムスタンプに応じたデータidx取得
-            int targetIdx = ListChData[idx_lat].FindClosestIndex(targetTime);
+            int targetIdx = ListChData[idx_lat].FindLeftIndex(targetTime);
 
             // 緯度経度取得
             float fl_lon = (float)ListChData[idx_lon].LogData[targetIdx].DataValue;
@@ -434,12 +446,15 @@ namespace MotoRecoViewer
 
             // ListViewData更新
             UpdateListViewData();
+
+            // 描画更新
+            Application.DoEvents();
         }
 
         /// <summary>
         /// 画面下部のサブChartのグリッドを描画する
         /// </summary>
-        private void DrawSubChartGrid(Graphics g, int margin)
+        private void DrawSubChartGrid(Graphics g, double margin)
         {
             //まずサブチャートエリアの枠を書く
 
@@ -447,17 +462,17 @@ namespace MotoRecoViewer
             for (int i = 0; i < 21; i++)
             {
                 // 罫線間ピクセルを算出
-                float rule = (float)(pictureSub.Width - 2 * margin) / 20;
+                double rule = (double)(pictureSub.Width - 2d * margin) / 20d;
 
                 // X座標
-                float x = margin + i * rule;
+                double x = margin + i * rule;
 
                 // Y座標
-                float y1 = margin;
-                float y2 = pictureSub.Height - margin;
+                double y1 = margin;
+                double y2 = pictureSub.Height - margin;
 
                 // ToDo グリッドカラーも設定できるようにする
-                g.DrawLine(Pens.DarkSeaGreen, x, y1, x, y2);
+                g.DrawLine(Pens.DarkSeaGreen, (float)x, (float)y1, (float)x, (float)y2);
             }
 
             //縦線
@@ -465,17 +480,17 @@ namespace MotoRecoViewer
             for (int i = 0; i < 3; i++)
             {
                 // 罫線間ピクセルを算出
-                float rule = (float)(pictureSub.Height - 2 * margin) / 2;
+                double rule = (pictureSub.Height - 2d * margin) / 2d;
 
                 // X座標
-                float y = margin + i * rule;
+                double y = margin + i * rule;
 
                 // Y座標
-                float x1 = margin;
-                float x2 = pictureSub.Width - margin;
+                double x1 = margin;
+                double x2 = pictureSub.Width - margin;
 
                 // ToDo グリッドカラーも設定できるようにする
-                g.DrawLine(Pens.DarkSeaGreen, x1, y, x2, y);
+                g.DrawLine(Pens.DarkSeaGreen, (float)x1, (float)y, (float)x2, (float)y);
             }
         }
 
@@ -492,24 +507,24 @@ namespace MotoRecoViewer
 
             Pen p = new Pen(Brushes.White);
 
-            //for (int i = 0; i < ListChName.Count; i++)
+            //for (int i = 0; i < ListChData.Count; i++)
             Parallel.For(0, ListChData.Count, i =>
             {
                 // Subチャートに表示するのは、ChData.ChPreviewがTrueの物のみ
                 if (ListChData[i].ChPreview)
                 {
-                    int targetIdxPrev = 0;
-                    int xPrev = chartMargin;
+                    double targetIdxPrev = 0d;
+                    double xPrev = chartMargin;
                     double yPrev = pictureSub.Height - chartMargin;
 
                     // SubChart描画ピクセル幅に対してのみ描画処理実施する
                     for (int j = 0; j <= pictureSub.Width - 2 * chartMargin; j++)
                     {
                         // SubChartのグラフ描画領域のXstart～Xendに対応したタイムスタンプを計算
-                        double targetTime = startTime + (endTime - startTime) / (pictureSub.Width - 2 * chartMargin) * j;
+                        double targetTime = startTime + (endTime - startTime) / (pictureSub.Width - 2d * chartMargin) * j;
 
                         // targetTimeに対応したタイムスタンプに最も近いChDataのインデックスを取得
-                        int targetIdx = ListChData[i].FindClosestIndex(targetTime);
+                        int targetIdx = ListChData[i].FindLeftIndex(targetTime);
 
 
                         // 1つ前のインデックスと同じ場合、スキップする
@@ -519,7 +534,7 @@ namespace MotoRecoViewer
                         }
 
                         // targetIdx相当分のXとYをラッチ
-                        int x = j + chartMargin;
+                        double x = j + chartMargin;
 
                         // targetIdxのDataValueが、Ch設定のMax-Min幅に対して何%位置か算出する
                         double y = ListChData[i].LogData[targetIdx].DataValue;
@@ -530,17 +545,18 @@ namespace MotoRecoViewer
                         if (y < 0) { y = 0; }
 
                         // %をY軸ピクセルに変換する.その際、グラフ上方が原点になるので、1-yとして計算する。
-                        y = (pictureSub.Height - chartMargin * 2) * (1 - y);
+                        y = (pictureSub.Height - chartMargin * 2d) * (1d - y);
                         y = y + chartMargin;
 
                         // 1つ前のインデックスと異なる場合のみ、ラインを描画する
-                        
-                        lock (lockobj) {
+
+                        lock (lockobj)
+                        {
                             // 描画色
                             p.Color = Color.FromArgb(ListChData[i].ChColor);
 
                             //　描画
-                            g.DrawLine(p, xPrev, (float)yPrev, x, (float)y);
+                            g.DrawLine(p, (float)xPrev, (float)yPrev, (float)x, (float)y);
                         }
 
                         targetIdxPrev = targetIdx;
@@ -550,7 +566,8 @@ namespace MotoRecoViewer
                 }
 
                 idxPreview++;
-            });
+             });
+            //}
         }
 
         /// <summary>
@@ -561,22 +578,22 @@ namespace MotoRecoViewer
             //選択マーカー幅を計算する
             //データの時間幅に対する、divTime*20の割合から計算できる
             //まずデータの時間幅に対するメインチャート時間幅の割合を計算
-            float ratioSelected = (divTime * 20) / (endTime - startTime);
+            double ratioSelected = (divTime * 20) / (endTime - startTime);
 
             //ratioSelected上限処理 , データが短くてメインチャート1画面に収まり切る場合に発生
             if (ratioSelected > 1) { ratioSelected = 1; }
 
-            float rectWidth = (pictureSub.Width - 2 * chartMargin) * ratioSelected;
+            double rectWidth = (pictureSub.Width - 2 * chartMargin) * ratioSelected;
 
             //rectWidth下限処理
             if (rectWidth < 2){ rectWidth = 2; }
 
             //XY座標計算
-            float x1 = (subPosTime - startTime) / (endTime - startTime);       //ToDo startTimeはMotoRecoでロギング時0のはずなので本来は不要
+            double x1 = (subPosTime - startTime) / (endTime - startTime);       //ToDo startTimeはMotoRecoでロギング時0のはずなので本来は不要
             x1 = x1 * (pictureSub.Width - 2 * chartMargin)+chartMargin;
-            float x2 = x1 + rectWidth;
-            float y1 = chartMargin;
-            float y2 = pictureSub.Height - chartMargin;
+            double x2 = x1 + rectWidth;
+            double y1 = chartMargin;
+            double y2 = pictureSub.Height - chartMargin;
 
             //rectangleに変換
             Rectangle rect = Rectangle.FromLTRB((int)x1, (int)y1, (int)x2, (int)y2);
@@ -622,16 +639,16 @@ namespace MotoRecoViewer
             for (int i = 0; i < 21; i++)
             {
                 // 罫線間ピクセルを算出
-                float rule = (float)(pictureMain.Width - 2 * chartMargin) / 20;
+                double rule = (pictureMain.Width - 2d * chartMargin) / 20d;
 
                 // X座標
-                float x = chartMargin + i * rule;
+                double x = chartMargin + i * rule;
 
                 // Y座標
-                float y1 = chartMargin;
-                float y2 = pictureMain.Height - chartMargin;
+                double y1 = chartMargin;
+                double y2 = pictureMain.Height - chartMargin;
 
-                g.DrawLine(Pens.DarkSeaGreen, x, y1, x, y2);
+                g.DrawLine(Pens.DarkSeaGreen, (float)x, (float)y1, (float)x, (float)y2);
             }
 
             //縦線
@@ -639,27 +656,27 @@ namespace MotoRecoViewer
             for (int i = 0; i < 11; i++)
             {
                 // 罫線間ピクセルを算出
-                float rule = (float)(pictureMain.Height - 2 * chartMargin) / 10;
+                double rule = (pictureMain.Height - 2d * chartMargin) / 10d;
 
                 // X座標
-                float y = chartMargin + i * rule;
+                double y = chartMargin + i * rule;
 
                 // Y座標
-                float x1 = chartMargin;
-                float x2 = pictureMain.Width - chartMargin;
+                double x1 = chartMargin;
+                double x2 = pictureMain.Width - chartMargin;
 
-                g.DrawLine(Pens.DarkSeaGreen, x1, y, x2, y);
+                g.DrawLine(Pens.DarkSeaGreen, (float)x1, (float)y, (float)x2, (float)y);
             }
 
             Pen curPen = new Pen(Brushes.White,3);
 
             //カーソル1
             curPen.DashStyle = DashStyle.DashDot;
-            g.DrawLine(curPen, mainCur1Pos, chartMargin, mainCur1Pos, pictureMain.Height - chartMargin);
+            g.DrawLine(curPen, (float)mainCur1Pos, (float)chartMargin, (float)mainCur1Pos, pictureMain.Height - (float)chartMargin);
 
             //カーソル2
             curPen.DashStyle = DashStyle.DashDotDot;
-            g.DrawLine(curPen, mainCur2Pos, chartMargin, mainCur2Pos, pictureMain.Height - chartMargin);
+            g.DrawLine(curPen, (float)mainCur2Pos, (float)chartMargin, (float)mainCur2Pos, pictureMain.Height - (float)chartMargin);
         }
 
         /// <summary>
@@ -674,29 +691,31 @@ namespace MotoRecoViewer
 
             // ListChNameの項目数すべて描画する
             Parallel.For(0, ListChData.Count, i =>
+            //for (int i = 0; i < ListChData.Count; i++)
             {
                 int targetIdxPrev = 0;
-                int xPrev = chartMargin;
+                double xPrev = chartMargin;
                 double yPrev = pictureMain.Height - chartMargin;
 
-                if (ListChData[i].ChShow) {
-
+                if (ListChData[i].ChShow)
+                {
                     //SubChart左端と右端に対応するListChDataのインデックスを先に求める。
                     //そうしておくことで、中間範囲のListChDataの検索範囲を狭めて高速化できる。
                     int startidx, endidx;
-                    startidx = ListChData[i].FindClosestIndex(subPosTime);
-                    endidx = ListChData[i].FindClosestIndex(subPosTime + (divTime * 20));
+                    startidx = ListChData[i].FindLeftIndex(subPosTime);
+                    endidx = ListChData[i].FindLeftIndex(subPosTime + (divTime * 20));
 
 
                     // MainChart描画ピクセル幅に対してのみ描画処理実施する
                     for (int j = 0; j <= pictureMain.Width - 2 * chartMargin; j++)
                     {
                         // MainChartのグラフ描画領域のXstart～Xendに対応したタイムスタンプを計算
-                        double targetTime = subPosTime + (divTime * 20) / (pictureMain.Width - 2 * chartMargin) * j;
+                        double targetTime = subPosTime + (divTime * 20d) / (pictureMain.Width - 2d * chartMargin) * j;
 
                         // targetTimeに対応したタイムスタンプに最も近いChDataのインデックスを取得
-                        int targetIdx = ListChData[i].FindClosestIndex(targetTime,startidx,endidx);
+                        //int targetIdx = ListChData[i].FindLeftIndex(targetTime, startidx, endidx);
 
+                        int targetIdx = ListChData[i].FindLeftIndex(targetTime);
                         // 1つ前のインデックスと同じ場合何もしない
                         if (targetIdxPrev == targetIdx)
                         {
@@ -704,11 +723,11 @@ namespace MotoRecoViewer
                         }
 
                         // targetIdx相当分のXとYをラッチ
-                        int x = j + chartMargin;
+                        double x = chartMargin + j;
 
                         // targetIdxのDataValueが、Ch設定のMax-Min幅に対して何%位置か算出する
                         double y = ListChData[i].LogData[targetIdx].DataValue;
-                        y = (y- ListChData[i].ChMin) / (ListChData[i].ChMax - ListChData[i].ChMin);
+                        y = (y - ListChData[i].ChMin) / (ListChData[i].ChMax - ListChData[i].ChMin);
 
                         // 0%以下もしくは100以上は0または100に丸める
                         if (y > 100) { y = 1; }
@@ -723,7 +742,7 @@ namespace MotoRecoViewer
                         {
                             p.Color = Color.FromArgb(ListChData[i].ChColor);
 
-                            g.DrawLine(p, xPrev, (float)yPrev, x, (float)y);
+                            g.DrawLine(p, (float)xPrev, (float)yPrev, (float)x, (float)y);
                         }
 
                         targetIdxPrev = targetIdx;
@@ -732,6 +751,7 @@ namespace MotoRecoViewer
                     }
                 }
             });
+            //}
         }
 
         /// <summary>
@@ -970,18 +990,18 @@ namespace MotoRecoViewer
                 //選択マーカー幅を計算する
                 //データの時間幅に対する、divTime*20の割合から計算できる
                 //まずデータの時間幅に対するメインチャート時間幅の割合を計算
-                float ratioSelected = (divTime * 20) / (endTime - startTime);
+                double ratioSelected = (divTime * 20) / (endTime - startTime);
 
                 //ratioSelected上限処理 , データが短くてメインチャート1画面に収まり切る場合に発生
                 if (ratioSelected > 1) { ratioSelected = 1; }
 
-                float rectWidth = (pictureSub.Width - 2 * chartMargin) * ratioSelected;
+                double rectWidth = (pictureSub.Width - 2 * chartMargin) * ratioSelected;
 
                 //rectWidth下限処理
                 if (rectWidth < 2) { rectWidth = 2; }
 
                 //startPosを算出
-                float startPos = getXY.X - rectWidth / 2;
+                double startPos = getXY.X - rectWidth / 2;
 
                 //startPos上下限処理
                 if (startPos < chartMargin) { startPos = chartMargin; }
