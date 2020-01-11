@@ -120,6 +120,11 @@ namespace MotoRecoViewer
             do {
                 mid = first + (last - first) / 2;
 
+                if (mid == this.LogData.Count - 1)
+                {
+                    return mid;
+                }
+
                 if ((this.LogData[mid].DataTime <= time) && ( time < this.LogData[mid + 1].DataTime ))
                 {
                     return mid;
@@ -134,6 +139,7 @@ namespace MotoRecoViewer
                 {
                     last = mid - 1;
                 }
+                
             } while (first <= last);
 
             return mid;
