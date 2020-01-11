@@ -357,7 +357,7 @@ namespace MotoRecoViewer
             float fl_lat = (float)ListChData[idx_lat].LogData[mainChartCenterIdx].DataValue;
 
             // 緯度経度に変化がなければリターンで抜ける
-            if ((fl_lon == prev_lon ) && (fl_lat == prev_lat))
+            if ((fl_lon == prev_lon) && (fl_lat == prev_lat))
             {
                 return;
             } else {
@@ -366,7 +366,7 @@ namespace MotoRecoViewer
             }
 
             //地図中心を、MainChartの中央市に合わせる
-            GMapControl.Position = new PointLatLng(fl_lat,fl_lon);
+            GMapControl.Position = new PointLatLng(fl_lat, fl_lon);
 
             //現在MainChartに表示されているデータのルートをMapに追加する
             // MainChartの両端に対応するタイムスタンプを計算
@@ -397,6 +397,20 @@ namespace MotoRecoViewer
         }
 
         /// <summary>
+        /// 一般的な線形補間式
+        /// 座標(x0,y0)(x1,y1)の2点が既知の場合に、新たな座標xに対応するyを返す
+        /// <param name = "x0" > 既知のx1</ param >
+        /// <param name = "y0" > 既知のx1</ param >
+        /// <param name = "x1" > 既知のx1</ param >
+        /// <param name = "y1" > 既知のx1</ param >
+        /// <param name = "x" > 新しく求めたいx</ param >
+        /// </summary>
+        private double linearInterpolation(double x0, double y0, double x1, double y1, double x)
+        {
+            return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
+        }
+
+        /// <summary>
         /// 地図上のマーカーのみ位置更新する
         /// 緯度経度のチャンネル名はLatitudeとLongitude固定とする
         /// マーカー位置はカーソル1位置とする
@@ -413,18 +427,37 @@ namespace MotoRecoViewer
             int idx_lon = DicChName["Longitude"];
 
             // MainChartのカーソル位置1に対応するタイムスタンプを計算
-            double targetTime = subPosTime + (divTime * 20) / (pictureMain.Width - 2 * chartMargin) * mainCur1Pos;
+            double cur1PosTime = subPosTime + (divTime * 20) / (pictureMain.Width - 2 * chartMargin) * mainCur1Pos;
 
-            // タイムスタンプに応じたデータidx取得
-            int targetIdx = ListChData[idx_lat].FindLeftIndex(targetTime);
+            // カーソル位置左側データidx取得
+            int leftIdx = ListChData[idx_lat].FindLeftIndex(cur1PosTime);
+            double leftTime = ListChData[idx_lat].LogData[leftIdx].DataTime;
+
+            // カーソル位置右側データidx取得
+            int rightIdx;
+            if (leftIdx == ListChData[idx_lat].LogData.Count - 1)
+            {
+                rightIdx = leftIdx;
+            } else
+            {
+                rightIdx = leftIdx + 1;
+            }
+            double rightTime = ListChData[idx_lat].LogData[rightIdx].DataTime;
 
             // 緯度経度取得
-            float fl_lon = (float)ListChData[idx_lon].LogData[targetIdx].DataValue;
-            float fl_lat = (float)ListChData[idx_lat].LogData[targetIdx].DataValue;
+            double leftLon = ListChData[idx_lon].LogData[leftIdx].DataValue;
+            double leftLat = ListChData[idx_lat].LogData[leftIdx].DataValue;
+
+            double rightLon = ListChData[idx_lon].LogData[rightIdx].DataValue;
+            double rightLat = ListChData[idx_lat].LogData[rightIdx].DataValue;
+
+            // 経度緯度を前後2点データから線形補間する
+            double liLat = linearInterpolation(leftTime, leftLat, rightTime, rightLat, cur1PosTime);
+            double liLon = linearInterpolation(leftTime, leftLon, rightTime, rightLon, cur1PosTime);
 
             //マーカー更新
             GMapOverlayMarker.Markers.Clear();
-            GMarkerGoogle marker = new GMarkerGoogle(new PointLatLng(fl_lat, fl_lon), GMarkerGoogleType.green);
+            GMarkerGoogle marker = new GMarkerGoogle(new PointLatLng(liLat, liLon), GMarkerGoogleType.green);
             GMapOverlayMarker.Markers.Add(marker);
         }
 
