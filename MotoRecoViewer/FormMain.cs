@@ -81,8 +81,6 @@ namespace MotoRecoViewer
 
         private bool IsDragging;                    // 現在ドラッグ中かどうか                                 
         private MouseButtons DraggingButton;        // どのボタンが押されているのか(右ボタンで別の処理をしたい時に、区別するため)
-        private double DraggingOldX;                // ②呼び出しの直前(前回の②の終了時)のマウスポインタのX座標
-        private double DraggingOldY;                // ②呼び出しの直前(同上)のマウスポインタのY座標
         private bool IsReadingCanData;              // 現在CANデータ読み込み中かどうか
 
         private float prev_lon;                     // longitude前回値
@@ -996,8 +994,6 @@ namespace MotoRecoViewer
             if (IsReadingCanData) { return; }
 
             this.DraggingButton = e.Button;
-            this.DraggingOldX = e.X;
-            this.DraggingOldY = e.Y;
             switch (this.DraggingButton)
             {
                 case MouseButtons.Left:
@@ -1116,8 +1112,6 @@ namespace MotoRecoViewer
             if (IsReadingCanData) { return; }
 
             this.DraggingButton = e.Button;
-            this.DraggingOldX = e.X;
-            this.DraggingOldY = e.Y;
             switch (this.DraggingButton)
             {
                 case MouseButtons.Left:
