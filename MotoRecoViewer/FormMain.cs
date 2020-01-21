@@ -438,7 +438,7 @@ namespace MotoRecoViewer
                 rightIdx = leftIdx;
             } else
             {
-                rightIdx = leftIdx + 1;
+                rightIdx = leftIdx + 1;   // ToDo 経度緯度データが、重複してロギングされているため.CanLogger側を治す 
             }
             double rightTime = ListChData[idx_lat].LogData[rightIdx].DataTime;
 
@@ -464,6 +464,9 @@ namespace MotoRecoViewer
         /// </summary>
         private void DrawChart()
         {
+            // ListChNameがNULL→即抜ける
+            if (DicChName == null) { return; }
+
             // ListChNameが0＝CANデータ未読み込み→即抜ける
             if (DicChName.Count < 1) { return; }
 
@@ -949,10 +952,13 @@ namespace MotoRecoViewer
             ListViewData.CheckBoxes = true;
             ListViewData.ItemChecked += ListViewData_ItemChecked;
 
-            // pictureMainにマウスホイールイベント登録
+            // pictureMainとpictureSubにマウスホイールイベント登録
             //ホイールイベントの追加  
             this.pictureMain.MouseWheel
                 += new System.Windows.Forms.MouseEventHandler(this.pictureMain_MouseWheel);
+
+            this.pictureSub.MouseWheel
+               += new System.Windows.Forms.MouseEventHandler(this.pictureSub_MouseWheel);
         }
 
         private void 終了ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1189,13 +1195,37 @@ namespace MotoRecoViewer
             int delta;
             delta = e.Delta;
 
-            // プラスならdivTimeを2倍にする
+            // GMapの拡大縮小に合わせて変更。プラスならdivTimeを0.5倍にする。
+            // ホイールを奥に回す→拡大　手前に回す→縮小
             if (delta > 0)
             {
-                divTime = divTime * 2;
+                divTime = divTime / 2;
             } else
             {
+                divTime = divTime * 2;
+            }
+
+            DrawChart();
+            UpdateMap();
+            UpdateMapMarker();
+        }
+
+        // マウスホイールイベント  
+        private void pictureSub_MouseWheel(object sender, MouseEventArgs e)
+        {
+            // スクロール量
+            int delta;
+            delta = e.Delta;
+
+            // GMapの拡大縮小に合わせて変更。プラスならdivTimeを0.5倍にする。
+            // ホイールを奥に回す→拡大　手前に回す→縮小
+            if (delta > 0)
+            {
                 divTime = divTime / 2;
+            }
+            else
+            {
+                divTime = divTime * 2;
             }
 
             DrawChart();
@@ -1293,6 +1323,42 @@ namespace MotoRecoViewer
         private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
         {
 
+        }
+
+        private void pictureMain_SizeChanged(object sender, EventArgs e)
+        {
+            // CANデータ読み込み中→即抜ける
+            if (IsReadingCanData) { return; }
+
+            // ListChNameがNULL→即抜ける
+            if (DicChName == null) { return; }
+
+            // ListChNameが0＝CANデータ未読み込み→即抜ける
+            if (DicChName.Count < 1) { return; }
+
+            //　アプリ上部のメインチャートを描画
+            DrawMainChart();
+
+            // 描画更新
+            Application.DoEvents();
+        }
+
+        private void pictureSub_SizeChanged(object sender, EventArgs e)
+        {
+            // CANデータ読み込み中→即抜ける
+            if (IsReadingCanData) { return; }
+
+            // ListChNameがNULL→即抜ける
+            if (DicChName == null) { return; }
+
+            // ListChNameが0＝CANデータ未読み込み→即抜ける
+            if (DicChName.Count < 1) { return; }
+
+            //　アプリ上部のメインチャートを描画
+            DrawSubChart();
+
+            // 描画更新
+            Application.DoEvents();
         }
     }
 }
