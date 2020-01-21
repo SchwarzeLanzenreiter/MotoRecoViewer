@@ -270,7 +270,7 @@ namespace MotoRecoViewer
             //CANデータ読み取り終了
             IsReadingCanData = false;
 
-            DrawChart();
+            //DrawChart();
 
             //進捗初期化
             context.Post(progress =>
@@ -462,7 +462,7 @@ namespace MotoRecoViewer
         /// <summary>
         /// Chartを描画する
         /// </summary>
-        private void DrawChart()
+        private void DrawChart(Graphics g)
         {
             // ListChNameがNULL→即抜ける
             if (DicChName == null) { return; }
@@ -471,22 +471,52 @@ namespace MotoRecoViewer
             if (DicChName.Count < 1) { return; }
 
             // アプリ下部のサブチャートを描画
-            DrawSubChart();
+            DrawSubChart(g);
 
             //　アプリ上部のメインチャートを描画
-            DrawMainChart();
+            DrawMainChart(g);
 
             // ListViewData更新
             UpdateListViewData();
+        }
 
-            // 描画更新
-            Application.DoEvents();
+        /// <summary>
+        /// Chartを描画する
+        /// </summary>
+        private void DrawChartMain(Graphics g)
+        {
+            // ListChNameがNULL→即抜ける
+            if (DicChName == null) { return; }
+
+            // ListChNameが0＝CANデータ未読み込み→即抜ける
+            if (DicChName.Count < 1) { return; }
+
+            //　アプリ上部のメインチャートを描画
+            DrawMainChart(g);
+
+            // ListViewData更新
+            UpdateListViewData();
+        }
+
+        /// <summary>
+        /// Chartを描画する
+        /// </summary>
+        private void DrawChartSub(Graphics g)
+        {
+            // ListChNameがNULL→即抜ける
+            if (DicChName == null) { return; }
+
+            // ListChNameが0＝CANデータ未読み込み→即抜ける
+            if (DicChName.Count < 1) { return; }
+
+            // アプリ下部のサブチャートを描画
+            DrawSubChart(g);
         }
 
         /// <summary>
         /// 画面下部のサブChartのグリッドを描画する
         /// </summary>
-        private void DrawSubChartGrid(Graphics g, double margin)
+        private void DrawSubChartGrid(Graphics g)
         {
             //まずサブチャートエリアの枠を書く
 
@@ -494,14 +524,14 @@ namespace MotoRecoViewer
             for (int i = 0; i < 21; i++)
             {
                 // 罫線間ピクセルを算出
-                double rule = (double)(pictureSub.Width - 2d * margin) / 20d;
+                double rule = (double)(pictureSub.Width - 2d * chartMargin) / 20d;
 
                 // X座標
-                double x = margin + i * rule;
+                double x = chartMargin + i * rule;
 
                 // Y座標
-                double y1 = margin;
-                double y2 = pictureSub.Height - margin;
+                double y1 = chartMargin;
+                double y2 = pictureSub.Height - chartMargin;
 
                 // ToDo グリッドカラーも設定できるようにする
                 g.DrawLine(Pens.DarkSeaGreen, (float)x, (float)y1, (float)x, (float)y2);
@@ -512,14 +542,14 @@ namespace MotoRecoViewer
             for (int i = 0; i < 3; i++)
             {
                 // 罫線間ピクセルを算出
-                double rule = (pictureSub.Height - 2d * margin) / 2d;
+                double rule = (pictureSub.Height - 2d * chartMargin) / 2d;
 
                 // X座標
-                double y = margin + i * rule;
+                double y = chartMargin + i * rule;
 
                 // Y座標
-                double x1 = margin;
-                double x2 = pictureSub.Width - margin;
+                double x1 = chartMargin;
+                double x2 = pictureSub.Width - chartMargin;
 
                 // ToDo グリッドカラーも設定できるようにする
                 g.DrawLine(Pens.DarkSeaGreen, (float)x1, (float)y, (float)x2, (float)y);
@@ -539,8 +569,8 @@ namespace MotoRecoViewer
 
             Pen p = new Pen(Brushes.White);
 
-            //for (int i = 0; i < ListChData.Count; i++)
-            Parallel.For(0, ListChData.Count, i =>
+            for (int i = 0; i < ListChData.Count; i++)
+            //Parallel.For(0, ListChData.Count, i =>
             {
                 // Subチャートに表示するのは、ChData.ChPreviewがTrueの物のみ
                 if (ListChData[i].ChPreview)
@@ -598,8 +628,8 @@ namespace MotoRecoViewer
                 }
 
                 idxPreview++;
-             });
-            //}
+             //});
+            }
         }
 
         /// <summary>
@@ -636,27 +666,18 @@ namespace MotoRecoViewer
         /// <summary>
         /// 画面下部のサブChartを描画する
         /// </summary>
-        private void DrawSubChart()
+        private void DrawSubChart(Graphics g)
         {
-            //Subチャートと同じサイズのBitmapを用意
-            Bitmap canvas = new Bitmap(pictureSub.Width, pictureSub.Height);
-
-            //ImageオブジェクトのGraphicsオブジェクトを作成する
-            Graphics g = Graphics.FromImage(canvas);
-
             //サブチャートエリアを黒く塗りつぶす
-            g.FillRectangle(Brushes.Black, 0, 0, canvas.Width, canvas.Height);
+            g.FillRectangle(Brushes.Black, 0, 0, pictureSub.Width, pictureSub.Height);
 
             //pictureSubのWidth分だけ、ListChDataからデータをピックアップして描画する
             DrawSubChartData(g);
 
-            DrawSubChartGrid(g, chartMargin);
+            DrawSubChartGrid(g);
 
             //サブチャートに現在位置を反転表示で表示
             DrawSubChartPos(g);
-
-            // canvasをpictureboxに転送する
-            pictureSub.Image = canvas;
         }
 
 
@@ -722,8 +743,8 @@ namespace MotoRecoViewer
             Pen p = new Pen(Brushes.White);
 
             // ListChNameの項目数すべて描画する
-            Parallel.For(0, ListChData.Count, i =>
-            //for (int i = 0; i < ListChData.Count; i++)
+            //Parallel.For(0, ListChData.Count, i =>
+            for (int i = 0; i < ListChData.Count; i++)
             {
                 int targetIdxPrev = 0;
                 double xPrev = chartMargin;
@@ -782,32 +803,23 @@ namespace MotoRecoViewer
                         yPrev = y;
                     }
                 }
-            });
-            //}
+            //});
+            }
         }
 
         /// <summary>
         /// 画面上部のメインChartを描画する
         /// </summary>
-        private void DrawMainChart()
+        private void DrawMainChart(Graphics g)
         {
-            //Mainチャートと同じサイズのBitmapを用意
-            Bitmap canvas = new Bitmap(pictureMain.Width, pictureMain.Height);
-
-            //ImageオブジェクトのGraphicsオブジェクトを作成する
-            Graphics g = Graphics.FromImage(canvas);
-
             //サブチャートエリアを黒く塗りつぶす
-            g.FillRectangle(Brushes.Black, 0, 0, canvas.Width, canvas.Height);
+            g.FillRectangle(Brushes.Black, 0, 0, pictureMain.Width, pictureMain.Height);
 
             //pictureSubのWidth分だけ、ListChDataからデータをピックアップして描画する
             DrawMainChartData(g);
 
             //Grid描画
             DrawMainChartGrid(g);
-
-            // canvasをpictureboxに転送する
-            pictureMain.Image = canvas;
         }
 
         /// <summary>
@@ -1044,7 +1056,9 @@ namespace MotoRecoViewer
                 //ToDo　末尾の+startTimeは、canloggerでKeyOn検出時にstartTimeは0で記録されているはずなので、不要のはずである
                 subPosTime = (endTime - startTime) * ((startPos - chartMargin) / (pictureSub.Width - 2 * chartMargin)) + startTime;
 
-                DrawChart();
+                //DrawChart();
+                pictureMain.Refresh();
+                pictureSub.Refresh();
             }
         }
 
@@ -1059,7 +1073,9 @@ namespace MotoRecoViewer
                     this.IsDragging = false; // ドラッグが終了していることを記録
                     this.Cursor = Cursors.Default; // マウスポインタを通常のものに戻す
 
-                    DrawChart();
+                    //DrawChart();
+                    pictureMain.Refresh();
+                    pictureSub.Refresh();
                     UpdateMapMarker();
                     UpdateMap();
 
@@ -1091,7 +1107,9 @@ namespace MotoRecoViewer
                     mainCur2Pos = getXY.X;
                 }
 
-                DrawChart();
+                //DrawChart();
+                pictureMain.Refresh();
+                pictureSub.Refresh();
                 UpdateMapMarker();
             }
         }
@@ -1109,7 +1127,9 @@ namespace MotoRecoViewer
                 ListChData[idx].ChShow = ListViewData.Items[i].Checked;
             }
 
-            DrawChart();
+            //DrawChart();
+            pictureMain.Refresh();
+            pictureSub.Refresh();
         }
 
         private void PictureMain_MouseDown(object sender, MouseEventArgs e)
@@ -1145,7 +1165,9 @@ namespace MotoRecoViewer
                     this.IsDragging = false; // ドラッグが終了していることを記録
                     this.Cursor = Cursors.Default; // マウスポインタを通常のものに戻す
 
-                    DrawChart();
+                    //DrawChart();
+                    pictureMain.Refresh();
+                    pictureSub.Refresh();
                     UpdateMapMarker();
                     break;
 
@@ -1153,7 +1175,9 @@ namespace MotoRecoViewer
                     this.IsDragging = false; // ドラッグが終了していることを記録
                     this.Cursor = Cursors.Default; // マウスポインタを通常のものに戻す
 
-                    DrawChart();
+                    //DrawChart();
+                    pictureMain.Refresh();
+                    pictureSub.Refresh();
                     UpdateMapMarker();
                     break;
             }
@@ -1180,7 +1204,9 @@ namespace MotoRecoViewer
                 ReadCANData(openFileDialog.FileName);
 
                 // 初回描画する
-                DrawChart();
+                //DrawChart();
+                pictureMain.Refresh();
+                pictureSub.Refresh();
                 UpdateMap();
                 UpdateMapMarker();
 
@@ -1205,7 +1231,9 @@ namespace MotoRecoViewer
                 divTime = divTime * 2;
             }
 
-            DrawChart();
+            //DrawChart();
+            pictureMain.Refresh();
+            pictureSub.Refresh();
             UpdateMap();
             UpdateMapMarker();
         }
@@ -1228,7 +1256,9 @@ namespace MotoRecoViewer
                 divTime = divTime * 2;
             }
 
-            DrawChart();
+            //DrawChart();
+            pictureMain.Refresh();
+            pictureSub.Refresh();
             UpdateMap();
             UpdateMapMarker();
         }
@@ -1320,12 +1350,7 @@ namespace MotoRecoViewer
             f.Dispose();
         }
 
-        private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
-        {
-
-        }
-
-        private void pictureMain_SizeChanged(object sender, EventArgs e)
+        private void pictureMain_Paint(object sender, PaintEventArgs e)
         {
             // CANデータ読み込み中→即抜ける
             if (IsReadingCanData) { return; }
@@ -1337,13 +1362,10 @@ namespace MotoRecoViewer
             if (DicChName.Count < 1) { return; }
 
             //　アプリ上部のメインチャートを描画
-            DrawMainChart();
-
-            // 描画更新
-            Application.DoEvents();
+            DrawChartMain(e.Graphics);
         }
 
-        private void pictureSub_SizeChanged(object sender, EventArgs e)
+        private void pictureSub_Paint(object sender, PaintEventArgs e)
         {
             // CANデータ読み込み中→即抜ける
             if (IsReadingCanData) { return; }
@@ -1355,10 +1377,7 @@ namespace MotoRecoViewer
             if (DicChName.Count < 1) { return; }
 
             //　アプリ上部のメインチャートを描画
-            DrawSubChart();
-
-            // 描画更新
-            Application.DoEvents();
+            DrawChartSub(e.Graphics);
         }
     }
 }

@@ -211,7 +211,7 @@
             this.pictureMain.Size = new System.Drawing.Size(878, 346);
             this.pictureMain.TabIndex = 0;
             this.pictureMain.TabStop = false;
-            this.pictureMain.SizeChanged += new System.EventHandler(this.pictureMain_SizeChanged);
+            this.pictureMain.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureMain_Paint);
             this.pictureMain.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PictureMain_MouseDown);
             this.pictureMain.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureMain_MouseMove);
             this.pictureMain.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PictureMain_MouseUp);
@@ -225,7 +225,7 @@
             this.pictureSub.Size = new System.Drawing.Size(878, 172);
             this.pictureSub.TabIndex = 0;
             this.pictureSub.TabStop = false;
-            this.pictureSub.SizeChanged += new System.EventHandler(this.pictureSub_SizeChanged);
+            this.pictureSub.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureSub_Paint);
             this.pictureSub.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pictureSub_MouseMove);
             this.pictureSub.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureSub_MouseDown);
             this.pictureSub.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureSub_MouseMove);
