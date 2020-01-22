@@ -892,7 +892,7 @@ namespace MotoRecoViewer
 
             //レコードを書き込む
             // ToDo fieldはStringBuilderに置き換えること
-            string field;
+            System.Text.StringBuilder field = new System.Text.StringBuilder("");
 
             for (int i = 0; i < arySize; i++)
             {
@@ -905,21 +905,23 @@ namespace MotoRecoViewer
                 }
                 counter++;
 
-                field = "";
-                field = field + aryCanData[i].timeSec.ToString() + ",";
-                field = field + aryCanData[i].timeMSec.ToString() + ",";
-                field = field + aryCanData[i].id.ToString("X3") + ",";
-                field = field + aryCanData[i].data[0].ToString("X2") + ",";
-                field = field + aryCanData[i].data[1].ToString("X2") + ",";
-                field = field + aryCanData[i].data[2].ToString("X2") + ",";
-                field = field + aryCanData[i].data[3].ToString("X2") + ",";
-                field = field + aryCanData[i].data[4].ToString("X2") + ",";
-                field = field + aryCanData[i].data[5].ToString("X2") + ",";
-                field = field + aryCanData[i].data[6].ToString("X2") + ",";
-                field = field + aryCanData[i].data[7].ToString("X2") + "\r\n";
+                field.Append(aryCanData[i].timeSec.ToString() + ",");
+                field.Append(aryCanData[i].timeMSec.ToString() + ",");
+                field.Append(aryCanData[i].id.ToString("X3") + ",");
+                field.Append(aryCanData[i].data[0].ToString("X2") + ",");
+                field.Append(aryCanData[i].data[1].ToString("X2") + ",");
+                field.Append(aryCanData[i].data[2].ToString("X2") + ",");
+                field.Append(aryCanData[i].data[3].ToString("X2") + ",");
+                field.Append(aryCanData[i].data[4].ToString("X2") + ",");
+                field.Append(aryCanData[i].data[5].ToString("X2") + ",");
+                field.Append(aryCanData[i].data[6].ToString("X2") + ",");
+                field.Append(aryCanData[i].data[7].ToString("X2") + "\r\n");
 
                 //フィールドを書き込む
                 sr.Write(field);
+
+                //field初期化
+                field.Clear();
             }
 
             //閉じる
