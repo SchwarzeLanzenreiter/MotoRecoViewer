@@ -250,9 +250,17 @@ namespace MotoRecoViewer
                         running = false;
                     }
                 }
-                    
             });
-            
+
+            //スレッド処理した関係でデータがソートできてないのでソートする
+            for (int i = 0; i < ListChData.Count; i++)
+            {
+                ListChData[i].Sort();
+            }
+
+            //GPS積算距離を計算
+            CalcGPSDistance();
+
             //開始時間を計算しておく
             startTime = aryCanData[0].timeSec + aryCanData[0].timeMSec / 1000;
             subPosTime = startTime;
@@ -261,16 +269,8 @@ namespace MotoRecoViewer
             //終了時間を計算しておく
             endTime = aryCanData[arySize - 1].timeSec + aryCanData[arySize - 1].timeMSec / 1000;
 
-            //スレッド処理した関係でデータがソートできてないのでソートする
-            for (int i = 0; i < ListChData.Count; i++)
-            {
-                ListChData[i].Sort();
-            }
-
             //CANデータ読み取り終了
             IsReadingCanData = false;
-
-            //DrawChart();
 
             //進捗初期化
             context.Post(progress =>
@@ -278,9 +278,62 @@ namespace MotoRecoViewer
                 this.progressBar.Value = 0;
                 this.statusLabel.Text ="";
             }, null);
-            //Application.DoEvents();
         }
 
+        /// <summary>
+        /// ＃GPS_Speedから#GPS_Distanceを計算する
+        /// </summary>
+        private void CalcGPSDistance() {
+            //#GPS_SpeedのChName取得
+            int i = decodeRule.FormulaIndexOf("#GPS_Speed");
+            string chNameGPSSpeed = decodeRule.GetChName(i);
+
+            //　該当CAN IDが存在しないケースも有りうることに注意
+            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
+            if (!DicChName.ContainsKey(chNameGPSSpeed))
+            {
+                return;
+            }
+            int idx_GPSSpeed = DicChName[chNameGPSSpeed];
+
+            //#GPS_DistanceのChName取得
+            i = decodeRule.FormulaIndexOf("#GPS_Distance");
+            string chNameGPSDistance = decodeRule.GetChName(i);
+
+            //　該当CAN IDが存在しないケースも有りうることに注意
+            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
+            if (!DicChName.ContainsKey(chNameGPSDistance))
+            {
+                return;
+            }
+            int idx_GPSDistance = DicChName[chNameGPSDistance];
+
+            //#GPS_Distanceの積分計算
+            TVData tvData;
+
+            tvData = ListChData[idx_GPSDistance].LogData[0];
+            tvData.DataValue = 0.0;
+            ListChData[idx_GPSDistance].LogData[0] = tvData;
+
+            for (i=1; i<ListChData[idx_GPSSpeed].Count; i++)
+            { 
+                // GPSSpeed unit:km/h
+                double dSpeed = ListChData[idx_GPSSpeed].LogData[i].DataValue;
+
+                // time diff unit:sec
+                double timeDiff = ListChData[idx_GPSSpeed].LogData[i].DataTime - ListChData[idx_GPSSpeed].LogData[i-1].DataTime;
+
+                tvData = ListChData[idx_GPSDistance].LogData[i];
+
+                // 積算距離は km で考える
+                tvData.DataValue = ListChData[idx_GPSDistance].LogData[i - 1].DataValue + (dSpeed / 3600) * timeDiff;
+                ListChData[idx_GPSDistance].LogData[i] = tvData;
+            }
+        }
+
+        /// <summary>
+        /// pictureMain上のカーソル位置のデータをListViewに反映する
+        /// </summary>
         private void UpdateListViewData()
         {
             // ListViewDataのValue1を更新

@@ -53,6 +53,8 @@ namespace MotoRecoViewer
                     ListViewItem.Items.Add(new ListViewItem(item3));
                     string[] item4 = { "Altitude", "7FE", "#GPS_Altitude" };
                     ListViewItem.Items.Add(new ListViewItem(item4));
+                    string[] item5 = { "Distance", "7FE", "#GPS_Distance" };
+                    ListViewItem.Items.Add(new ListViewItem(item5));
 
                     return;
 

@@ -264,6 +264,13 @@ namespace MotoRecoViewer
                 case "#GPS_Altitude":
                     return (data.data[3] * 16777216d + data.data[2] * 65536d + data.data[1] * 256d + data.data[0] - 1000000000d) / 1000000d;
 
+                // CANID 7FE
+                // GPS Distance
+                // 積分計算が後処理で必要になるので、ダミーで0を返すだけとする。
+                case "#GPS_Distance":
+                    return 0;
+
+
                 // 計算定義が間違っていてここまで来た場合は0を返す
                 default:
                     return 0;
@@ -320,6 +327,15 @@ namespace MotoRecoViewer
         public int IndexOf(ushort usid, int index)
         {
             return this.Id.IndexOf(usid, index);
+        }
+
+        /// <summary>
+        /// 引数のFormulaのインデックスを返す
+        /// </summary>
+        /// <param name="str">検索するFormula</param>
+        public int FormulaIndexOf(string formula)
+        {
+            return this.Formula.IndexOf(formula);
         }
 
         /// <summary>

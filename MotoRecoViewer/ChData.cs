@@ -30,8 +30,8 @@ namespace MotoRecoViewer
 {
     public struct TVData   //tvは、time と　value
     {
-        public double DataTime;
-        public double DataValue;
+        public double DataTime { get; set; }
+        public double DataValue { get; set; }
     }
 
     class ChData
@@ -42,7 +42,7 @@ namespace MotoRecoViewer
         public int ChColor { get; set; }
         public bool ChPreview { get; set; }
         public bool ChShow { get; set; }
-        public List<TVData> LogData { get; }
+        public List<TVData> LogData { get; set; }
 
         /// <summary>
         /// コンストラクタ
