@@ -40,12 +40,6 @@
             this.cANDecodeSettingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mapSettingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
-            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
-            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.pictureMain = new System.Windows.Forms.PictureBox();
-            this.pictureSub = new System.Windows.Forms.PictureBox();
-            this.splitContainer3 = new System.Windows.Forms.SplitContainer();
-            this.GMapControl = new GMap.NET.WindowsForms.GMapControl();
             this.contextMenuMap = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.menuBingMap = new System.Windows.Forms.ToolStripMenuItem();
             this.menuGoogleMap = new System.Windows.Forms.ToolStripMenuItem();
@@ -56,7 +50,15 @@
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.progressBar = new System.Windows.Forms.ToolStripProgressBar();
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
+            this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.pictureMain = new System.Windows.Forms.PictureBox();
+            this.pictureSub = new System.Windows.Forms.PictureBox();
+            this.splitContainer3 = new System.Windows.Forms.SplitContainer();
+            this.GMapControl = new GMap.NET.WindowsForms.GMapControl();
             this.menuStrip.SuspendLayout();
+            this.contextMenuMap.SuspendLayout();
+            this.statusStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
             this.splitContainer1.Panel1.SuspendLayout();
             this.splitContainer1.Panel2.SuspendLayout();
@@ -70,8 +72,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
-            this.contextMenuMap.SuspendLayout();
-            this.statusStrip.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip
@@ -161,121 +161,6 @@
             this.openFileDialog.FileName = "openFileDialog1";
             this.openFileDialog.Filter = "datファイル|*.dat";
             // 
-            // splitContainer1
-            // 
-            this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 28);
-            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4);
-            this.splitContainer1.Name = "splitContainer1";
-            // 
-            // splitContainer1.Panel1
-            // 
-            this.splitContainer1.Panel1.Controls.Add(this.splitContainer2);
-            // 
-            // splitContainer1.Panel2
-            // 
-            this.splitContainer1.Panel2.Controls.Add(this.splitContainer3);
-            this.splitContainer1.Size = new System.Drawing.Size(1258, 527);
-            this.splitContainer1.SplitterDistance = 880;
-            this.splitContainer1.SplitterWidth = 5;
-            this.splitContainer1.TabIndex = 5;
-            // 
-            // splitContainer2
-            // 
-            this.splitContainer2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Margin = new System.Windows.Forms.Padding(4);
-            this.splitContainer2.Name = "splitContainer2";
-            this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // splitContainer2.Panel1
-            // 
-            this.splitContainer2.Panel1.Controls.Add(this.pictureMain);
-            // 
-            // splitContainer2.Panel2
-            // 
-            this.splitContainer2.Panel2.Controls.Add(this.pictureSub);
-            this.splitContainer2.Size = new System.Drawing.Size(880, 527);
-            this.splitContainer2.SplitterDistance = 348;
-            this.splitContainer2.SplitterWidth = 5;
-            this.splitContainer2.TabIndex = 0;
-            // 
-            // pictureMain
-            // 
-            this.pictureMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureMain.Location = new System.Drawing.Point(0, 0);
-            this.pictureMain.Margin = new System.Windows.Forms.Padding(4);
-            this.pictureMain.Name = "pictureMain";
-            this.pictureMain.Size = new System.Drawing.Size(878, 346);
-            this.pictureMain.TabIndex = 0;
-            this.pictureMain.TabStop = false;
-            this.pictureMain.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureMain_Paint);
-            this.pictureMain.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PictureMain_MouseDown);
-            this.pictureMain.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureMain_MouseMove);
-            this.pictureMain.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PictureMain_MouseUp);
-            // 
-            // pictureSub
-            // 
-            this.pictureSub.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureSub.Location = new System.Drawing.Point(0, 0);
-            this.pictureSub.Margin = new System.Windows.Forms.Padding(4);
-            this.pictureSub.Name = "pictureSub";
-            this.pictureSub.Size = new System.Drawing.Size(878, 172);
-            this.pictureSub.TabIndex = 0;
-            this.pictureSub.TabStop = false;
-            this.pictureSub.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureSub_Paint);
-            this.pictureSub.MouseClick += new System.Windows.Forms.MouseEventHandler(this.pictureSub_MouseMove);
-            this.pictureSub.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureSub_MouseDown);
-            this.pictureSub.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureSub_MouseMove);
-            this.pictureSub.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureSub_MouseUp);
-            // 
-            // splitContainer3
-            // 
-            this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer3.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer3.Margin = new System.Windows.Forms.Padding(4);
-            this.splitContainer3.Name = "splitContainer3";
-            this.splitContainer3.Orientation = System.Windows.Forms.Orientation.Horizontal;
-            // 
-            // splitContainer3.Panel2
-            // 
-            this.splitContainer3.Panel2.Controls.Add(this.GMapControl);
-            this.splitContainer3.Size = new System.Drawing.Size(371, 525);
-            this.splitContainer3.SplitterDistance = 322;
-            this.splitContainer3.SplitterWidth = 5;
-            this.splitContainer3.TabIndex = 2;
-            // 
-            // GMapControl
-            // 
-            this.GMapControl.Bearing = 0F;
-            this.GMapControl.CanDragMap = true;
-            this.GMapControl.ContextMenuStrip = this.contextMenuMap;
-            this.GMapControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.GMapControl.EmptyTileColor = System.Drawing.Color.Navy;
-            this.GMapControl.GrayScaleMode = false;
-            this.GMapControl.HelperLineOption = GMap.NET.WindowsForms.HelperLineOptions.DontShow;
-            this.GMapControl.LevelsKeepInMemory = 5;
-            this.GMapControl.Location = new System.Drawing.Point(0, 0);
-            this.GMapControl.Margin = new System.Windows.Forms.Padding(4);
-            this.GMapControl.MarkersEnabled = true;
-            this.GMapControl.MaxZoom = 18;
-            this.GMapControl.MinZoom = 3;
-            this.GMapControl.MouseWheelZoomEnabled = true;
-            this.GMapControl.MouseWheelZoomType = GMap.NET.MouseWheelZoomType.MousePositionAndCenter;
-            this.GMapControl.Name = "GMapControl";
-            this.GMapControl.NegativeMode = false;
-            this.GMapControl.PolygonsEnabled = true;
-            this.GMapControl.RetryLoadTile = 0;
-            this.GMapControl.RoutesEnabled = true;
-            this.GMapControl.ScaleMode = GMap.NET.WindowsForms.ScaleModes.Integer;
-            this.GMapControl.SelectedAreaFillColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(65)))), ((int)(((byte)(105)))), ((int)(((byte)(225)))));
-            this.GMapControl.ShowTileGridLines = false;
-            this.GMapControl.Size = new System.Drawing.Size(371, 198);
-            this.GMapControl.TabIndex = 4;
-            this.GMapControl.Zoom = 3D;
-            // 
             // contextMenuMap
             // 
             this.contextMenuMap.ImageScalingSize = new System.Drawing.Size(20, 20);
@@ -337,7 +222,7 @@
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 19, 0);
             this.statusStrip.Size = new System.Drawing.Size(1258, 28);
-            this.statusStrip.TabIndex = 6;
+            this.statusStrip.TabIndex = 8;
             this.statusStrip.Text = "statusStrip1";
             // 
             // progressBar
@@ -350,13 +235,127 @@
             this.statusLabel.Name = "statusLabel";
             this.statusLabel.Size = new System.Drawing.Size(0, 22);
             // 
+            // splitContainer1
+            // 
+            this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 28);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.splitContainer2);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.splitContainer3);
+            this.splitContainer1.Size = new System.Drawing.Size(1258, 499);
+            this.splitContainer1.SplitterDistance = 879;
+            this.splitContainer1.SplitterWidth = 5;
+            this.splitContainer1.TabIndex = 9;
+            // 
+            // splitContainer2
+            // 
+            this.splitContainer2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer2.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer2.Margin = new System.Windows.Forms.Padding(4);
+            this.splitContainer2.Name = "splitContainer2";
+            this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer2.Panel1
+            // 
+            this.splitContainer2.Panel1.Controls.Add(this.pictureMain);
+            // 
+            // splitContainer2.Panel2
+            // 
+            this.splitContainer2.Panel2.Controls.Add(this.pictureSub);
+            this.splitContainer2.Size = new System.Drawing.Size(879, 499);
+            this.splitContainer2.SplitterDistance = 328;
+            this.splitContainer2.SplitterWidth = 5;
+            this.splitContainer2.TabIndex = 0;
+            // 
+            // pictureMain
+            // 
+            this.pictureMain.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pictureMain.Location = new System.Drawing.Point(0, 0);
+            this.pictureMain.Margin = new System.Windows.Forms.Padding(4);
+            this.pictureMain.Name = "pictureMain";
+            this.pictureMain.Size = new System.Drawing.Size(877, 326);
+            this.pictureMain.TabIndex = 0;
+            this.pictureMain.TabStop = false;
+            this.pictureMain.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureMain_Paint);
+            this.pictureMain.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PictureMain_MouseDown);
+            this.pictureMain.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureMain_MouseMove);
+            this.pictureMain.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PictureMain_MouseUp);
+            // 
+            // pictureSub
+            // 
+            this.pictureSub.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pictureSub.Location = new System.Drawing.Point(0, 0);
+            this.pictureSub.Margin = new System.Windows.Forms.Padding(4);
+            this.pictureSub.Name = "pictureSub";
+            this.pictureSub.Size = new System.Drawing.Size(877, 164);
+            this.pictureSub.TabIndex = 0;
+            this.pictureSub.TabStop = false;
+            this.pictureSub.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureSub_Paint);
+            this.pictureSub.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureSub_MouseDown);
+            this.pictureSub.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureSub_MouseMove);
+            this.pictureSub.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureSub_MouseUp);
+            // 
+            // splitContainer3
+            // 
+            this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer3.Location = new System.Drawing.Point(0, 0);
+            this.splitContainer3.Margin = new System.Windows.Forms.Padding(4);
+            this.splitContainer3.Name = "splitContainer3";
+            this.splitContainer3.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer3.Panel2
+            // 
+            this.splitContainer3.Panel2.Controls.Add(this.GMapControl);
+            this.splitContainer3.Size = new System.Drawing.Size(372, 497);
+            this.splitContainer3.SplitterDistance = 303;
+            this.splitContainer3.SplitterWidth = 5;
+            this.splitContainer3.TabIndex = 2;
+            // 
+            // GMapControl
+            // 
+            this.GMapControl.Bearing = 0F;
+            this.GMapControl.CanDragMap = true;
+            this.GMapControl.ContextMenuStrip = this.contextMenuMap;
+            this.GMapControl.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.GMapControl.EmptyTileColor = System.Drawing.Color.Navy;
+            this.GMapControl.GrayScaleMode = false;
+            this.GMapControl.HelperLineOption = GMap.NET.WindowsForms.HelperLineOptions.DontShow;
+            this.GMapControl.LevelsKeepInMemory = 5;
+            this.GMapControl.Location = new System.Drawing.Point(0, 0);
+            this.GMapControl.Margin = new System.Windows.Forms.Padding(4);
+            this.GMapControl.MarkersEnabled = true;
+            this.GMapControl.MaxZoom = 18;
+            this.GMapControl.MinZoom = 3;
+            this.GMapControl.MouseWheelZoomEnabled = true;
+            this.GMapControl.MouseWheelZoomType = GMap.NET.MouseWheelZoomType.MousePositionAndCenter;
+            this.GMapControl.Name = "GMapControl";
+            this.GMapControl.NegativeMode = false;
+            this.GMapControl.PolygonsEnabled = true;
+            this.GMapControl.RetryLoadTile = 0;
+            this.GMapControl.RoutesEnabled = true;
+            this.GMapControl.ScaleMode = GMap.NET.WindowsForms.ScaleModes.Integer;
+            this.GMapControl.SelectedAreaFillColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(65)))), ((int)(((byte)(105)))), ((int)(((byte)(225)))));
+            this.GMapControl.ShowTileGridLines = false;
+            this.GMapControl.Size = new System.Drawing.Size(372, 189);
+            this.GMapControl.TabIndex = 4;
+            this.GMapControl.Zoom = 3D;
+            // 
             // FormMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1258, 555);
-            this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.splitContainer1);
+            this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip);
             this.MainMenuStrip = this.menuStrip;
             this.Margin = new System.Windows.Forms.Padding(4);
@@ -365,6 +364,9 @@
             this.Load += new System.EventHandler(this.FormMain_Load);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
+            this.contextMenuMap.ResumeLayout(false);
+            this.statusStrip.ResumeLayout(false);
+            this.statusStrip.PerformLayout();
             this.splitContainer1.Panel1.ResumeLayout(false);
             this.splitContainer1.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
@@ -378,9 +380,6 @@
             this.splitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
-            this.contextMenuMap.ResumeLayout(false);
-            this.statusStrip.ResumeLayout(false);
-            this.statusStrip.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -396,12 +395,6 @@
         private System.Windows.Forms.OpenFileDialog openFileDialog;
         private System.Windows.Forms.ToolStripMenuItem ToolStripMenuItemView;
         private System.Windows.Forms.ToolStripMenuItem cANDecodeSettingToolStripMenuItem;
-        private System.Windows.Forms.SplitContainer splitContainer1;
-        private System.Windows.Forms.SplitContainer splitContainer2;
-        private System.Windows.Forms.PictureBox pictureMain;
-        private System.Windows.Forms.PictureBox pictureSub;
-        private System.Windows.Forms.SplitContainer splitContainer3;
-        private GMap.NET.WindowsForms.GMapControl GMapControl;
         private System.Windows.Forms.ToolStripMenuItem MenuConvert;
         private System.Windows.Forms.ToolStripMenuItem MenuConvertAscii;
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
@@ -415,5 +408,11 @@
         private System.Windows.Forms.StatusStrip statusStrip;
         private System.Windows.Forms.ToolStripProgressBar progressBar;
         private System.Windows.Forms.ToolStripStatusLabel statusLabel;
+        private System.Windows.Forms.SplitContainer splitContainer1;
+        private System.Windows.Forms.SplitContainer splitContainer2;
+        private System.Windows.Forms.PictureBox pictureMain;
+        private System.Windows.Forms.PictureBox pictureSub;
+        private System.Windows.Forms.SplitContainer splitContainer3;
+        private GMap.NET.WindowsForms.GMapControl GMapControl;
     }
 }

@@ -891,6 +891,7 @@ namespace MotoRecoViewer
                 new System.IO.StreamWriter(DstFileName, false, enc);
 
             //レコードを書き込む
+            // ToDo fieldはStringBuilderに置き換えること
             string field;
 
             for (int i = 0; i < arySize; i++)
