@@ -174,10 +174,10 @@ namespace MotoRecoViewer
 
                 // CANID 10C
                 // K51 LeanAngle
-                // (Data5-127) * -1
+                // (Data5*90/128-90) * -1
                 // -1を掛けるのは、画面上右側を進行方向と考えて、右コーナーなら画面下側に、左コーナーなら画面上側にリーンアングルを表記したいので
                 case "#K51_LeanAngle":
-                    return ((double)data.data[4] - 127d) * (-1d);
+                    return (((double)data.data[4] * 90d / 128d) - 90d) * (-1d);
 
                 // CANID 293
                 // K51 FrSpeed1

@@ -286,6 +286,13 @@ namespace MotoRecoViewer
         private void CalcGPSDistance() {
             //#GPS_SpeedのChName取得
             int i = decodeRule.FormulaIndexOf("#GPS_Speed");
+
+            //DecodeRuleに定義がない
+            if (i < 0)
+            {
+                return;
+            }
+
             string chNameGPSSpeed = decodeRule.GetChName(i);
 
             //　該当CAN IDが存在しないケースも有りうることに注意
@@ -298,6 +305,13 @@ namespace MotoRecoViewer
 
             //#GPS_DistanceのChName取得
             i = decodeRule.FormulaIndexOf("#GPS_Distance");
+
+            //DecodeRuleに定義がない
+            if (i < 0)
+            {
+                return;
+            }
+
             string chNameGPSDistance = decodeRule.GetChName(i);
 
             //　該当CAN IDが存在しないケースも有りうることに注意
@@ -339,7 +353,7 @@ namespace MotoRecoViewer
             // ListViewDataのValue1を更新
             // MainChartのカーソル位置1に対応するタイムスタンプを計算
             // mainCur1Posは、PictureMain上の絶対的なX座標の為、グラフ描画領域幅に対するポジションに変換する
-            double ratioMainCurPos = (mainCur1Pos - chartMargin) / (pictureMain.Width - 2 * chartMargin) ;
+            double ratioMainCurPos = (mainCur1Pos - chartMargin) / (PictureMain.Width - 2 * chartMargin) ;
             double targetTime = subPosTime + (divTime * 20) * ratioMainCurPos;
             
             for (int i = 0; i < ListViewData.Items.Count; i++)
@@ -359,7 +373,7 @@ namespace MotoRecoViewer
 
             // MainChartのカーソル位置2に対応するタイムスタンプを計算
             // mainCur1Posは、PictureMain上の絶対的なX座標の為、グラフ描画領域幅に対するポジションに変換する
-            ratioMainCurPos = (mainCur2Pos - chartMargin) / (pictureMain.Width - 2 * chartMargin);
+            ratioMainCurPos = (mainCur2Pos - chartMargin) / (PictureMain.Width - 2 * chartMargin);
             targetTime = subPosTime + (divTime * 20) * ratioMainCurPos;
 
             for (int i = 0; i < ListViewData.Items.Count; i++)
@@ -456,7 +470,7 @@ namespace MotoRecoViewer
         /// <param name = "y1" > 既知のx1</ param >
         /// <param name = "x" > 新しく求めたいx</ param >
         /// </summary>
-        private double linearInterpolation(double x0, double y0, double x1, double y1, double x)
+        private double LinearInterpolation(double x0, double y0, double x1, double y1, double x)
         {
             return y0 + (y1 - y0) * (x - x0) / (x1 - x0);
         }
@@ -478,7 +492,7 @@ namespace MotoRecoViewer
             int idx_lon = DicChName["Longitude"];
 
             // MainChartのカーソル位置1に対応するタイムスタンプを計算
-            double cur1PosTime = subPosTime + (divTime * 20) / (pictureMain.Width - 2 * chartMargin) * mainCur1Pos;
+            double cur1PosTime = subPosTime + (divTime * 20) / (PictureMain.Width - 2 * chartMargin) * mainCur1Pos;
 
             // カーソル位置左側データidx取得
             int leftIdx = ListChData[idx_lat].FindLeftIndex(cur1PosTime);
@@ -503,34 +517,13 @@ namespace MotoRecoViewer
             double rightLat = ListChData[idx_lat].LogData[rightIdx].DataValue;
 
             // 経度緯度を前後2点データから線形補間する
-            double liLat = linearInterpolation(leftTime, leftLat, rightTime, rightLat, cur1PosTime);
-            double liLon = linearInterpolation(leftTime, leftLon, rightTime, rightLon, cur1PosTime);
+            double liLat = LinearInterpolation(leftTime, leftLat, rightTime, rightLat, cur1PosTime);
+            double liLon = LinearInterpolation(leftTime, leftLon, rightTime, rightLon, cur1PosTime);
 
             //マーカー更新
             GMapOverlayMarker.Markers.Clear();
             GMarkerGoogle marker = new GMarkerGoogle(new PointLatLng(liLat, liLon), GMarkerGoogleType.green);
             GMapOverlayMarker.Markers.Add(marker);
-        }
-
-        /// <summary>
-        /// Chartを描画する
-        /// </summary>
-        private void DrawChart(Graphics g)
-        {
-            // ListChNameがNULL→即抜ける
-            if (DicChName == null) { return; }
-
-            // ListChNameが0＝CANデータ未読み込み→即抜ける
-            if (DicChName.Count < 1) { return; }
-
-            // アプリ下部のサブチャートを描画
-            DrawSubChart(g);
-
-            //　アプリ上部のメインチャートを描画
-            DrawMainChart(g);
-
-            // ListViewData更新
-            UpdateListViewData();
         }
 
         /// <summary>
@@ -577,14 +570,14 @@ namespace MotoRecoViewer
             for (int i = 0; i < 21; i++)
             {
                 // 罫線間ピクセルを算出
-                double rule = (double)(pictureSub.Width - 2d * chartMargin) / 20d;
+                double rule = (double)(PictureSub.Width - 2d * chartMargin) / 20d;
 
                 // X座標
                 double x = chartMargin + i * rule;
 
                 // Y座標
                 double y1 = chartMargin;
-                double y2 = pictureSub.Height - chartMargin;
+                double y2 = PictureSub.Height - chartMargin;
 
                 // ToDo グリッドカラーも設定できるようにする
                 g.DrawLine(Pens.DarkSeaGreen, (float)x, (float)y1, (float)x, (float)y2);
@@ -595,14 +588,14 @@ namespace MotoRecoViewer
             for (int i = 0; i < 3; i++)
             {
                 // 罫線間ピクセルを算出
-                double rule = (pictureSub.Height - 2d * chartMargin) / 2d;
+                double rule = (PictureSub.Height - 2d * chartMargin) / 2d;
 
                 // X座標
                 double y = chartMargin + i * rule;
 
                 // Y座標
                 double x1 = chartMargin;
-                double x2 = pictureSub.Width - chartMargin;
+                double x2 = PictureSub.Width - chartMargin;
 
                 // ToDo グリッドカラーも設定できるようにする
                 g.DrawLine(Pens.DarkSeaGreen, (float)x1, (float)y, (float)x2, (float)y);
@@ -630,13 +623,13 @@ namespace MotoRecoViewer
                 {
                     double targetIdxPrev = 0d;
                     double xPrev = chartMargin;
-                    double yPrev = pictureSub.Height - chartMargin;
+                    double yPrev = PictureSub.Height - chartMargin;
 
                     // SubChart描画ピクセル幅に対してのみ描画処理実施する
-                    for (int j = 0; j <= pictureSub.Width - 2 * chartMargin; j++)
+                    for (int j = 0; j <= PictureSub.Width - 2 * chartMargin; j++)
                     {
                         // SubChartのグラフ描画領域のXstart～Xendに対応したタイムスタンプを計算
-                        double targetTime = startTime + (endTime - startTime) / (pictureSub.Width - 2d * chartMargin) * j;
+                        double targetTime = startTime + (endTime - startTime) / (PictureSub.Width - 2d * chartMargin) * j;
 
                         // targetTimeに対応したタイムスタンプに最も近いChDataのインデックスを取得
                         int targetIdx = ListChData[i].FindLeftIndex(targetTime);
@@ -660,8 +653,8 @@ namespace MotoRecoViewer
                         if (y < 0) { y = 0; }
 
                         // %をY軸ピクセルに変換する.その際、グラフ上方が原点になるので、1-yとして計算する。
-                        y = (pictureSub.Height - chartMargin * 2d) * (1d - y);
-                        y = y + chartMargin;
+                        y = (PictureSub.Height - chartMargin * 2d) * (1d - y);
+                        y += chartMargin;
 
                         // 1つ前のインデックスと異なる場合のみ、ラインを描画する
 
@@ -698,17 +691,17 @@ namespace MotoRecoViewer
             //ratioSelected上限処理 , データが短くてメインチャート1画面に収まり切る場合に発生
             if (ratioSelected > 1) { ratioSelected = 1; }
 
-            double rectWidth = (pictureSub.Width - 2 * chartMargin) * ratioSelected;
+            double rectWidth = (PictureSub.Width - 2 * chartMargin) * ratioSelected;
 
             //rectWidth下限処理
             if (rectWidth < 2){ rectWidth = 2; }
 
             //XY座標計算
             double x1 = (subPosTime - startTime) / (endTime - startTime);       //ToDo startTimeはMotoRecoでロギング時0のはずなので本来は不要
-            x1 = x1 * (pictureSub.Width - 2 * chartMargin)+chartMargin;
+            x1 = x1 * (PictureSub.Width - 2 * chartMargin)+chartMargin;
             double x2 = x1 + rectWidth;
             double y1 = chartMargin;
-            double y2 = pictureSub.Height - chartMargin;
+            double y2 = PictureSub.Height - chartMargin;
 
             //rectangleに変換
             Rectangle rect = Rectangle.FromLTRB((int)x1, (int)y1, (int)x2, (int)y2);
@@ -722,7 +715,7 @@ namespace MotoRecoViewer
         private void DrawSubChart(Graphics g)
         {
             //サブチャートエリアを黒く塗りつぶす
-            g.FillRectangle(Brushes.Black, 0, 0, pictureSub.Width, pictureSub.Height);
+            g.FillRectangle(Brushes.Black, 0, 0, PictureSub.Width, PictureSub.Height);
 
             //pictureSubのWidth分だけ、ListChDataからデータをピックアップして描画する
             DrawSubChartData(g);
@@ -745,14 +738,14 @@ namespace MotoRecoViewer
             for (int i = 0; i < 21; i++)
             {
                 // 罫線間ピクセルを算出
-                double rule = (pictureMain.Width - 2d * chartMargin) / 20d;
+                double rule = (PictureMain.Width - 2d * chartMargin) / 20d;
 
                 // X座標
                 double x = chartMargin + i * rule;
 
                 // Y座標
                 double y1 = chartMargin;
-                double y2 = pictureMain.Height - chartMargin;
+                double y2 = PictureMain.Height - chartMargin;
 
                 g.DrawLine(Pens.DarkSeaGreen, (float)x, (float)y1, (float)x, (float)y2);
             }
@@ -762,14 +755,14 @@ namespace MotoRecoViewer
             for (int i = 0; i < 11; i++)
             {
                 // 罫線間ピクセルを算出
-                double rule = (pictureMain.Height - 2d * chartMargin) / 10d;
+                double rule = (PictureMain.Height - 2d * chartMargin) / 10d;
 
                 // X座標
                 double y = chartMargin + i * rule;
 
                 // Y座標
                 double x1 = chartMargin;
-                double x2 = pictureMain.Width - chartMargin;
+                double x2 = PictureMain.Width - chartMargin;
 
                 g.DrawLine(Pens.DarkSeaGreen, (float)x1, (float)y, (float)x2, (float)y);
             }
@@ -778,11 +771,11 @@ namespace MotoRecoViewer
 
             //カーソル1
             curPen.DashStyle = DashStyle.DashDot;
-            g.DrawLine(curPen, (float)mainCur1Pos, (float)chartMargin, (float)mainCur1Pos, pictureMain.Height - (float)chartMargin);
+            g.DrawLine(curPen, (float)mainCur1Pos, (float)chartMargin, (float)mainCur1Pos, PictureMain.Height - (float)chartMargin);
 
             //カーソル2
             curPen.DashStyle = DashStyle.DashDotDot;
-            g.DrawLine(curPen, (float)mainCur2Pos, (float)chartMargin, (float)mainCur2Pos, pictureMain.Height - (float)chartMargin);
+            g.DrawLine(curPen, (float)mainCur2Pos, (float)chartMargin, (float)mainCur2Pos, PictureMain.Height - (float)chartMargin);
         }
 
         /// <summary>
@@ -801,22 +794,15 @@ namespace MotoRecoViewer
             {
                 int targetIdxPrev = 0;
                 double xPrev = chartMargin;
-                double yPrev = pictureMain.Height - chartMargin;
+                double yPrev = PictureMain.Height - chartMargin;
 
                 if (ListChData[i].ChShow)
                 {
-                    //SubChart左端と右端に対応するListChDataのインデックスを先に求める。
-                    //そうしておくことで、中間範囲のListChDataの検索範囲を狭めて高速化できる。
-                    int startidx, endidx;
-                    startidx = ListChData[i].FindLeftIndex(subPosTime);
-                    endidx = ListChData[i].FindLeftIndex(subPosTime + (divTime * 20));
-
-
                     // MainChart描画ピクセル幅に対してのみ描画処理実施する
-                    for (int j = 0; j <= pictureMain.Width - 2 * chartMargin; j++)
+                    for (int j = 0; j <= PictureMain.Width - 2 * chartMargin; j++)
                     {
                         // MainChartのグラフ描画領域のXstart～Xendに対応したタイムスタンプを計算
-                        double targetTime = subPosTime + (divTime * 20d) / (pictureMain.Width - 2d * chartMargin) * j;
+                        double targetTime = subPosTime + (divTime * 20d) / (PictureMain.Width - 2d * chartMargin) * j;
 
                         // targetTimeに対応したタイムスタンプに最も近いChDataのインデックスを取得
                         //int targetIdx = ListChData[i].FindLeftIndex(targetTime, startidx, endidx);
@@ -840,8 +826,8 @@ namespace MotoRecoViewer
                         if (y < 0) { y = 0; }
 
                         // %をY軸ピクセルに変換する.その際、グラフ上方が原点になるので、1-yとして計算する。
-                        y = (pictureMain.Height - chartMargin * 2) * (1 - y);
-                        y = y + chartMargin;
+                        y = (PictureMain.Height - chartMargin * 2) * (1 - y);
+                        y += chartMargin;
 
                         // 1つ前のインデックスと異なる場合のみ、ラインを描画する
                         lock (lockobj)
@@ -866,7 +852,7 @@ namespace MotoRecoViewer
         private void DrawMainChart(Graphics g)
         {
             //サブチャートエリアを黒く塗りつぶす
-            g.FillRectangle(Brushes.Black, 0, 0, pictureMain.Width, pictureMain.Height);
+            g.FillRectangle(Brushes.Black, 0, 0, PictureMain.Width, PictureMain.Height);
 
             //pictureSubのWidth分だけ、ListChDataからデータをピックアップして描画する
             DrawMainChartData(g);
@@ -988,11 +974,11 @@ namespace MotoRecoViewer
             this.statusLabel.Text = "";
         }
 
-        //==========================
+        //=================================================================================================================================
         //
         //  自動生成イベントハンドラ
         //
-        //==========================
+        //=================================================================================================================================
         public FormMain()
         {
             InitializeComponent();
@@ -1022,11 +1008,11 @@ namespace MotoRecoViewer
 
             // pictureMainとpictureSubにマウスホイールイベント登録
             //ホイールイベントの追加  
-            this.pictureMain.MouseWheel
-                += new System.Windows.Forms.MouseEventHandler(this.pictureMain_MouseWheel);
+            this.PictureMain.MouseWheel
+                += new System.Windows.Forms.MouseEventHandler(this.PictureMain_MouseWheel);
 
-            this.pictureSub.MouseWheel
-               += new System.Windows.Forms.MouseEventHandler(this.pictureSub_MouseWheel);
+            this.PictureSub.MouseWheel
+               += new System.Windows.Forms.MouseEventHandler(this.PictureSub_MouseWheel);
         }
 
         private void 終了ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1062,7 +1048,7 @@ namespace MotoRecoViewer
             }
         }
 
-         private void pictureSub_MouseDown(object sender, MouseEventArgs e)
+         private void PictureSub_MouseDown(object sender, MouseEventArgs e)
         {
             // CANデータ読み込み中→即抜ける
             if (IsReadingCanData) { return; }
@@ -1078,7 +1064,7 @@ namespace MotoRecoViewer
             }
         }
 
-        private void pictureSub_MouseMove(object sender, MouseEventArgs e)
+        private void PictureSub_MouseMove(object sender, MouseEventArgs e)
         {
             // CANデータ読み込み中→即抜ける
             if (IsReadingCanData) { return; }
@@ -1096,7 +1082,7 @@ namespace MotoRecoViewer
                 //ratioSelected上限処理 , データが短くてメインチャート1画面に収まり切る場合に発生
                 if (ratioSelected > 1) { ratioSelected = 1; }
 
-                double rectWidth = (pictureSub.Width - 2 * chartMargin) * ratioSelected;
+                double rectWidth = (PictureSub.Width - 2 * chartMargin) * ratioSelected;
 
                 //rectWidth下限処理
                 if (rectWidth < 2) { rectWidth = 2; }
@@ -1106,19 +1092,19 @@ namespace MotoRecoViewer
 
                 //startPos上下限処理
                 if (startPos < chartMargin) { startPos = chartMargin; }
-                if (startPos + rectWidth > pictureSub.Width - 2 * chartMargin) { startPos = pictureSub.Width - chartMargin - rectWidth; }
+                if (startPos + rectWidth > PictureSub.Width - 2 * chartMargin) { startPos = PictureSub.Width - chartMargin - rectWidth; }
 
                 //startPosをposTimeに変換する
                 //ToDo　末尾の+startTimeは、canloggerでKeyOn検出時にstartTimeは0で記録されているはずなので、不要のはずである
-                subPosTime = (endTime - startTime) * ((startPos - chartMargin) / (pictureSub.Width - 2 * chartMargin)) + startTime;
+                subPosTime = (endTime - startTime) * ((startPos - chartMargin) / (PictureSub.Width - 2 * chartMargin)) + startTime;
 
                 //DrawChart();
-                pictureMain.Refresh();
-                pictureSub.Refresh();
+                PictureMain.Refresh();
+                PictureSub.Refresh();
             }
         }
 
-        private void pictureSub_MouseUp(object sender, MouseEventArgs e)
+        private void PictureSub_MouseUp(object sender, MouseEventArgs e)
         {
             // CANデータ読み込み中→即抜ける
             if (IsReadingCanData) { return; }
@@ -1130,8 +1116,8 @@ namespace MotoRecoViewer
                     this.Cursor = Cursors.Default; // マウスポインタを通常のものに戻す
 
                     //DrawChart();
-                    pictureMain.Refresh();
-                    pictureSub.Refresh();
+                    PictureMain.Refresh();
+                    PictureSub.Refresh();
                     UpdateMapMarker();
                     UpdateMap();
 
@@ -1164,8 +1150,8 @@ namespace MotoRecoViewer
                 }
 
                 //DrawChart();
-                pictureMain.Refresh();
-                pictureSub.Refresh();
+                PictureMain.Refresh();
+                PictureSub.Refresh();
                 UpdateMapMarker();
             }
         }
@@ -1184,8 +1170,8 @@ namespace MotoRecoViewer
             }
 
             //DrawChart();
-            pictureMain.Refresh();
-            pictureSub.Refresh();
+            PictureMain.Refresh();
+            PictureSub.Refresh();
         }
 
         private void PictureMain_MouseDown(object sender, MouseEventArgs e)
@@ -1222,8 +1208,8 @@ namespace MotoRecoViewer
                     this.Cursor = Cursors.Default; // マウスポインタを通常のものに戻す
 
                     //DrawChart();
-                    pictureMain.Refresh();
-                    pictureSub.Refresh();
+                    PictureMain.Refresh();
+                    PictureSub.Refresh();
                     UpdateMapMarker();
                     break;
 
@@ -1232,8 +1218,8 @@ namespace MotoRecoViewer
                     this.Cursor = Cursors.Default; // マウスポインタを通常のものに戻す
 
                     //DrawChart();
-                    pictureMain.Refresh();
-                    pictureSub.Refresh();
+                    PictureMain.Refresh();
+                    PictureSub.Refresh();
                     UpdateMapMarker();
                     break;
             }
@@ -1261,8 +1247,8 @@ namespace MotoRecoViewer
 
                 // 初回描画する
                 //DrawChart();
-                pictureMain.Refresh();
-                pictureSub.Refresh();
+                PictureMain.Refresh();
+                PictureSub.Refresh();
                 UpdateMap();
                 UpdateMapMarker();
 
@@ -1271,7 +1257,7 @@ namespace MotoRecoViewer
         }
 
         // マウスホイールイベント  
-        private void pictureMain_MouseWheel(object sender, MouseEventArgs e)
+        private void PictureMain_MouseWheel(object sender, MouseEventArgs e)
         {
             // スクロール量
             int delta;
@@ -1281,21 +1267,21 @@ namespace MotoRecoViewer
             // ホイールを奥に回す→拡大　手前に回す→縮小
             if (delta > 0)
             {
-                divTime = divTime / 2;
+                divTime /= 2;
             } else
             {
-                divTime = divTime * 2;
+                divTime *= 2;
             }
 
             //DrawChart();
-            pictureMain.Refresh();
-            pictureSub.Refresh();
+            PictureMain.Refresh();
+            PictureSub.Refresh();
             UpdateMap();
             UpdateMapMarker();
         }
 
         // マウスホイールイベント  
-        private void pictureSub_MouseWheel(object sender, MouseEventArgs e)
+        private void PictureSub_MouseWheel(object sender, MouseEventArgs e)
         {
             // スクロール量
             int delta;
@@ -1305,23 +1291,23 @@ namespace MotoRecoViewer
             // ホイールを奥に回す→拡大　手前に回す→縮小
             if (delta > 0)
             {
-                divTime = divTime / 2;
+                divTime /= 2;
             }
             else
             {
-                divTime = divTime * 2;
+                divTime *= 2;
             }
 
             //DrawChart();
-            pictureMain.Refresh();
-            pictureSub.Refresh();
+            PictureMain.Refresh();
+            PictureSub.Refresh();
             UpdateMap();
             UpdateMapMarker();
         }
 
         private void FormMain_Load(object sender, EventArgs e)
         {
-            // proxy対応
+            // GMap proxy対応
             GMapProvider.WebProxy = WebRequest.GetSystemWebProxy();
             GMapProvider.WebProxy.Credentials = CredentialCache.DefaultNetworkCredentials;
 
@@ -1372,32 +1358,32 @@ namespace MotoRecoViewer
             }
         }
 
-        private void menuBingMap_Click(object sender, EventArgs e)
+        private void MenuBingMap_Click(object sender, EventArgs e)
         {
             GMapControl.MapProvider = GMap.NET.MapProviders.BingMapProvider.Instance;
         }
 
-        private void menuGoogleMap_Click(object sender, EventArgs e)
+        private void MenuGoogleMap_Click(object sender, EventArgs e)
         {
             GMapControl.MapProvider = GMap.NET.MapProviders.GoogleMapProvider.Instance;
         }
 
-        private void menuOpenCycleMap_Click(object sender, EventArgs e)
+        private void MenuOpenCycleMap_Click(object sender, EventArgs e)
         {
             GMapControl.MapProvider = GMap.NET.MapProviders.OpenCycleMapProvider.Instance;
         }
 
-        private void menuOpenStreetMap_Click(object sender, EventArgs e)
+        private void MenuOpenStreetMap_Click(object sender, EventArgs e)
         {
             GMapControl.MapProvider = GMap.NET.MapProviders.OpenStreetMapProvider.Instance;
         }
 
-        private void menuWikiMapiaMap_Click(object sender, EventArgs e)
+        private void MenuWikiMapiaMap_Click(object sender, EventArgs e)
         {
             GMapControl.MapProvider = GMap.NET.MapProviders.WikiMapiaMapProvider.Instance;
         }
 
-        private void mapSettingToolStripMenuItem_Click(object sender, EventArgs e)
+        private void MapSettingToolStripMenuItem_Click(object sender, EventArgs e)
         {
             // GoogleApi入力フォーム表示
             FormMapOption f = new FormMapOption();
@@ -1406,7 +1392,7 @@ namespace MotoRecoViewer
             f.Dispose();
         }
 
-        private void pictureMain_Paint(object sender, PaintEventArgs e)
+        private void PictureMain_Paint(object sender, PaintEventArgs e)
         {
             // CANデータ読み込み中→即抜ける
             if (IsReadingCanData) { return; }
@@ -1421,7 +1407,7 @@ namespace MotoRecoViewer
             DrawChartMain(e.Graphics);
         }
 
-        private void pictureSub_Paint(object sender, PaintEventArgs e)
+        private void PictureSub_Paint(object sender, PaintEventArgs e)
         {
             // CANデータ読み込み中→即抜ける
             if (IsReadingCanData) { return; }
@@ -1434,6 +1420,20 @@ namespace MotoRecoViewer
 
             //　アプリ上部のメインチャートを描画
             DrawChartSub(e.Graphics);
+        }
+
+        private void AboutAToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            FormAbout f = new FormAbout();
+
+            f.ShowDialog(this);
+            f.Dispose();
+        }
+
+        private void ToolStripMenuItem2_Click(object sender, EventArgs e)
+        {
+            //ブラウザで開く
+            System.Diagnostics.Process.Start("https://MotoReco.info");
         }
     }
 }

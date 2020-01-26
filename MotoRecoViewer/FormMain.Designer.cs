@@ -39,6 +39,9 @@
             this.ToolStripMenuItemView = new System.Windows.Forms.ToolStripMenuItem();
             this.cANDecodeSettingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.mapSettingToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.helpHToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
+            this.aboutAToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.contextMenuMap = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.menuBingMap = new System.Windows.Forms.ToolStripMenuItem();
@@ -52,8 +55,8 @@
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
-            this.pictureMain = new System.Windows.Forms.PictureBox();
-            this.pictureSub = new System.Windows.Forms.PictureBox();
+            this.PictureMain = new System.Windows.Forms.PictureBox();
+            this.PictureSub = new System.Windows.Forms.PictureBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.GMapControl = new GMap.NET.WindowsForms.GMapControl();
             this.menuStrip.SuspendLayout();
@@ -67,8 +70,8 @@
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureMain)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureSub)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PictureMain)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PictureSub)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
@@ -79,11 +82,11 @@
             this.menuStrip.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MenuFile,
-            this.ToolStripMenuItemView});
+            this.ToolStripMenuItemView,
+            this.helpHToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Padding = new System.Windows.Forms.Padding(8, 2, 0, 2);
-            this.menuStrip.Size = new System.Drawing.Size(1258, 28);
+            this.menuStrip.Size = new System.Drawing.Size(944, 24);
             this.menuStrip.TabIndex = 0;
             this.menuStrip.Text = "menuStrip";
             // 
@@ -95,41 +98,41 @@
             this.MenuConvert,
             this.MenuExit});
             this.MenuFile.Name = "MenuFile";
-            this.MenuFile.Size = new System.Drawing.Size(63, 24);
+            this.MenuFile.Size = new System.Drawing.Size(51, 20);
             this.MenuFile.Text = "File(&F)";
             // 
             // MenuOpen
             // 
             this.MenuOpen.Name = "MenuOpen";
             this.MenuOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.MenuOpen.Size = new System.Drawing.Size(202, 26);
+            this.MenuOpen.Size = new System.Drawing.Size(162, 22);
             this.MenuOpen.Text = "Open(&O)";
             this.MenuOpen.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(199, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(159, 6);
             // 
             // MenuConvert
             // 
             this.MenuConvert.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MenuConvertAscii});
             this.MenuConvert.Name = "MenuConvert";
-            this.MenuConvert.Size = new System.Drawing.Size(202, 26);
+            this.MenuConvert.Size = new System.Drawing.Size(162, 22);
             this.MenuConvert.Text = "Export";
             // 
             // MenuConvertAscii
             // 
             this.MenuConvertAscii.Name = "MenuConvertAscii";
-            this.MenuConvertAscii.Size = new System.Drawing.Size(153, 26);
+            this.MenuConvertAscii.Size = new System.Drawing.Size(122, 22);
             this.MenuConvertAscii.Text = "Ascii CSV";
             this.MenuConvertAscii.Click += new System.EventHandler(this.MenuConvertAscii_Click);
             // 
             // MenuExit
             // 
             this.MenuExit.Name = "MenuExit";
-            this.MenuExit.Size = new System.Drawing.Size(202, 26);
+            this.MenuExit.Size = new System.Drawing.Size(162, 22);
             this.MenuExit.Text = "Exit(&X)";
             this.MenuExit.Click += new System.EventHandler(this.終了ToolStripMenuItem_Click);
             // 
@@ -139,22 +142,45 @@
             this.cANDecodeSettingToolStripMenuItem,
             this.mapSettingToolStripMenuItem});
             this.ToolStripMenuItemView.Name = "ToolStripMenuItemView";
-            this.ToolStripMenuItemView.Size = new System.Drawing.Size(90, 24);
+            this.ToolStripMenuItemView.Size = new System.Drawing.Size(73, 20);
             this.ToolStripMenuItemView.Text = "Option(&O)";
             // 
             // cANDecodeSettingToolStripMenuItem
             // 
             this.cANDecodeSettingToolStripMenuItem.Name = "cANDecodeSettingToolStripMenuItem";
-            this.cANDecodeSettingToolStripMenuItem.Size = new System.Drawing.Size(177, 26);
+            this.cANDecodeSettingToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
             this.cANDecodeSettingToolStripMenuItem.Text = "Read Setting";
             this.cANDecodeSettingToolStripMenuItem.Click += new System.EventHandler(this.CANDecodeSettingToolStripMenuItem_Click);
             // 
             // mapSettingToolStripMenuItem
             // 
             this.mapSettingToolStripMenuItem.Name = "mapSettingToolStripMenuItem";
-            this.mapSettingToolStripMenuItem.Size = new System.Drawing.Size(177, 26);
+            this.mapSettingToolStripMenuItem.Size = new System.Drawing.Size(140, 22);
             this.mapSettingToolStripMenuItem.Text = "Map Setting";
-            this.mapSettingToolStripMenuItem.Click += new System.EventHandler(this.mapSettingToolStripMenuItem_Click);
+            this.mapSettingToolStripMenuItem.Click += new System.EventHandler(this.MapSettingToolStripMenuItem_Click);
+            // 
+            // helpHToolStripMenuItem
+            // 
+            this.helpHToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripMenuItem2,
+            this.aboutAToolStripMenuItem});
+            this.helpHToolStripMenuItem.Name = "helpHToolStripMenuItem";
+            this.helpHToolStripMenuItem.Size = new System.Drawing.Size(61, 20);
+            this.helpHToolStripMenuItem.Text = "Help(&H)";
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(156, 22);
+            this.toolStripMenuItem2.Text = "MotoReco Web";
+            this.toolStripMenuItem2.Click += new System.EventHandler(this.ToolStripMenuItem2_Click);
+            // 
+            // aboutAToolStripMenuItem
+            // 
+            this.aboutAToolStripMenuItem.Name = "aboutAToolStripMenuItem";
+            this.aboutAToolStripMenuItem.Size = new System.Drawing.Size(156, 22);
+            this.aboutAToolStripMenuItem.Text = "About(&A)";
+            this.aboutAToolStripMenuItem.Click += new System.EventHandler(this.AboutAToolStripMenuItem_Click);
             // 
             // openFileDialog
             // 
@@ -171,42 +197,42 @@
             this.menuOpenStreetMap,
             this.menuWikiMapiaMap});
             this.contextMenuMap.Name = "contextMenuMap";
-            this.contextMenuMap.Size = new System.Drawing.Size(192, 124);
+            this.contextMenuMap.Size = new System.Drawing.Size(164, 114);
             // 
             // menuBingMap
             // 
             this.menuBingMap.Name = "menuBingMap";
-            this.menuBingMap.Size = new System.Drawing.Size(191, 24);
+            this.menuBingMap.Size = new System.Drawing.Size(163, 22);
             this.menuBingMap.Text = "Bing Map";
-            this.menuBingMap.Click += new System.EventHandler(this.menuBingMap_Click);
+            this.menuBingMap.Click += new System.EventHandler(this.MenuBingMap_Click);
             // 
             // menuGoogleMap
             // 
             this.menuGoogleMap.Name = "menuGoogleMap";
-            this.menuGoogleMap.Size = new System.Drawing.Size(191, 24);
+            this.menuGoogleMap.Size = new System.Drawing.Size(163, 22);
             this.menuGoogleMap.Text = "Google Map";
-            this.menuGoogleMap.Click += new System.EventHandler(this.menuGoogleMap_Click);
+            this.menuGoogleMap.Click += new System.EventHandler(this.MenuGoogleMap_Click);
             // 
             // menuOpenCycleMap
             // 
             this.menuOpenCycleMap.Name = "menuOpenCycleMap";
-            this.menuOpenCycleMap.Size = new System.Drawing.Size(191, 24);
+            this.menuOpenCycleMap.Size = new System.Drawing.Size(163, 22);
             this.menuOpenCycleMap.Text = "Open Cycle Map";
-            this.menuOpenCycleMap.Click += new System.EventHandler(this.menuOpenCycleMap_Click);
+            this.menuOpenCycleMap.Click += new System.EventHandler(this.MenuOpenCycleMap_Click);
             // 
             // menuOpenStreetMap
             // 
             this.menuOpenStreetMap.Name = "menuOpenStreetMap";
-            this.menuOpenStreetMap.Size = new System.Drawing.Size(191, 24);
+            this.menuOpenStreetMap.Size = new System.Drawing.Size(163, 22);
             this.menuOpenStreetMap.Text = "Open Street Map";
-            this.menuOpenStreetMap.Click += new System.EventHandler(this.menuOpenStreetMap_Click);
+            this.menuOpenStreetMap.Click += new System.EventHandler(this.MenuOpenStreetMap_Click);
             // 
             // menuWikiMapiaMap
             // 
             this.menuWikiMapiaMap.Name = "menuWikiMapiaMap";
-            this.menuWikiMapiaMap.Size = new System.Drawing.Size(191, 24);
+            this.menuWikiMapiaMap.Size = new System.Drawing.Size(163, 22);
             this.menuWikiMapiaMap.Text = "Wiki Mapia Map";
-            this.menuWikiMapiaMap.Click += new System.EventHandler(this.menuWikiMapiaMap_Click);
+            this.menuWikiMapiaMap.Click += new System.EventHandler(this.MenuWikiMapiaMap_Click);
             // 
             // saveFileDialog
             // 
@@ -218,29 +244,27 @@
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.progressBar,
             this.statusLabel});
-            this.statusStrip.Location = new System.Drawing.Point(0, 527);
+            this.statusStrip.Location = new System.Drawing.Point(0, 420);
             this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Padding = new System.Windows.Forms.Padding(1, 0, 19, 0);
-            this.statusStrip.Size = new System.Drawing.Size(1258, 28);
+            this.statusStrip.Size = new System.Drawing.Size(944, 24);
             this.statusStrip.TabIndex = 8;
             this.statusStrip.Text = "statusStrip1";
             // 
             // progressBar
             // 
             this.progressBar.Name = "progressBar";
-            this.progressBar.Size = new System.Drawing.Size(133, 20);
+            this.progressBar.Size = new System.Drawing.Size(100, 18);
             // 
             // statusLabel
             // 
             this.statusLabel.Name = "statusLabel";
-            this.statusLabel.Size = new System.Drawing.Size(0, 22);
+            this.statusLabel.Size = new System.Drawing.Size(0, 19);
             // 
             // splitContainer1
             // 
             this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 28);
-            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4);
+            this.splitContainer1.Location = new System.Drawing.Point(0, 24);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -250,9 +274,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer3);
-            this.splitContainer1.Size = new System.Drawing.Size(1258, 499);
-            this.splitContainer1.SplitterDistance = 879;
-            this.splitContainer1.SplitterWidth = 5;
+            this.splitContainer1.Size = new System.Drawing.Size(944, 396);
+            this.splitContainer1.SplitterDistance = 659;
             this.splitContainer1.TabIndex = 9;
             // 
             // splitContainer2
@@ -260,64 +283,58 @@
             this.splitContainer2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Margin = new System.Windows.Forms.Padding(4);
             this.splitContainer2.Name = "splitContainer2";
             this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
             // splitContainer2.Panel1
             // 
-            this.splitContainer2.Panel1.Controls.Add(this.pictureMain);
+            this.splitContainer2.Panel1.Controls.Add(this.PictureMain);
             // 
             // splitContainer2.Panel2
             // 
-            this.splitContainer2.Panel2.Controls.Add(this.pictureSub);
-            this.splitContainer2.Size = new System.Drawing.Size(879, 499);
-            this.splitContainer2.SplitterDistance = 328;
-            this.splitContainer2.SplitterWidth = 5;
+            this.splitContainer2.Panel2.Controls.Add(this.PictureSub);
+            this.splitContainer2.Size = new System.Drawing.Size(659, 396);
+            this.splitContainer2.SplitterDistance = 260;
             this.splitContainer2.TabIndex = 0;
             // 
-            // pictureMain
+            // PictureMain
             // 
-            this.pictureMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureMain.Location = new System.Drawing.Point(0, 0);
-            this.pictureMain.Margin = new System.Windows.Forms.Padding(4);
-            this.pictureMain.Name = "pictureMain";
-            this.pictureMain.Size = new System.Drawing.Size(877, 326);
-            this.pictureMain.TabIndex = 0;
-            this.pictureMain.TabStop = false;
-            this.pictureMain.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureMain_Paint);
-            this.pictureMain.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PictureMain_MouseDown);
-            this.pictureMain.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureMain_MouseMove);
-            this.pictureMain.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PictureMain_MouseUp);
+            this.PictureMain.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PictureMain.Location = new System.Drawing.Point(0, 0);
+            this.PictureMain.Name = "PictureMain";
+            this.PictureMain.Size = new System.Drawing.Size(657, 258);
+            this.PictureMain.TabIndex = 0;
+            this.PictureMain.TabStop = false;
+            this.PictureMain.Paint += new System.Windows.Forms.PaintEventHandler(this.PictureMain_Paint);
+            this.PictureMain.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PictureMain_MouseDown);
+            this.PictureMain.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureMain_MouseMove);
+            this.PictureMain.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PictureMain_MouseUp);
             // 
-            // pictureSub
+            // PictureSub
             // 
-            this.pictureSub.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pictureSub.Location = new System.Drawing.Point(0, 0);
-            this.pictureSub.Margin = new System.Windows.Forms.Padding(4);
-            this.pictureSub.Name = "pictureSub";
-            this.pictureSub.Size = new System.Drawing.Size(877, 164);
-            this.pictureSub.TabIndex = 0;
-            this.pictureSub.TabStop = false;
-            this.pictureSub.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureSub_Paint);
-            this.pictureSub.MouseDown += new System.Windows.Forms.MouseEventHandler(this.pictureSub_MouseDown);
-            this.pictureSub.MouseMove += new System.Windows.Forms.MouseEventHandler(this.pictureSub_MouseMove);
-            this.pictureSub.MouseUp += new System.Windows.Forms.MouseEventHandler(this.pictureSub_MouseUp);
+            this.PictureSub.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PictureSub.Location = new System.Drawing.Point(0, 0);
+            this.PictureSub.Name = "PictureSub";
+            this.PictureSub.Size = new System.Drawing.Size(657, 130);
+            this.PictureSub.TabIndex = 0;
+            this.PictureSub.TabStop = false;
+            this.PictureSub.Paint += new System.Windows.Forms.PaintEventHandler(this.PictureSub_Paint);
+            this.PictureSub.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PictureSub_MouseDown);
+            this.PictureSub.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureSub_MouseMove);
+            this.PictureSub.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PictureSub_MouseUp);
             // 
             // splitContainer3
             // 
             this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer3.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer3.Margin = new System.Windows.Forms.Padding(4);
             this.splitContainer3.Name = "splitContainer3";
             this.splitContainer3.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.GMapControl);
-            this.splitContainer3.Size = new System.Drawing.Size(372, 497);
-            this.splitContainer3.SplitterDistance = 303;
-            this.splitContainer3.SplitterWidth = 5;
+            this.splitContainer3.Size = new System.Drawing.Size(279, 394);
+            this.splitContainer3.SplitterDistance = 240;
             this.splitContainer3.TabIndex = 2;
             // 
             // GMapControl
@@ -331,7 +348,6 @@
             this.GMapControl.HelperLineOption = GMap.NET.WindowsForms.HelperLineOptions.DontShow;
             this.GMapControl.LevelsKeepInMemory = 5;
             this.GMapControl.Location = new System.Drawing.Point(0, 0);
-            this.GMapControl.Margin = new System.Windows.Forms.Padding(4);
             this.GMapControl.MarkersEnabled = true;
             this.GMapControl.MaxZoom = 18;
             this.GMapControl.MinZoom = 3;
@@ -345,20 +361,19 @@
             this.GMapControl.ScaleMode = GMap.NET.WindowsForms.ScaleModes.Integer;
             this.GMapControl.SelectedAreaFillColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(65)))), ((int)(((byte)(105)))), ((int)(((byte)(225)))));
             this.GMapControl.ShowTileGridLines = false;
-            this.GMapControl.Size = new System.Drawing.Size(372, 189);
+            this.GMapControl.Size = new System.Drawing.Size(279, 150);
             this.GMapControl.TabIndex = 4;
             this.GMapControl.Zoom = 3D;
             // 
             // FormMain
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1258, 555);
+            this.ClientSize = new System.Drawing.Size(944, 444);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip);
             this.MainMenuStrip = this.menuStrip;
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "FormMain";
             this.Text = "Moto Reco Viewer";
             this.Load += new System.EventHandler(this.FormMain_Load);
@@ -375,8 +390,8 @@
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureMain)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureSub)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PictureMain)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.PictureSub)).EndInit();
             this.splitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
@@ -410,9 +425,12 @@
         private System.Windows.Forms.ToolStripStatusLabel statusLabel;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.SplitContainer splitContainer2;
-        private System.Windows.Forms.PictureBox pictureMain;
-        private System.Windows.Forms.PictureBox pictureSub;
+        private System.Windows.Forms.PictureBox PictureMain;
+        private System.Windows.Forms.PictureBox PictureSub;
         private System.Windows.Forms.SplitContainer splitContainer3;
         private GMap.NET.WindowsForms.GMapControl GMapControl;
+        private System.Windows.Forms.ToolStripMenuItem helpHToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem aboutAToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
     }
 }
