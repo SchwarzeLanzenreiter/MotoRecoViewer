@@ -239,11 +239,43 @@ namespace MotoRecoViewer
 
                     return rrSpeed/frSpeed*100d-100d;
 
+
+
+
+                // CANID 174
+                // K51_YawRate
+                // Data2*125/128+Data1/256-125
+                case "#K51_YawRate":
+                    return data.data[1] * 125d / 128d + data.data[0] / 256d - 125d;
+
                 // CANID 174
                 // K51_YAxisG
                 // (Data6+Data5/256-128)/32 
                 case "#K51_YAxisG":
                     return (data.data[5] + (data.data[4] / 256d) - 128d) / 32d;
+
+                // CANID 178
+                // K51_RollRate
+                // Data2*125/128+Data1/256-125
+                case "#K51_RollRate":
+                    return data.data[1] * 125d / 128d + data.data[0] / 256d - 125d;
+
+                // CANID 178
+                // K51_XAxisG
+                // (Data6+Data5/256-128)/32
+                case "#K51_XAxisG":
+                    return (data.data[5] + (data.data[4] / 256d) - 128d) / 32d;
+
+                // CANID 17C
+                // K51_ZAxisG
+                // (Data6+Data5/256-128)/32
+                case "#K51_ZAxisG":
+                    return (data.data[5] + (data.data[4] / 256d) - 128d) / 32d;
+
+
+
+
+
 
                 // CANID 7FF
                 // GPS Latitude
