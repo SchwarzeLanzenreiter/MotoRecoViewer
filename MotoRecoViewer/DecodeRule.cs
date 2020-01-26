@@ -239,6 +239,12 @@ namespace MotoRecoViewer
 
                     return rrSpeed/frSpeed*100d-100d;
 
+                // CANID 174
+                // K51_YAxisG
+                // (Data6+Data5/256-128)/32 
+                case "#K51_YAxisG":
+                    return (data.data[5] + (data.data[4] / 256d) - 128d) / 32d;
+
                 // CANID 7FF
                 // GPS Latitude
                 // (Data8*16777216+Data7*65536+Data6*256+Data5-90000000)/1000000

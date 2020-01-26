@@ -90,6 +90,8 @@ namespace MotoRecoViewer
                     ListViewItem.Items.Add(new ListViewItem(item24));
                     string[] item25 = { "SlipRate", "293", "#K51_SlipRate" };
                     ListViewItem.Items.Add(new ListViewItem(item25));
+                    string[] item26 = { "Y_Axis_G", "174", "#K51_YAxisG" };
+                    ListViewItem.Items.Add(new ListViewItem(item26));
 
                     return;
 
