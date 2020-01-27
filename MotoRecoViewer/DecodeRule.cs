@@ -180,37 +180,22 @@ namespace MotoRecoViewer
                     return (((double)data.data[4] * 90d / 128d) - 90d) * (-1d);
 
                 // CANID 293
-                // K51 FrSpeed1
-                // (Data5-208)*32+(Data4/8)
-                case "#K51_FrSpeed1":
-                    return (data.data[4] - 208d)*32d + (data.data[3]/8d);
+                // K51 RrSpeed
+                // (LoData2*256+Data1)/8
+                case "#K51_RrSpeed":
+                    return ((nibble & data.data[1])*256d + data.data[0]) / 8d;
 
                 // CANID 293
                 // K51 FrSpeed2
-                // (Data3*2)+(Data2/128)
+                // (Data3*16+HiData2)/8
                 case "#K51_FrSpeed2":
-                    return (data.data[2] * 2d) + (data.data[1] / 128d);
+                    return (data.data[2] * 16d + (nibble & data.data[1] >> 4)) / 8d;
 
                 // CANID 293
-                // K51 RrSpeed
-                // (Data5-208)*32+(Data1/8)
-                case "#K51_RrSpeed":
-                    // RrSpeedは、Data5は本来Fr用の為、車速差がある時に繰り上がりタイミングが異なってしまうため、
-                    // 便宜的にFrSpeedと車速差が16km/h以下になるよう調整してしまう
-                    frSpeed = (data.data[4] - 208d) * 32d + (data.data[3] / 8d);
-                    rrSpeed = (data.data[4] - 208d) * 32d + (data.data[0] / 8d);
-
-                    if (rrSpeed > frSpeed + 16d)
-                    {
-                        rrSpeed = rrSpeed - 32d;
-                    }
-
-                    if (rrSpeed < frSpeed - 16d)
-                    {
-                        rrSpeed = rrSpeed + 32d;
-                    }
-
-                    return rrSpeed;
+                // K51 FrSpeed1
+                // (LoData5*256+Data4)/8
+                case "#K51_FrSpeed1":
+                    return ((nibble & data.data[4]) * 256 + data.data[3]) / 8d;
 
                 // CANID 293
                 // K51 SlipRate
@@ -218,18 +203,8 @@ namespace MotoRecoViewer
                 case "#K51_SlipRate":
                     // RrSpeedは、Data5は本来Fr用の為、車速差がある時に繰り上がりタイミングが異なってしまうため、
                     // 便宜的にFrSpeedと車速差が16km/h以下になるよう調整してしまう
-                    frSpeed = (data.data[4] - 208d) * 32d + (data.data[3] / 8d);
-                    rrSpeed = (data.data[4] - 208d) * 32d + (data.data[0] / 8d);
-
-                    if (rrSpeed > frSpeed + 16d)
-                    {
-                        rrSpeed = rrSpeed - 32d;
-                    }
-
-                    if (rrSpeed < frSpeed - 16d)
-                    {
-                        rrSpeed = rrSpeed + 32d;
-                    }
+                    rrSpeed = ((nibble & data.data[1]) * 256d + data.data[0]) / 8d;
+                    frSpeed = ((nibble & data.data[4]) * 256 + data.data[3]) / 8d;
 
                     // 0割防止
                     if (frSpeed == 0)
@@ -238,9 +213,6 @@ namespace MotoRecoViewer
                     }
 
                     return rrSpeed/frSpeed*100d-100d;
-
-
-
 
                 // CANID 174
                 // K51_YawRate
