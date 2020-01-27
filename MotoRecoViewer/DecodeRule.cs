@@ -79,7 +79,7 @@ namespace MotoRecoViewer
             //式中のHiData1～HiData8の文字列を、数値に置き換える
             for (int i = 0; i < 8; i++)
             {
-                str = (nibble & data.data[i] >> 4).ToString();
+                str = (data.data[i] >> 4).ToString();
                 exp = exp.Replace("HiData" + (i + 1).ToString(), str);
             }
 
@@ -170,7 +170,7 @@ namespace MotoRecoViewer
                 // K51 RrStroke
                 // (Data8*16+HiData7)/3
                 case "#K51_RrStroke":
-                    return (data.data[7] * 16d + (nibble & data.data[6] >> 4)) / 3d;
+                    return (data.data[7] * 16d + (data.data[6] >> 4)) / 3d;
 
                 // CANID 10C
                 // K51 LeanAngle
@@ -189,7 +189,7 @@ namespace MotoRecoViewer
                 // K51 FrSpeed2
                 // (Data3*16+HiData2)/8
                 case "#K51_FrSpeed2":
-                    return (data.data[2] * 16d + (nibble & data.data[1] >> 4)) / 8d;
+                    return (data.data[2] * 16d + (data.data[1] >> 4)) / 8d;
 
                 // CANID 293
                 // K51 FrSpeed1
@@ -213,6 +213,22 @@ namespace MotoRecoViewer
                     }
 
                     return rrSpeed/frSpeed*100d-100d;
+
+                // CANID 2BC
+                // K51 K51_Gear
+                // HiData6
+                // 1 4 7 8 11 13 が 1-6速に該当
+                case "#K51_Gear":
+                    switch (data.data[5] >> 4)
+                    {
+                        case 1:return 1;
+                        case 4: return 2;
+                        case 7: return 3;
+                        case 8: return 4;
+                        case 11: return 5;
+                        case 13: return 6;
+                        default: return 0;
+                    }
 
                 // CANID 174
                 // K51_YawRate

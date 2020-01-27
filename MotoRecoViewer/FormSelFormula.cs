@@ -109,20 +109,24 @@ namespace MotoRecoViewer
                     string[] item25 = { "SlipRate", "293", "#K51_SlipRate" };
                     ListViewItem.Items.Add(new ListViewItem(item25));
 
-                    string[] item26 = { "X_Axis_G", "178", "#K51_XAxisG" };
+                    string[] item26 = { "Gear", "2BC", "#K51_Gear" };
                     ListViewItem.Items.Add(new ListViewItem(item26));
 
-                    string[] item27 = { "Y_Axis_G", "174", "#K51_YAxisG" };
-                    ListViewItem.Items.Add(new ListViewItem(item27));
 
-                    string[] item28 = { "Z_Axis_G", "17C", "#K51_ZAxisG" };
-                    ListViewItem.Items.Add(new ListViewItem(item28));
-                    
-                    string[] item29 = { "RollRate", "178", "#K51_RollRate" };
-                    ListViewItem.Items.Add(new ListViewItem(item29));
-
-                    string[] item30 = { "YawRate", "174", "#K51_YawRate" };
+                    string[] item30 = { "X_Axis_G", "178", "#K51_XAxisG" };
                     ListViewItem.Items.Add(new ListViewItem(item30));
+
+                    string[] item31 = { "Y_Axis_G", "174", "#K51_YAxisG" };
+                    ListViewItem.Items.Add(new ListViewItem(item31));
+
+                    string[] item32 = { "Z_Axis_G", "17C", "#K51_ZAxisG" };
+                    ListViewItem.Items.Add(new ListViewItem(item32));
+                    
+                    string[] item33 = { "RollRate", "178", "#K51_RollRate" };
+                    ListViewItem.Items.Add(new ListViewItem(item33));
+
+                    string[] item34 = { "YawRate", "174", "#K51_YawRate" };
+                    ListViewItem.Items.Add(new ListViewItem(item34));
 
 
 
