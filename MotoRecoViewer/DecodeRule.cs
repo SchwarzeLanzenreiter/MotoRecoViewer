@@ -162,15 +162,15 @@ namespace MotoRecoViewer
 
                 // CANID 29C
                 // K51 FrStroke
-                // Data6+LoData7*255
+                // (LoData7*256+Data6)/5
                 case "#K51_FrStroke":
-                    return data.data[5] ;
+                    return ((nibble & data.data[6])*256d + data.data[5])/5d;
 
                 // CANID 29C
                 // K51 RrStroke
-                // Data8*4
+                // (Data8*16+HiData7)/3
                 case "#K51_RrStroke":
-                    return (data.data[7] + data.data[6]/256d) / 2d * 10d;
+                    return (data.data[7] * 16d + (nibble & data.data[6] >> 4)) / 3d;
 
                 // CANID 10C
                 // K51 LeanAngle

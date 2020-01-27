@@ -161,6 +161,49 @@ namespace MotoRecoViewer
                 field.EndsWith("\t");
         }
 
+        /// <summary>
+        /// FormMainのDecodeRuleをListViewにロードする
+        /// </summary>
+        private void LoadDecodeRule()
+        {
+            FormMain fm = (FormMain)this.Owner;
+
+            //FormMainのDecodeRuleがなければ何もしない
+            if (fm.decodeRule.Count == 0)
+            {
+                return;
+            }
+
+            //DecodeRuleの内容をListViewDecodeに反映する
+            for (int i = 0; i < fm.decodeRule.Count; i++)
+            {
+                ListViewItem newItem = new ListViewItem
+                {
+                    UseItemStyleForSubItems = false
+                };
+
+                //ChName
+                newItem.Text = fm.decodeRule.GetChName(i);
+                //CANID
+                newItem.SubItems.Add(fm.decodeRule.GetCANID(i).ToString("X3"));
+                //Formula
+                newItem.SubItems.Add(fm.decodeRule.GetDecodeRule(i));
+                //Pen Color
+                newItem.SubItems.Add(fm.decodeRule.GetChartColor(i).ToString());
+                newItem.SubItems[3].BackColor = Color.FromArgb(fm.decodeRule.GetChartColor(i));
+                //Min
+                newItem.SubItems.Add(fm.decodeRule.GetChartMin(i).ToString());
+                //MAX
+                newItem.SubItems.Add(fm.decodeRule.GetChartMax(i).ToString());
+                //Preview
+                newItem.SubItems.Add(fm.decodeRule.GetChartPreview(i).ToString());
+                //Show
+                newItem.SubItems.Add(fm.decodeRule.GetChartShow(i).ToString());
+
+                ListViewDecode.Items.Add(newItem);
+            }
+        }
+
         public FormDecodeOption()
         {
             InitializeComponent();
@@ -388,58 +431,30 @@ namespace MotoRecoViewer
                 }
             }
 
+            ListCANID.Sort();
+
             // fileクローズ
             reader.Close();
 
+            // 収集したCANIDの選択ダイアログを表示
             FormAnalysys f = new FormAnalysys();
-
-            //ToDo 固定式選択時は、CAN IDとChNameもデフォルトで入れること
+            f.ListCANID = ListCANID;
 
             f.ShowDialog(this);
             f.Dispose();
 
+            // このタイミングでFormMainのDecodeRuleに、FormAnalysysで追加したルールが追加されているので、DecodeRuleを再ロードする
+            LoadDecodeRule();
         }
 
         private void FormDecodeOption_Load(object sender, EventArgs e)
         {
-            FormMain fm = (FormMain)this.Owner;
+            LoadDecodeRule();
+        }
 
-            //FormMainのDecodeRuleがなければ何もしない
-            if (fm.decodeRule.Count == 0)
-            {
-                return;
-            }
+        private void BtnCancel_Click(object sender, EventArgs e)
+        {
 
-            //ToDo DecodeRuleの内容をListViewDecodeに反映する
-            for (int i=0; i<fm.decodeRule.Count; i++)
-            {
-                ListViewItem newItem = new ListViewItem
-                {
-                    UseItemStyleForSubItems = false
-                };
-
-                int j;
-
-                //ChName
-                newItem.Text = fm.decodeRule.GetChName(i);
-                //CANID
-                newItem.SubItems.Add(fm.decodeRule.GetCANID(i).ToString("X3"));
-                //Formula
-                newItem.SubItems.Add(fm.decodeRule.GetDecodeRule(i));
-                //Pen Color
-                newItem.SubItems.Add(fm.decodeRule.GetChartColor(i).ToString());
-                newItem.SubItems[3].BackColor = Color.FromArgb(fm.decodeRule.GetChartColor(i));
-                //Min
-                newItem.SubItems.Add(fm.decodeRule.GetChartMin(i).ToString());
-                //MAX
-                newItem.SubItems.Add(fm.decodeRule.GetChartMax(i).ToString());
-                //Preview
-                newItem.SubItems.Add(fm.decodeRule.GetChartPreview(i).ToString());
-                //Show
-                newItem.SubItems.Add(fm.decodeRule.GetChartShow(i).ToString());
-
-                ListViewDecode.Items.Add(newItem);
-            }
         }
     }
 }
