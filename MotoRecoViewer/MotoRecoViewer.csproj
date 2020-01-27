@@ -105,6 +105,12 @@
     <Compile Include="FormAbout.Designer.cs">
       <DependentUpon>FormAbout.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormAnalysys.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormAnalysys.Designer.cs">
+      <DependentUpon>FormAnalysys.cs</DependentUpon>
+    </Compile>
     <Compile Include="FormMapOption.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -133,6 +139,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FormAbout.resx">
       <DependentUpon>FormAbout.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormAnalysys.resx">
+      <DependentUpon>FormAnalysys.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="FormMapOption.resx">
       <DependentUpon>FormMapOption.cs</DependentUpon>

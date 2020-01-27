@@ -41,7 +41,6 @@ C:\Users\0490345\source\repos\MotoRecoViewer\MotoRecoViewer\bin\Debug\EntityFram
 C:\Users\0490345\source\repos\MotoRecoViewer\MotoRecoViewer\bin\Debug\Newtonsoft.Json.xml
 C:\Users\0490345\source\repos\MotoRecoViewer\MotoRecoViewer\bin\Debug\System.Data.SQLite.xml
 C:\Users\0490345\source\repos\MotoRecoViewer\MotoRecoViewer\bin\Debug\System.Data.SQLite.dll.config
-C:\Users\0490345\source\repos\MotoRecoViewer\MotoRecoViewer\obj\Debug\MotoRecoViewer.csprojAssemblyReference.cache
 C:\Users\0490345\source\repos\MotoRecoViewer\MotoRecoViewer\obj\Debug\MotoRecoViewer.Properties.Resources.resources
 C:\Users\0490345\source\repos\MotoRecoViewer\MotoRecoViewer\obj\Debug\MotoRecoViewer.csproj.GenerateResource.cache
 C:\Users\0490345\source\repos\MotoRecoViewer\MotoRecoViewer\obj\Debug\MotoRecoViewer.csproj.CopyComplete
@@ -80,3 +79,4 @@ C:\Users\schwarze\Source\Repos\SchwarzeLanzenreiter\MotoRecoViewer\MotoRecoViewe
 C:\Users\schwarze\Source\Repos\SchwarzeLanzenreiter\MotoRecoViewer\MotoRecoViewer\obj\Debug\MotoRecoViewer.FormAbout.resources
 C:\Users\schwarze\Source\Repos\SchwarzeLanzenreiter\MotoRecoViewer\MotoRecoViewer\obj\Debug\MotoRecoViewer.csprojAssemblyReference.cache
 C:\Users\0490345\source\repos\MotoRecoViewer\MotoRecoViewer\obj\Debug\MotoRecoViewer.FormAbout.resources
+C:\Users\0490345\source\repos\MotoRecoViewer\MotoRecoViewer\obj\Debug\MotoRecoViewer.FormAnalysys.resources

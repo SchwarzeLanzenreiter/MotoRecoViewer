@@ -338,57 +338,66 @@ namespace MotoRecoViewer
 
         private void BtnPreAna_Click(object sender, EventArgs e)
         {
-            if (OpenFileDAT.ShowDialog() == DialogResult.OK)
-            {
-                string FileName = OpenFileDAT.FileName;
-
-                //ファイルサイズを調べる
-                FileStream fs = new FileStream(FileName, FileMode.Open, FileAccess.Read);
-                long fileSize = fs.Length;
-
-                //CANDataは1データ16バイトなので、用意する配列は　( ファイルサイズ / 16 - 1)
-                long arySize = fileSize / 16;
-
-                //CANDataが壊れていると、16で割り切れないかもしれないのでチェックしておき、あまりが出たら読み込む個数を1減らす
-                long checkSize = fileSize % 16;
-
-                if (checkSize != 0)
-                {
-                    arySize--;
-                }
-
-                //バイナリーリーダー生成
-                BinaryReader reader = new BinaryReader(fs);
-
-                //CANデータを1フレーム分読み込む
-                FormMain.CanData tempCanData = new FormMain.CanData();
-
-                List<ushort> ListCANID = new List<ushort>();
-
-                for (int i = 0; i < arySize; i++)
-                {
-                    tempCanData.timeSec = reader.ReadUInt32();
-                    tempCanData.timeMSec = reader.ReadUInt16();
-                    tempCanData.id = reader.ReadUInt16();
-                    tempCanData.data = new byte[8];
-
-                    for (int j = 0; j < 8; j++)
-                    {
-                        tempCanData.data[j] = reader.ReadByte();
-                    }
-
-                    //ここで1フレーム分読み込み終了
-
-                    //CANIDがListに既存でなければ追加する
-                    if (ListCANID.IndexOf(tempCanData.id) == -1)
-                    {
-                        ListCANID.Add(tempCanData.id);
-                    }
-                }
-
-                // fileクローズ
-                reader.Close();
+            if (OpenFileDAT.ShowDialog() != DialogResult.OK){
+                return;
             }
+            
+            string FileName = OpenFileDAT.FileName;
+
+            //ファイルサイズを調べる
+            FileStream fs = new FileStream(FileName, FileMode.Open, FileAccess.Read);
+            long fileSize = fs.Length;
+
+            //CANDataは1データ16バイトなので、用意する配列は　( ファイルサイズ / 16 - 1)
+            long arySize = fileSize / 16;
+
+            //CANDataが壊れていると、16で割り切れないかもしれないのでチェックしておき、あまりが出たら読み込む個数を1減らす
+            long checkSize = fileSize % 16;
+
+            if (checkSize != 0)
+            {
+                arySize--;
+            }
+
+            //バイナリーリーダー生成
+            BinaryReader reader = new BinaryReader(fs);
+
+            //CANデータを1フレーム分読み込む
+            FormMain.CanData tempCanData = new FormMain.CanData();
+
+            List<ushort> ListCANID = new List<ushort>();
+
+            for (int i = 0; i < arySize; i++)
+            {
+                tempCanData.timeSec = reader.ReadUInt32();
+                tempCanData.timeMSec = reader.ReadUInt16();
+                tempCanData.id = reader.ReadUInt16();
+                tempCanData.data = new byte[8];
+
+                for (int j = 0; j < 8; j++)
+                {
+                    tempCanData.data[j] = reader.ReadByte();
+                }
+
+                //ここで1フレーム分読み込み終了
+
+                //CANIDがListに既存でなければ追加する
+                if (ListCANID.IndexOf(tempCanData.id) == -1)
+                {
+                    ListCANID.Add(tempCanData.id);
+                }
+            }
+
+            // fileクローズ
+            reader.Close();
+
+            FormAnalysys f = new FormAnalysys();
+
+            //ToDo 固定式選択時は、CAN IDとChNameもデフォルトで入れること
+
+            f.ShowDialog(this);
+            f.Dispose();
+
         }
 
         private void FormDecodeOption_Load(object sender, EventArgs e)
