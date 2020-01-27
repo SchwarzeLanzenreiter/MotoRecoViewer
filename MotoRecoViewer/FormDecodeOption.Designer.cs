@@ -29,7 +29,7 @@
         private void InitializeComponent()
         {
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
-            this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.OpenFileDDF = new System.Windows.Forms.OpenFileDialog();
             this.colorDialog = new System.Windows.Forms.ColorDialog();
             this.column1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.column2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -61,18 +61,20 @@
             this.CheckPreview = new System.Windows.Forms.CheckBox();
             this.BtnNew = new System.Windows.Forms.Button();
             this.CheckShow = new System.Windows.Forms.CheckBox();
-            this.button1 = new System.Windows.Forms.Button();
+            this.BtnClear = new System.Windows.Forms.Button();
             this.BtnBrowsRule = new System.Windows.Forms.Button();
+            this.BtnPreAna = new System.Windows.Forms.Button();
+            this.OpenFileDAT = new System.Windows.Forms.OpenFileDialog();
             this.SuspendLayout();
             // 
             // saveFileDialog
             // 
             this.saveFileDialog.Filter = "decode definition file|*.ddf";
             // 
-            // openFileDialog
+            // OpenFileDDF
             // 
-            this.openFileDialog.FileName = "openFileDialog1";
-            this.openFileDialog.Filter = "decode definition file|*.ddf";
+            this.OpenFileDDF.FileName = "openFileDialog1";
+            this.OpenFileDDF.Filter = "decode definition file|*.ddf";
             // 
             // column1
             // 
@@ -121,7 +123,7 @@
             this.ListViewDecode.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
             this.ListViewDecode.HideSelection = false;
             this.ListViewDecode.Location = new System.Drawing.Point(0, 0);
-            this.ListViewDecode.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.ListViewDecode.Margin = new System.Windows.Forms.Padding(4);
             this.ListViewDecode.MultiSelect = false;
             this.ListViewDecode.Name = "ListViewDecode";
             this.ListViewDecode.Size = new System.Drawing.Size(781, 506);
@@ -137,7 +139,7 @@
             // BtnDel
             // 
             this.BtnDel.Location = new System.Drawing.Point(141, 626);
-            this.BtnDel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.BtnDel.Margin = new System.Windows.Forms.Padding(4);
             this.BtnDel.Name = "BtnDel";
             this.BtnDel.Size = new System.Drawing.Size(55, 39);
             this.BtnDel.TabIndex = 2;
@@ -149,7 +151,7 @@
             // 
             this.BtnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.BtnOK.Location = new System.Drawing.Point(699, 581);
-            this.BtnOK.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.BtnOK.Margin = new System.Windows.Forms.Padding(4);
             this.BtnOK.Name = "BtnOK";
             this.BtnOK.Size = new System.Drawing.Size(67, 39);
             this.BtnOK.TabIndex = 3;
@@ -190,7 +192,7 @@
             // TextChName
             // 
             this.TextChName.Location = new System.Drawing.Point(108, 525);
-            this.TextChName.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.TextChName.Margin = new System.Windows.Forms.Padding(4);
             this.TextChName.Name = "TextChName";
             this.TextChName.Size = new System.Drawing.Size(296, 22);
             this.TextChName.TabIndex = 7;
@@ -198,7 +200,7 @@
             // TextCanId
             // 
             this.TextCanId.Location = new System.Drawing.Point(108, 558);
-            this.TextCanId.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.TextCanId.Margin = new System.Windows.Forms.Padding(4);
             this.TextCanId.Name = "TextCanId";
             this.TextCanId.Size = new System.Drawing.Size(55, 22);
             this.TextCanId.TabIndex = 8;
@@ -206,7 +208,7 @@
             // TextFormula
             // 
             this.TextFormula.Location = new System.Drawing.Point(108, 589);
-            this.TextFormula.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.TextFormula.Margin = new System.Windows.Forms.Padding(4);
             this.TextFormula.Name = "TextFormula";
             this.TextFormula.Size = new System.Drawing.Size(296, 22);
             this.TextFormula.TabIndex = 9;
@@ -214,7 +216,7 @@
             // BtnEdit
             // 
             this.BtnEdit.Location = new System.Drawing.Point(79, 626);
-            this.BtnEdit.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.BtnEdit.Margin = new System.Windows.Forms.Padding(4);
             this.BtnEdit.Name = "BtnEdit";
             this.BtnEdit.Size = new System.Drawing.Size(55, 39);
             this.BtnEdit.TabIndex = 10;
@@ -224,8 +226,8 @@
             // 
             // BtnSave
             // 
-            this.BtnSave.Location = new System.Drawing.Point(329, 626);
-            this.BtnSave.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.BtnSave.Location = new System.Drawing.Point(393, 626);
+            this.BtnSave.Margin = new System.Windows.Forms.Padding(4);
             this.BtnSave.Name = "BtnSave";
             this.BtnSave.Size = new System.Drawing.Size(55, 39);
             this.BtnSave.TabIndex = 11;
@@ -235,8 +237,8 @@
             // 
             // BtnLoad
             // 
-            this.BtnLoad.Location = new System.Drawing.Point(267, 626);
-            this.BtnLoad.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.BtnLoad.Location = new System.Drawing.Point(330, 626);
+            this.BtnLoad.Margin = new System.Windows.Forms.Padding(4);
             this.BtnLoad.Name = "BtnLoad";
             this.BtnLoad.Size = new System.Drawing.Size(55, 39);
             this.BtnLoad.TabIndex = 12;
@@ -248,7 +250,7 @@
             // 
             this.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.BtnCancel.Location = new System.Drawing.Point(699, 626);
-            this.BtnCancel.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.BtnCancel.Margin = new System.Windows.Forms.Padding(4);
             this.BtnCancel.Name = "BtnCancel";
             this.BtnCancel.Size = new System.Drawing.Size(67, 39);
             this.BtnCancel.TabIndex = 13;
@@ -268,7 +270,7 @@
             // TextColor
             // 
             this.TextColor.Location = new System.Drawing.Point(516, 525);
-            this.TextColor.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.TextColor.Margin = new System.Windows.Forms.Padding(4);
             this.TextColor.Name = "TextColor";
             this.TextColor.Size = new System.Drawing.Size(96, 22);
             this.TextColor.TabIndex = 15;
@@ -288,7 +290,7 @@
             // TextMin
             // 
             this.TextMin.Location = new System.Drawing.Point(516, 558);
-            this.TextMin.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.TextMin.Margin = new System.Windows.Forms.Padding(4);
             this.TextMin.Name = "TextMin";
             this.TextMin.Size = new System.Drawing.Size(96, 22);
             this.TextMin.TabIndex = 17;
@@ -306,7 +308,7 @@
             // TextMax
             // 
             this.TextMax.Location = new System.Drawing.Point(516, 589);
-            this.TextMax.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.TextMax.Margin = new System.Windows.Forms.Padding(4);
             this.TextMax.Name = "TextMax";
             this.TextMax.Size = new System.Drawing.Size(96, 22);
             this.TextMax.TabIndex = 19;
@@ -315,7 +317,7 @@
             // 
             this.CheckPreview.AutoSize = true;
             this.CheckPreview.Location = new System.Drawing.Point(516, 626);
-            this.CheckPreview.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.CheckPreview.Margin = new System.Windows.Forms.Padding(4);
             this.CheckPreview.Name = "CheckPreview";
             this.CheckPreview.Size = new System.Drawing.Size(79, 19);
             this.CheckPreview.TabIndex = 20;
@@ -325,7 +327,7 @@
             // BtnNew
             // 
             this.BtnNew.Location = new System.Drawing.Point(16, 626);
-            this.BtnNew.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.BtnNew.Margin = new System.Windows.Forms.Padding(4);
             this.BtnNew.Name = "BtnNew";
             this.BtnNew.Size = new System.Drawing.Size(55, 39);
             this.BtnNew.TabIndex = 1;
@@ -337,28 +339,28 @@
             // 
             this.CheckShow.AutoSize = true;
             this.CheckShow.Location = new System.Drawing.Point(516, 654);
-            this.CheckShow.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.CheckShow.Margin = new System.Windows.Forms.Padding(4);
             this.CheckShow.Name = "CheckShow";
             this.CheckShow.Size = new System.Drawing.Size(64, 19);
             this.CheckShow.TabIndex = 21;
             this.CheckShow.Text = "Show";
             this.CheckShow.UseVisualStyleBackColor = true;
             // 
-            // button1
+            // BtnClear
             // 
-            this.button1.Location = new System.Drawing.Point(204, 626);
-            this.button1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(55, 39);
-            this.button1.TabIndex = 22;
-            this.button1.Text = "Clear";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.Button1_Click);
+            this.BtnClear.Location = new System.Drawing.Point(204, 626);
+            this.BtnClear.Margin = new System.Windows.Forms.Padding(4);
+            this.BtnClear.Name = "BtnClear";
+            this.BtnClear.Size = new System.Drawing.Size(55, 39);
+            this.BtnClear.TabIndex = 22;
+            this.BtnClear.Text = "Clear";
+            this.BtnClear.UseVisualStyleBackColor = true;
+            this.BtnClear.Click += new System.EventHandler(this.Button1_Click);
             // 
             // BtnBrowsRule
             // 
             this.BtnBrowsRule.Location = new System.Drawing.Point(413, 589);
-            this.BtnBrowsRule.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.BtnBrowsRule.Margin = new System.Windows.Forms.Padding(4);
             this.BtnBrowsRule.Name = "BtnBrowsRule";
             this.BtnBrowsRule.Size = new System.Drawing.Size(33, 24);
             this.BtnBrowsRule.TabIndex = 23;
@@ -366,13 +368,30 @@
             this.BtnBrowsRule.UseVisualStyleBackColor = true;
             this.BtnBrowsRule.Click += new System.EventHandler(this.BtnBrowsRule_Click);
             // 
+            // BtnPreAna
+            // 
+            this.BtnPreAna.Location = new System.Drawing.Point(267, 626);
+            this.BtnPreAna.Margin = new System.Windows.Forms.Padding(4);
+            this.BtnPreAna.Name = "BtnPreAna";
+            this.BtnPreAna.Size = new System.Drawing.Size(55, 39);
+            this.BtnPreAna.TabIndex = 24;
+            this.BtnPreAna.Text = "Ana";
+            this.BtnPreAna.UseVisualStyleBackColor = true;
+            this.BtnPreAna.Click += new System.EventHandler(this.BtnPreAna_Click);
+            // 
+            // OpenFileDAT
+            // 
+            this.OpenFileDAT.FileName = "openFileDialog1";
+            this.OpenFileDAT.Filter = "datファイル|*.dat";
+            // 
             // FormDecodeOption
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(781, 678);
+            this.Controls.Add(this.BtnPreAna);
             this.Controls.Add(this.BtnBrowsRule);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.BtnClear);
             this.Controls.Add(this.CheckShow);
             this.Controls.Add(this.CheckPreview);
             this.Controls.Add(this.TextMax);
@@ -395,9 +414,10 @@
             this.Controls.Add(this.BtnDel);
             this.Controls.Add(this.BtnNew);
             this.Controls.Add(this.ListViewDecode);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "FormDecodeOption";
             this.Text = "Decode Option";
+            this.Load += new System.EventHandler(this.FormDecodeOption_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -405,7 +425,7 @@
 
         #endregion
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
-        private System.Windows.Forms.OpenFileDialog openFileDialog;
+        private System.Windows.Forms.OpenFileDialog OpenFileDDF;
         private System.Windows.Forms.ColorDialog colorDialog;
         private System.Windows.Forms.ColumnHeader column1;
         private System.Windows.Forms.ColumnHeader column2;
@@ -437,7 +457,9 @@
         private System.Windows.Forms.Button BtnNew;
         private System.Windows.Forms.CheckBox CheckShow;
         private System.Windows.Forms.ColumnHeader column8;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button BtnClear;
         private System.Windows.Forms.Button BtnBrowsRule;
+        private System.Windows.Forms.Button BtnPreAna;
+        private System.Windows.Forms.OpenFileDialog OpenFileDAT;
     }
 }

@@ -132,10 +132,5 @@ namespace MotoRecoViewer
                     return;
             }
         }
-
-        private void ListViewItem_SelectedIndexChanged(object sender, EventArgs e)
-        {
-
-        }
     }
 }

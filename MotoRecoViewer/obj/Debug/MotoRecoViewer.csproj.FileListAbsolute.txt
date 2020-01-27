@@ -79,3 +79,4 @@ C:\Users\schwarze\Source\Repos\SchwarzeLanzenreiter\MotoRecoViewer\MotoRecoViewe
 C:\Users\schwarze\Source\Repos\SchwarzeLanzenreiter\MotoRecoViewer\MotoRecoViewer\obj\Debug\MotoRecoViewer.pdb
 C:\Users\schwarze\Source\Repos\SchwarzeLanzenreiter\MotoRecoViewer\MotoRecoViewer\obj\Debug\MotoRecoViewer.FormAbout.resources
 C:\Users\schwarze\Source\Repos\SchwarzeLanzenreiter\MotoRecoViewer\MotoRecoViewer\obj\Debug\MotoRecoViewer.csprojAssemblyReference.cache
+C:\Users\0490345\source\repos\MotoRecoViewer\MotoRecoViewer\obj\Debug\MotoRecoViewer.FormAbout.resources

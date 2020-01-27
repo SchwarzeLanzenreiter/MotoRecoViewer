@@ -200,9 +200,9 @@ namespace MotoRecoViewer
         private void BtnLoad_Click(object sender, EventArgs e)
         {
 
-            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            if (OpenFileDDF.ShowDialog() == DialogResult.OK)
             {
-                string filePath = openFileDialog.FileName;
+                string filePath = OpenFileDDF.FileName;
                 StreamReader reader = new StreamReader(filePath, Encoding.GetEncoding("Shift_JIS"));
 
                 while (reader.Peek() >= 0)
@@ -334,6 +334,103 @@ namespace MotoRecoViewer
 
             f.ShowDialog(this);
             f.Dispose();
+        }
+
+        private void BtnPreAna_Click(object sender, EventArgs e)
+        {
+            if (OpenFileDAT.ShowDialog() == DialogResult.OK)
+            {
+                string FileName = OpenFileDAT.FileName;
+
+                //ファイルサイズを調べる
+                FileStream fs = new FileStream(FileName, FileMode.Open, FileAccess.Read);
+                long fileSize = fs.Length;
+
+                //CANDataは1データ16バイトなので、用意する配列は　( ファイルサイズ / 16 - 1)
+                long arySize = fileSize / 16;
+
+                //CANDataが壊れていると、16で割り切れないかもしれないのでチェックしておき、あまりが出たら読み込む個数を1減らす
+                long checkSize = fileSize % 16;
+
+                if (checkSize != 0)
+                {
+                    arySize--;
+                }
+
+                //バイナリーリーダー生成
+                BinaryReader reader = new BinaryReader(fs);
+
+                //CANデータを1フレーム分読み込む
+                FormMain.CanData tempCanData = new FormMain.CanData();
+
+                List<ushort> ListCANID = new List<ushort>();
+
+                for (int i = 0; i < arySize; i++)
+                {
+                    tempCanData.timeSec = reader.ReadUInt32();
+                    tempCanData.timeMSec = reader.ReadUInt16();
+                    tempCanData.id = reader.ReadUInt16();
+                    tempCanData.data = new byte[8];
+
+                    for (int j = 0; j < 8; j++)
+                    {
+                        tempCanData.data[j] = reader.ReadByte();
+                    }
+
+                    //ここで1フレーム分読み込み終了
+
+                    //CANIDがListに既存でなければ追加する
+                    if (ListCANID.IndexOf(tempCanData.id) == -1)
+                    {
+                        ListCANID.Add(tempCanData.id);
+                    }
+                }
+
+                // fileクローズ
+                reader.Close();
+            }
+        }
+
+        private void FormDecodeOption_Load(object sender, EventArgs e)
+        {
+            FormMain fm = (FormMain)this.Owner;
+
+            //FormMainのDecodeRuleがなければ何もしない
+            if (fm.decodeRule.Count == 0)
+            {
+                return;
+            }
+
+            //ToDo DecodeRuleの内容をListViewDecodeに反映する
+            for (int i=0; i<fm.decodeRule.Count; i++)
+            {
+                ListViewItem newItem = new ListViewItem
+                {
+                    UseItemStyleForSubItems = false
+                };
+
+                int j;
+
+                //ChName
+                newItem.Text = fm.decodeRule.GetChName(i);
+                //CANID
+                newItem.SubItems.Add(fm.decodeRule.GetCANID(i).ToString("X3"));
+                //Formula
+                newItem.SubItems.Add(fm.decodeRule.GetDecodeRule(i));
+                //Pen Color
+                newItem.SubItems.Add(fm.decodeRule.GetChartColor(i).ToString());
+                newItem.SubItems[3].BackColor = Color.FromArgb(fm.decodeRule.GetChartColor(i));
+                //Min
+                newItem.SubItems.Add(fm.decodeRule.GetChartMin(i).ToString());
+                //MAX
+                newItem.SubItems.Add(fm.decodeRule.GetChartMax(i).ToString());
+                //Preview
+                newItem.SubItems.Add(fm.decodeRule.GetChartPreview(i).ToString());
+                //Show
+                newItem.SubItems.Add(fm.decodeRule.GetChartShow(i).ToString());
+
+                ListViewDecode.Items.Add(newItem);
+            }
         }
     }
 }

@@ -397,6 +397,15 @@ namespace MotoRecoViewer
         }
 
         /// <summary>
+        /// 引数のCANIDを返す
+        /// </summary>
+        /// <param name="index">検索するチャンネル名</param>
+        public ushort GetCANID(int index)
+        {
+            return this.Id[index];
+        }
+
+        /// <summary>
         /// 引数のインデックスのデコードルールを返す
         /// </summary>
         /// <param name="index">検索するチャンネル名</param>
