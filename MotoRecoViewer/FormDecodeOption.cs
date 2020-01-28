@@ -87,46 +87,6 @@ namespace MotoRecoViewer
         }
 
         /// <summary>
-        /// 必要ならば、文字列をダブルクォートで囲む
-        /// </summary>
-        private string EncloseDoubleQuotesIfNeed(string field)
-        {
-            if (NeedEncloseDoubleQuotes(field))
-            {
-                return EncloseDoubleQuotes(field);
-            }
-            return field;
-        }
-
-        /// <summary>
-        /// 文字列をダブルクォートで囲む
-        /// </summary>
-        private string EncloseDoubleQuotes(string field)
-        {
-            if (field.IndexOf('"') > -1)
-            {
-                //"を""とする
-                field = field.Replace("\"", "\"\"");
-            }
-            return "\"" + field + "\"";
-        }
-
-        /// <summary>
-        /// 文字列をダブルクォートで囲む必要があるか調べる
-        /// </summary>
-        private bool NeedEncloseDoubleQuotes(string field)
-        {
-            return field.IndexOf('"') > -1 ||
-                field.IndexOf(',') > -1 ||
-                field.IndexOf('\r') > -1 ||
-                field.IndexOf('\n') > -1 ||
-                field.StartsWith(" ") ||
-                field.StartsWith("\t") ||
-                field.EndsWith(" ") ||
-                field.EndsWith("\t");
-        }
-
-        /// <summary>
         /// FormMainのDecodeRuleをListViewにロードする
         /// </summary>
         private void LoadDecodeRuleToListView()
