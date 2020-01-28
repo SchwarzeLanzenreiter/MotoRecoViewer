@@ -77,9 +77,9 @@ namespace MotoRecoViewer
                 sr.Write(ChName[i] + ",");
                 sr.Write(Id[i].ToString("X3") + ",");
                 sr.Write(Formula[i] + ",");
+                sr.Write(ChColor[i].ToString() + ",");
                 sr.Write(ChMin[i].ToString() + ",");
                 sr.Write(ChMax[i].ToString() + ",");
-                sr.Write(ChColor[i].ToString() + ",");
                 sr.Write(ChPreview[i].ToString() + ",");
                 sr.Write(ChShow[i].ToString());
 
@@ -458,6 +458,15 @@ namespace MotoRecoViewer
         public int FormulaIndexOf(string formula)
         {
             return this.Formula.IndexOf(formula);
+        }
+
+        /// <summary>
+        /// 引数のFormulaのインデックスを返す
+        /// </summary>
+        /// <param name="str">検索するFormula</param>
+        public int ChNameIndexOf(string chName)
+        {
+            return this.ChName.IndexOf(chName);
         }
 
         /// <summary>

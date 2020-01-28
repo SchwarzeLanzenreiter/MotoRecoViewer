@@ -1081,6 +1081,28 @@ namespace MotoRecoViewer
 
                 ListViewData.Items.Add(newItem);
             }
+
+            // データロードなければ何もしない
+            if (ListChData.Count == 0)
+            {
+                return;
+            }
+
+            // もしデータがロード済だった場合は、ListChDataのチャンネル情報をアップデートする
+            for (int i=0; i < ListChData.Count; i++)
+            {
+                // ListChData[i]と同じChNameのDecodeRuleのidxを取得
+                int idx = decodeRule.ChNameIndexOf(ListChData[i].ChName);
+
+                // idxが存在しなければ何もしない
+                if (idx < 0) { continue; }
+
+                ListChData[i].ChColor = decodeRule.GetChartColor(idx);
+                ListChData[i].ChMax = decodeRule.GetChartMax(idx);
+                ListChData[i].ChMin = decodeRule.GetChartMin(idx);
+                ListChData[i].ChPreview = decodeRule.GetChartPreview(idx);
+                ListChData[i].ChShow = decodeRule.GetChartShow(idx);
+            }
         }
 
          private void PictureSub_MouseDown(object sender, MouseEventArgs e)
