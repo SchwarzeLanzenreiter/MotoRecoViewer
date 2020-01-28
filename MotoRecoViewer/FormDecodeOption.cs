@@ -251,7 +251,7 @@ namespace MotoRecoViewer
                 while (reader.Peek() >= 0)
                 {
                     string[] cols = reader.ReadLine().Split(',');
-
+                     
                     decodeRule.AddData(cols[0],                                                                    //Ch Name
                                        ushort.Parse(cols[1], System.Globalization.NumberStyles.HexNumber),         //CAN ID
                                        cols[2],                                                                    //Formula

@@ -321,7 +321,7 @@ namespace MotoRecoViewer
             int i = decodeRule.FormulaIndexOf("#GPS_Speed");
 
             //DecodeRuleに定義がない
-            if (i < 0)
+            if (i == -1)
             {
                 return;
             }
@@ -340,7 +340,7 @@ namespace MotoRecoViewer
             i = decodeRule.FormulaIndexOf("#GPS_Distance");
 
             //DecodeRuleに定義がない
-            if (i < 0)
+            if (i == -1)
             {
                 return;
             }
@@ -1061,7 +1061,14 @@ namespace MotoRecoViewer
             FormDecodeOption f = new FormDecodeOption();
 
             f.ShowDialog(this);
-            f.Dispose();
+            f.Dispose();  
+
+            //一時的にListViewDataのClickイベントを削除
+            //そうしないと、下でListViewItem追加のたびにClickイベントが起きてしまう為
+            ListViewData.ItemChecked -= ListViewData_ItemChecked;
+
+            //一時的に描画停止
+            ListViewData.BeginUpdate();
 
             // ListViewDataをクリア
             ListViewData.Items.Clear();
@@ -1082,6 +1089,12 @@ namespace MotoRecoViewer
                 ListViewData.Items.Add(newItem);
             }
 
+            //ListViewDataのClickイベント復活
+            ListViewData.ItemChecked += ListViewData_ItemChecked;
+
+            //描画再開
+            ListViewData.EndUpdate();
+
             // データロードなければ何もしない
             if (ListChData.Count == 0)
             {
@@ -1089,23 +1102,57 @@ namespace MotoRecoViewer
             }
 
             // もしデータがロード済だった場合は、ListChDataのチャンネル情報をアップデートする
-            for (int i=0; i < ListChData.Count; i++)
+            for (int i=0; i < decodeRule.Count; i++)
             {
-                // ListChData[i]と同じChNameのDecodeRuleのidxを取得
-                int idx = decodeRule.ChNameIndexOf(ListChData[i].ChName);
+                int idx;
+                string chName;
 
-                // idxが存在しなければ何もしない
-                if (idx < 0) { continue; }
+                chName = decodeRule.GetChName(i);
 
-                ListChData[i].ChColor = decodeRule.GetChartColor(idx);
-                ListChData[i].ChMax = decodeRule.GetChartMax(idx);
-                ListChData[i].ChMin = decodeRule.GetChartMin(idx);
-                ListChData[i].ChPreview = decodeRule.GetChartPreview(idx);
-                ListChData[i].ChShow = decodeRule.GetChartShow(idx);
+                // decodeRule.ChName[i]と同じChNameのListChDataのidxを取得
+                if (!DicChName.ContainsKey(chName))
+                {
+                    //decodeRuleのChName[i]がDicChNameになければ何もしない
+                    continue;
+                }
+
+                idx = DicChName[chName];
+
+                ListChData[idx].ChColor = decodeRule.GetChartColor(i);
+                ListChData[idx].ChMax = decodeRule.GetChartMax(i);
+                ListChData[idx].ChMin = decodeRule.GetChartMin(i);
+                ListChData[idx].ChPreview = decodeRule.GetChartPreview(i);
+                ListChData[idx].ChShow = decodeRule.GetChartShow(i);
+            }
+
+            // もしListChDataには存在するが、decodeRuleに存在しない場合(一度データをロードした後、あるChを削除した場合)、
+            // ListChDataからデータを削除する。
+            int j = 0;
+            while (j < ListChData.Count)
+            {
+                int idx = decodeRule.ChNameIndexOf(ListChData[j].ChName);
+
+                if (idx == -1)
+                {
+                    ListChData[j].Clear();
+                    ListChData.RemoveAt(j);
+                } else
+                {
+                    j++;
+                }
+            }
+
+            // もし直前でListChDataがRemoveAtされる場合、DicChNameのKeyとValueの整合が崩れるため、DicChNameを再生成する
+            DicChName.Clear();
+
+            for (int i = 0; i<ListChData.Count; i++)
+            {
+                DicChName.Add(ListChData[i].ChName, i);
             }
 
             //　グラフ再描画
             PictureMain.Refresh();
+
             PictureSub.Refresh();
         }
 
@@ -1334,7 +1381,6 @@ namespace MotoRecoViewer
                 divTime *= 2;
             }
 
-            //DrawChart();
             PictureMain.Refresh();
             PictureSub.Refresh();
             UpdateMap();
@@ -1359,7 +1405,6 @@ namespace MotoRecoViewer
                 divTime *= 2;
             }
 
-            //DrawChart();
             PictureMain.Refresh();
             PictureSub.Refresh();
             UpdateMap();
