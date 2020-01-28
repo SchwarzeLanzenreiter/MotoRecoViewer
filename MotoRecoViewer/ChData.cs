@@ -146,35 +146,6 @@ namespace MotoRecoViewer
         }
 
         /// <summary>
-        /// 引数のtimeに対応した左側インデックスを返す
-        /// 左側とは、時間が若い、という意味になる
-        /// </summary>
-        /// <param name="time">検索するtime</param>
-        /// <param name="start">検索開始インデックス</param>
-        /// <param name="end">検索終了インデックス</param>
-        /// <returns>要素の位置（見つからなかった場合は配列長）</returns>
-        public int FindLeftIndex(double time, int start, int end)
-        {
-            int first = start;
-            int last = end;
-
-            if (last > this.LogData.Count - 1) { last = this.LogData.Count - 1; }
-
-            int mid;
-            do
-            {
-                mid = first + (last - first) / 2;
-                if (time > this.LogData[mid].DataTime)
-                    first = mid + 1;
-                else
-                    last = mid - 1;
-                if (this.LogData[mid].DataTime == time)
-                    return mid;
-            } while (first <= last);
-            return mid;
-        }
-
-        /// <summary>
         /// LogDataのDateTimeをKeyにDataValueをソートする
         /// </summary>
         public void Sort()
