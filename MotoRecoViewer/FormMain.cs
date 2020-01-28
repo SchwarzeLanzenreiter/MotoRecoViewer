@@ -281,10 +281,11 @@ namespace MotoRecoViewer
             });
 
             //スレッド処理した関係でデータがソートできてないのでソートする
-            for (int i = 0; i < ListChData.Count; i++)
+            //ソートは各ch毎なので並列化可能
+            Parallel.For(0, ListChData.Count, i =>
             {
                 ListChData[i].Sort();
-            }
+            });
 
             //GPS積算距離を計算
             CalcGPSDistance();
