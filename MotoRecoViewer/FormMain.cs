@@ -489,8 +489,10 @@ namespace MotoRecoViewer
                 points.Add(new PointLatLng(fl_lat, fl_lon));
             }
 
-            GMapRoute route = new GMapRoute(points, "MainChartRoute");
-            route.Stroke = new Pen(Color.Red, 3);
+            GMapRoute route = new GMapRoute(points, "MainChartRoute")
+            {
+                Stroke = new Pen(Color.Red, 3)
+            };
             GMapOverlayRoute.Routes.Add(route);
         }
 
