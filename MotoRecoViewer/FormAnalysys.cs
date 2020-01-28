@@ -23,8 +23,7 @@ namespace MotoRecoViewer
 
         private void BtnOK_Click(object sender, EventArgs e)
         {
-            // FormMainは、FormAnalysysのOwnerのFormDecodeOptionのOwnerと、2Step辿る
-            FormMain fm = (FormMain)((FormDecodeOption)this.Owner).Owner;
+            FormDecodeOption fm = (FormDecodeOption)this.Owner;
 
             //LBAddのCANIDをFormMain.decodeRuleに追加する
             for (int i = 0; i< LBAdd.Items.Count; i++){
@@ -60,9 +59,9 @@ namespace MotoRecoViewer
 
                     if (CBHigh.Checked)
                     {
-                        fm.decodeRule.AddData(LBAdd.Items[i] + "_HiData" + j.ToString(),                                              //Ch Name
+                        fm.decodeRule.AddData(LBAdd.Items[i] + "_HiData" + j.ToString(),                                            //Ch Name
                                               ushort.Parse(LBAdd.Items[i].ToString(), System.Globalization.NumberStyles.HexNumber), //CAN ID
-                                              "HiData" + j.ToString(),                                                                //Formula
+                                              "HiData" + j.ToString(),                                                              //Formula
                                               i_color,                                                                              //Ch Color
                                               0,                                                                                    //Min
                                               255,                                                                                  //Max
@@ -72,9 +71,9 @@ namespace MotoRecoViewer
 
                     if (CBLow.Checked)
                     {
-                        fm.decodeRule.AddData(LBAdd.Items[i] + "_LoData" + j.ToString(),                                              //Ch Name
+                        fm.decodeRule.AddData(LBAdd.Items[i] + "_LoData" + j.ToString(),                                            //Ch Name
                                               ushort.Parse(LBAdd.Items[i].ToString(), System.Globalization.NumberStyles.HexNumber), //CAN ID
-                                              "LoData" + j.ToString(),                                                                //Formula
+                                              "LoData" + j.ToString(),                                                              //Formula
                                               i_color,                                                                              //Ch Color
                                               0,                                                                                    //Min
                                               255,                                                                                  //Max

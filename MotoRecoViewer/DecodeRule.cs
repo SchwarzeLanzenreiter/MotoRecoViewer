@@ -30,6 +30,7 @@ namespace MotoRecoViewer
 {
     class DecodeRule
     {
+        // ToDo Structで宣言して、StructのListとしたい
         private List<string> ChName;
         private List<ushort> Id;
         private List<string> Formula;
@@ -54,6 +55,42 @@ namespace MotoRecoViewer
             ChShow = new List<bool>();
         }
 
+        public void SaveToCSV(string FilePath)
+        {
+            //Itemが0なら即抜ける
+            if (ChName.Count < 1)
+            {
+                return;
+            }
+
+            //CSVファイルに書き込むときに使うEncoding
+            System.Text.Encoding enc =
+                System.Text.Encoding.GetEncoding("Shift_JIS");
+
+            //書き込むファイルを開く
+            System.IO.StreamWriter sr =
+            new System.IO.StreamWriter(FilePath, false, enc);
+            
+            //レコードを書き込む
+            for (int i=0; i<ChName.Count; i++)
+            {
+                sr.Write(ChName[i] + ",");
+                sr.Write(Id[i].ToString("X3") + ",");
+                sr.Write(Formula[i] + ",");
+                sr.Write(ChMin[i].ToString() + ",");
+                sr.Write(ChMax[i].ToString() + ",");
+                sr.Write(ChColor[i].ToString() + ",");
+                sr.Write(ChPreview[i].ToString() + ",");
+                sr.Write(ChShow[i].ToString());
+
+                //改行する
+                sr.Write("\r\n");
+            }
+
+            //閉じる
+            sr.Close();
+        }
+
         /// <summary>
         /// 引数の文字列式を、CANDataの数値に置き換えた文字列を返す
         /// </summary>
@@ -72,6 +109,7 @@ namespace MotoRecoViewer
             //式中のLoData1～LoData8の文字列を、数値に置き換える
             for (int i = 0; i < 8; i++)
             {
+                //Lower 4bitは、Higher 4bitを0でマスクするだけ
                 str = (nibble & data.data[i]).ToString();
                 exp = exp.Replace("LoData" + (i + 1).ToString(), str);
             }
@@ -79,6 +117,7 @@ namespace MotoRecoViewer
             //式中のHiData1～HiData8の文字列を、数値に置き換える
             for (int i = 0; i < 8; i++)
             {
+                //Higher 4bitは、4bit右シフトするだけ
                 str = (data.data[i] >> 4).ToString();
                 exp = exp.Replace("HiData" + (i + 1).ToString(), str);
             }
@@ -203,8 +242,8 @@ namespace MotoRecoViewer
                 case "#K51_SlipRate":
                     // RrSpeedは、Data5は本来Fr用の為、車速差がある時に繰り上がりタイミングが異なってしまうため、
                     // 便宜的にFrSpeedと車速差が16km/h以下になるよう調整してしまう
-                    rrSpeed = ((nibble & data.data[1]) * 256d + data.data[0]) / 8d;
-                    frSpeed = ((nibble & data.data[4]) * 256 + data.data[3]) / 8d;
+                    rrSpeed = (((nibble & data.data[1]) * 256d) + data.data[0]) / 8d;
+                    frSpeed = (((nibble & data.data[4]) * 256) + data.data[3]) / 8d;
 
                     // 0割防止
                     if (frSpeed == 0)
@@ -319,6 +358,63 @@ namespace MotoRecoViewer
             this.ChColor.Add(chColor);
             this.ChPreview.Add(chPreview);
             this.ChShow.Add(chShow);
+        }
+
+        /// <summary>
+        /// Decodeルールを編集する
+        /// </summary>
+        /// <param name="chName">デコードルールの識別名。</param>
+        /// <param name="id">デコードルールのCAN ID（16進数表記）。</param>
+        /// <param name="formula">デコード計算式。</param>
+        public void EditData(int idx,string chName, ushort id, string formula, int chColor, int chMin, int chMax, bool chPreview, bool chShow)
+        {
+            if (idx < 0)
+            {
+                return;
+            }
+
+            if (idx >= ChName.Count)
+            {
+                return;
+            }
+
+
+            this.ChName[idx] = chName;
+            this.Id[idx] = id;
+            this.Formula[idx] = formula;
+            this.ChMin[idx] = chMin;
+            this.ChMax[idx] = chMax;
+            this.ChColor[idx] = chColor;
+            this.ChPreview[idx] = chPreview;
+            this.ChShow[idx] = chShow;
+        }
+
+        /// <summary>
+        /// Decodeルールを削除する
+        /// </summary>
+        /// <param name="chName">デコードルールの識別名。</param>
+        /// <param name="id">デコードルールのCAN ID（16進数表記）。</param>
+        /// <param name="formula">デコード計算式。</param>
+        public void DelData(int idx)
+        {
+            if (idx < 0)
+            {
+                return;
+            }
+
+            if (idx >= ChName.Count)
+            {
+                return;
+            }
+
+            this.ChName.RemoveAt(idx);
+            this.Id.RemoveAt(idx);
+            this.Formula.RemoveAt(idx);
+            this.ChMin.RemoveAt(idx);
+            this.ChMax.RemoveAt(idx);
+            this.ChColor.RemoveAt(idx);
+            this.ChPreview.RemoveAt(idx);
+            this.ChShow.RemoveAt(idx);
         }
 
         /// <summary>

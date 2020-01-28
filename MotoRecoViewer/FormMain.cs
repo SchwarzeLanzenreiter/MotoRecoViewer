@@ -1023,8 +1023,6 @@ namespace MotoRecoViewer
 
         private void CANDecodeSettingToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            //ToDo FormMainのDecodeRuleが既存なら、その情報を反映したい
-
             FormDecodeOption f = new FormDecodeOption();
 
             f.ShowDialog(this);

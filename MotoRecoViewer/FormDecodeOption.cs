@@ -38,6 +38,13 @@ namespace MotoRecoViewer
     {
         //==========================
         //
+        //  internal変数
+        //
+        //==========================
+        internal DecodeRule decodeRule;
+
+        //==========================
+        //
         //  Private変数
         //
         //==========================
@@ -77,48 +84,6 @@ namespace MotoRecoViewer
                 FixedFormula = value;
                 TextFormula.Text = FixedFormula;
             }
-        }
-
-        /// <summary>
-        /// ListViewの内容をCSVファイルに保存する
-        /// </summary>
-        /// <param name="csvPath">保存先のCSVファイルのパス</param>
-        private void ListViewToCsv(string csvPath)
-        {
-            //CSVファイルに書き込むときに使うEncoding
-            System.Text.Encoding enc =
-                System.Text.Encoding.GetEncoding("Shift_JIS");
-
-            //書き込むファイルを開く
-            System.IO.StreamWriter sr =
-                new System.IO.StreamWriter(csvPath, false, enc);
-
-            int colCount = ListViewDecode.Columns.Count;
-            int lastColIndex = colCount - 1;
-
-            //レコードを書き込む
-            foreach (ListViewItem row in ListViewDecode.Items)
-            {
-                for (int i = 0; i < colCount; i++)
-                {
-                    //フィールドの取得
-                    string field = row.SubItems[i].Text;
-                    //"で囲む
-                    field = EncloseDoubleQuotesIfNeed(field);
-                    //フィールドを書き込む
-                    sr.Write(field);
-                    //カンマを書き込む
-                    if (lastColIndex > i)
-                    {
-                        sr.Write(',');
-                    }
-                }
-                //改行する
-                sr.Write("\r\n");
-            }
-
-            //閉じる
-            sr.Close();
         }
 
         /// <summary>
@@ -164,7 +129,57 @@ namespace MotoRecoViewer
         /// <summary>
         /// FormMainのDecodeRuleをListViewにロードする
         /// </summary>
-        private void LoadDecodeRule()
+        private void LoadDecodeRuleToListView()
+        {
+            //decodeRuleがなければ何もしない
+            if (this.decodeRule.Count == 0)
+            {
+                return;
+            }
+
+            //ListView描画停止
+            ListViewDecode.BeginUpdate();
+
+            //ListViewDecodeクリア
+            ListViewDecode.Items.Clear();
+
+            //DecodeRuleの内容をListViewDecodeに反映する
+            for (int i = 0; i < this.decodeRule.Count; i++)
+            {
+                ListViewItem newItem = new ListViewItem
+                {
+                    UseItemStyleForSubItems = false
+                };
+
+                //ChName
+                newItem.Text = this.decodeRule.GetChName(i);
+                //CANID
+                newItem.SubItems.Add(this.decodeRule.GetCANID(i).ToString("X3"));
+                //Formula
+                newItem.SubItems.Add(this.decodeRule.GetDecodeRule(i));
+                //Pen Color
+                newItem.SubItems.Add(this.decodeRule.GetChartColor(i).ToString());
+                newItem.SubItems[3].BackColor = Color.FromArgb(this.decodeRule.GetChartColor(i));
+                //Min
+                newItem.SubItems.Add(this.decodeRule.GetChartMin(i).ToString());
+                //MAX
+                newItem.SubItems.Add(this.decodeRule.GetChartMax(i).ToString());
+                //Preview
+                newItem.SubItems.Add(this.decodeRule.GetChartPreview(i).ToString());
+                //Show
+                newItem.SubItems.Add(this.decodeRule.GetChartShow(i).ToString());
+
+                ListViewDecode.Items.Add(newItem);
+            }
+
+            //ListView描画再開
+            ListViewDecode.EndUpdate();
+        }
+
+        /// <summary>
+        /// FormMainのDecodeRuleをFormDecodeOptionのDecodeRuleにコピーする
+        /// </summary>
+        private void CopyDecodeRuleFromMain()
         {
             FormMain fm = (FormMain)this.Owner;
 
@@ -174,69 +189,94 @@ namespace MotoRecoViewer
                 return;
             }
 
+            //DecodeRuleクリア
+            this.decodeRule.Clear();
+
             //DecodeRuleの内容をListViewDecodeに反映する
             for (int i = 0; i < fm.decodeRule.Count; i++)
             {
-                ListViewItem newItem = new ListViewItem
-                {
-                    UseItemStyleForSubItems = false
-                };
+                this.decodeRule.AddData(fm.decodeRule.GetChName(i),                                 //Ch Name
+                                        fm.decodeRule.GetCANID(i),                                  //CAN ID
+                                        fm.decodeRule.GetDecodeRule(i),                             //Formula
+                                        fm.decodeRule.GetChartColor(i),                             //Ch Color
+                                        fm.decodeRule.GetChartMin(i),                               //Min
+                                        fm.decodeRule.GetChartMax(i),                               //Max
+                                        fm.decodeRule.GetChartPreview(i),                           //flg Preview
+                                        fm.decodeRule.GetChartShow(i));                             //flg Show
+            }
+        }
 
-                //ChName
-                newItem.Text = fm.decodeRule.GetChName(i);
-                //CANID
-                newItem.SubItems.Add(fm.decodeRule.GetCANID(i).ToString("X3"));
-                //Formula
-                newItem.SubItems.Add(fm.decodeRule.GetDecodeRule(i));
-                //Pen Color
-                newItem.SubItems.Add(fm.decodeRule.GetChartColor(i).ToString());
-                newItem.SubItems[3].BackColor = Color.FromArgb(fm.decodeRule.GetChartColor(i));
-                //Min
-                newItem.SubItems.Add(fm.decodeRule.GetChartMin(i).ToString());
-                //MAX
-                newItem.SubItems.Add(fm.decodeRule.GetChartMax(i).ToString());
-                //Preview
-                newItem.SubItems.Add(fm.decodeRule.GetChartPreview(i).ToString());
-                //Show
-                newItem.SubItems.Add(fm.decodeRule.GetChartShow(i).ToString());
+        /// <summary>
+        /// this.decodeRuleをFormMainのdecodeRuleにコピーする
+        /// </summary>
+        public void TransferDecodeRule()
+        {
+            FormMain fm = (FormMain)this.Owner;
 
-                ListViewDecode.Items.Add(newItem);
+            //DecodeRuleクリア
+            fm.decodeRule.Clear();
+
+            //DecodeRuleの内容をListViewDecodeに反映する
+            for (int i = 0; i < this.decodeRule.Count; i++)
+            {
+                fm.decodeRule.AddData(this.decodeRule.GetChName(i),                                 //Ch Name
+                                      this.decodeRule.GetCANID(i),                                  //CAN ID
+                                      this.decodeRule.GetDecodeRule(i),                             //Formula
+                                      this.decodeRule.GetChartColor(i),                             //Ch Color
+                                      this.decodeRule.GetChartMin(i),                               //Min
+                                      this.decodeRule.GetChartMax(i),                               //Max
+                                      this.decodeRule.GetChartPreview(i),                           //flg Preview
+                                      this.decodeRule.GetChartShow(i));                             //flg Show
             }
         }
 
         public FormDecodeOption()
         {
             InitializeComponent();
+
+            // private internal変数のnew
+            decodeRule = new DecodeRule();
         }
 
         private void BtnAdd_Click(object sender, EventArgs e)
         {
-            ListViewItem newItem = new ListViewItem
+            //線のカラーをINTに変換
+            int i_color;
+            i_color = TextColor.BackColor.ToArgb();
+
+            //TextBoxの内容をdecodeRuleに反映
+            try
             {
-                UseItemStyleForSubItems = false
-            };
+                decodeRule.AddData(TextChName.Text,                                                         //ChName
+                                ushort.Parse(TextCanId.Text, System.Globalization.NumberStyles.HexNumber),  //ID
+                                TextFormula.Text,                                                           //Formula
+                                i_color,                                                                    //Ch Color
+                                int.Parse(TextMin.Text),                                                    //Min
+                                int.Parse(TextMax.Text),                                                    //Max
+                                bool.Parse(CheckPreview.Checked.ToString()),                                //flg Preview
+                                bool.Parse(CheckShow.Checked.ToString()));                                  //flg Show
+            }
+            catch (Exception)
+            {
 
-            int i;
+                throw;
+            }
+                                                                 
 
-            newItem.Text = TextChName.Text;
-            newItem.SubItems.Add(TextCanId.Text);
-            newItem.SubItems.Add(TextFormula.Text);
-            i = TextColor.BackColor.ToArgb();
-            newItem.SubItems.Add(i.ToString());
-            newItem.SubItems[3].BackColor = TextColor.BackColor;
-            newItem.SubItems.Add(TextMin.Text);
-            newItem.SubItems.Add(TextMax.Text);
-            newItem.SubItems.Add(CheckPreview.Checked.ToString());
-            newItem.SubItems.Add(CheckShow.Checked.ToString());
-
-            ListViewDecode.Items.Add(newItem);
+            //ListViewをリロード
+            LoadDecodeRuleToListView();
         }
 
         private void BtnSave_Click(object sender, EventArgs e)
         {
+            if (this.decodeRule.Count == 0)
+            {
+                return;
+            }
+
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
-                ListViewToCsv(saveFileDialog.FileName);
+                this.decodeRule.SaveToCSV(saveFileDialog.FileName);
             }
         }
 
@@ -256,30 +296,19 @@ namespace MotoRecoViewer
                     };
 
                     string[] cols = reader.ReadLine().Split(',');
-                    for (int n = 0; n < cols.Length; n++)
-                    {
-                        if (n == 0)
-                        {
-                            newItem.SubItems[n].Text = cols[n];
-                        }
-                        else
-                        {
-                            newItem.SubItems.Add(cols[n]);
 
-                            //Color指定する場合は、SubItems.BackColorに反映する
-                            if (n==3)
-                            {
-                                int i;
-                                i = int.Parse(newItem.SubItems[3].Text);
-                                Color color = Color.FromArgb(i);
-                                newItem.SubItems[3].BackColor = color;
-                            }
-                        }
-                    }
-                    ListViewDecode.Items.Add(newItem);
+                    decodeRule.AddData(cols[0],                                                                    //Ch Name
+                                       ushort.Parse(cols[1], System.Globalization.NumberStyles.HexNumber),         //CAN ID
+                                       cols[2],                                                                    //Formula
+                                       int.Parse(cols[3]),                                                         //Ch Color
+                                       int.Parse(cols[4]),                                                         //Min
+                                       int.Parse(cols[5]),                                                         //Max
+                                       bool.Parse(cols[6]),                                                        //flg Preview
+                                       bool.Parse(cols[7]));                                                       //flg Show
                 }
                 reader.Close();
             }
+            LoadDecodeRuleToListView();
         }
 
         private void ListViewDecode_SelectedIndexChanged(object sender, EventArgs e)
@@ -329,18 +358,32 @@ namespace MotoRecoViewer
 
         private void BtnEdit_Click(object sender, EventArgs e)
         {
-            //TextBoxの内容をListViewに反映
-            ListViewDecode.SelectedItems[0].SubItems[0].Text = TextChName.Text;
-            ListViewDecode.SelectedItems[0].SubItems[1].Text = TextCanId.Text;
-            ListViewDecode.SelectedItems[0].SubItems[2].Text = TextFormula.Text;
-            int i;
-            i = TextColor.BackColor.ToArgb();
-            ListViewDecode.SelectedItems[0].SubItems[3].Text = i.ToString();
-            ListViewDecode.SelectedItems[0].SubItems[3].BackColor = TextColor.BackColor;
-            ListViewDecode.SelectedItems[0].SubItems[4].Text = TextMin.Text;
-            ListViewDecode.SelectedItems[0].SubItems[5].Text = TextMax.Text;
-            ListViewDecode.SelectedItems[0].SubItems[6].Text = CheckPreview.Checked.ToString();
-            ListViewDecode.SelectedItems[0].SubItems[7].Text = CheckShow.Checked.ToString();
+            //ListViewで選択がなければ即抜ける
+            if (ListViewDecode.SelectedItems.Count == 0)
+            {
+                return;
+            }
+            
+            //選択中のListViewIdxを取得
+            int idx = ListViewDecode.SelectedIndices[0];
+
+            //線のカラーをINTに変換
+            int i_color;
+            i_color = TextColor.BackColor.ToArgb();
+
+            //TextBoxの内容をdecodeRuleに反映
+            decodeRule.EditData(idx,                                                                        //idx
+                                TextChName.Text,                                                            //ChName
+                                ushort.Parse(TextCanId.Text, System.Globalization.NumberStyles.HexNumber),  //ID
+                                TextFormula.Text,                                                           //Formula
+                                i_color,                                                                    //Ch Color
+                                int.Parse(TextMin.Text),                                                    //Min
+                                int.Parse(TextMax.Text),                                                    //Max
+                                bool.Parse(CheckPreview.Checked.ToString()),                                //flg Preview
+                                bool.Parse(CheckShow.Checked.ToString()));                                  //flg Show                                                     
+
+            //ListViewをリロード
+            LoadDecodeRuleToListView();
         }
 
         private void TextColor_TextChanged(object sender, EventArgs e)
@@ -350,7 +393,20 @@ namespace MotoRecoViewer
 
         private void BtnDel_Click(object sender, EventArgs e)
         {
-            ListViewDecode.SelectedItems[0].Remove();
+            //ListViewで選択がなければ即抜ける
+            if (ListViewDecode.SelectedItems.Count == 0)
+            {
+                return;
+            }
+
+            //選択中のListViewIdxを取得
+            int idx = ListViewDecode.SelectedIndices[0];
+
+            //該当インデックスのdecodeRule削除
+            this.decodeRule.DelData(idx);
+
+            //ListViewをリロード
+            LoadDecodeRuleToListView();
         }
 
         private void TextColor_DoubleClick(object sender, EventArgs e)
@@ -365,6 +421,9 @@ namespace MotoRecoViewer
 
         private void Button1_Click(object sender, EventArgs e)
         {
+            //decodeRuleクリア
+            this.decodeRule.Clear();
+
             //List Viewクリア
             ListViewDecode.Items.Clear();
         }
@@ -443,13 +502,17 @@ namespace MotoRecoViewer
             f.ShowDialog(this);
             f.Dispose();
 
-            // このタイミングでFormMainのDecodeRuleに、FormAnalysysで追加したルールが追加されているので、DecodeRuleを再ロードする
-            LoadDecodeRule();
+            // このタイミングでDecodeRuleに、FormAnalysysで追加したルールが追加されているので、DecodeRuleを再ロードする
+            LoadDecodeRuleToListView();
         }
 
         private void FormDecodeOption_Load(object sender, EventArgs e)
         {
-            LoadDecodeRule();
+            //decodeRule内容をFormMainからコピー
+            CopyDecodeRuleFromMain();
+
+            //decodeRule内容をListViewにロード
+            LoadDecodeRuleToListView();
         }
 
         private void BtnCancel_Click(object sender, EventArgs e)
