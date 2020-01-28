@@ -154,7 +154,7 @@ namespace MotoRecoViewer
             progressBar.Value = 0;
             progressBar.Maximum = (int)arySize;
                        
-            //arySizeを1024個づつ処理したい
+            //arySizeを1024個づつ処理したい。1024の根拠はあまりないけど…
             //Parallel.Forで並列化しているが、1 CanData毎に並列化するのは効率が悪く、あるまとまり毎に並列化するほうが良さそうな為
             const int CHUNK_SIZE = 1024;
             long numChunk =  arySize / CHUNK_SIZE;
@@ -164,8 +164,13 @@ namespace MotoRecoViewer
             if (extra != 0)
             {
                 numChunk++;
+            } else
+            {
+                //割り切れた場合は、extraを1024に伸ばす
+                extra = CHUNK_SIZE;
             }
 
+            //CHUNK_SIZE毎の塊でデコード処理を実施
             Parallel.For(0, numChunk, j =>
             {
                 long start, end;
@@ -203,7 +208,6 @@ namespace MotoRecoViewer
                     if (decodeRuleIdx == -1)
                     {
                         // ToDo どう考えても捨てるしかないCANIDは、MotoReco側でフィルターかけるのも有り
-                        // 通常のForループならcontinueとなるが、Parallel.Forの中身はメソッド扱いなのでリターンすれば良い
                         continue;
 
                     }
