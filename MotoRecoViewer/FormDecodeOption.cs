@@ -250,11 +250,6 @@ namespace MotoRecoViewer
 
                 while (reader.Peek() >= 0)
                 {
-                    ListViewItem newItem = new ListViewItem
-                    {
-                        UseItemStyleForSubItems = false
-                    };
-
                     string[] cols = reader.ReadLine().Split(',');
 
                     decodeRule.AddData(cols[0],                                                                    //Ch Name
