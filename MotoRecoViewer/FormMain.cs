@@ -123,6 +123,7 @@ namespace MotoRecoViewer
             BinaryReader reader = new BinaryReader(fs);
 
             //canDataの配列にファイル内容コピーする
+            //本当はメモリにマルッとコピーしたくないが、後でParallel.Forで処理する都合で配列に確保する。
             CanData[] aryCanData = new CanData[arySize];
 
             for (int i = 0; i < arySize; i++)
@@ -155,7 +156,7 @@ namespace MotoRecoViewer
                        
             //arySizeを1024個づつ処理したい
             //Parallel.Forで並列化しているが、1 CanData毎に並列化するのは効率が悪く、あるまとまり毎に並列化するほうが良さそうな為
-            const int CHUNK_SIZE = 2048;
+            const int CHUNK_SIZE = 1024;
             long numChunk =  arySize / CHUNK_SIZE;
             long extra = arySize % CHUNK_SIZE;
 
@@ -182,19 +183,6 @@ namespace MotoRecoViewer
 
                 for (long i = start; i < end; i++)
                 {
-                    //CanDataのCANIDが、DecodeRuleで一致するかチェック
-                    int decodeRuleIdx;
-                    decodeRuleIdx = decodeRule.IndexOf(aryCanData[i].id);
-
-                    //もしCANIDが対象外なら即抜ける
-                    if (decodeRuleIdx == -1)
-                    {
-                        // ToDo どう考えても捨てるしかないCANIDは、MotoReco側でフィルターかけるのも有り
-                        // 通常のForループならcontinueとなるが、Parallel.Forの中身はメソッド扱いなのでリターンすれば良い
-                        continue;
-
-                    }
-
                     //毎ループメッセージ発行するとクソ遅いので、トータル100回送るようにする。そもそもプログレスバーのWidthも100なので100以上送っても意味なし
                     Interlocked.Increment(ref counter);
                     if (i % div_num == 0)
@@ -207,6 +195,19 @@ namespace MotoRecoViewer
                         Application.DoEvents();
                     }
 
+                    //CanDataのCANIDが、DecodeRuleで一致するかチェック
+                    int decodeRuleIdx;
+                    decodeRuleIdx = decodeRule.IndexOf(aryCanData[i].id);
+
+                    //もしCANIDが対象外なら即抜ける
+                    if (decodeRuleIdx == -1)
+                    {
+                        // ToDo どう考えても捨てるしかないCANIDは、MotoReco側でフィルターかけるのも有り
+                        // 通常のForループならcontinueとなるが、Parallel.Forの中身はメソッド扱いなのでリターンすれば良い
+                        continue;
+
+                    }
+                    
                     //１データ読み込んだらデコード処理にわたす
                     int idxCh;
 
