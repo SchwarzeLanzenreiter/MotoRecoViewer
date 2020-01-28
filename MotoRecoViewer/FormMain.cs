@@ -152,102 +152,129 @@ namespace MotoRecoViewer
             long div_num = arySize / 100;
             progressBar.Value = 0;
             progressBar.Maximum = (int)arySize;
+                       
+            //arySizeを1024個づつ処理したい
+            //Parallel.Forで並列化しているが、1 CanData毎に並列化するのは効率が悪く、あるまとまり毎に並列化するほうが良さそうな為
+            const int CHUNK_SIZE = 2048;
+            long numChunk =  arySize / CHUNK_SIZE;
+            long extra = arySize % CHUNK_SIZE;
 
-            Parallel.For(0, arySize, i =>
+            //もしarySizeが1024で割り切れない場合は、1回多く処理する
+            if (extra != 0)
             {
-                Interlocked.Increment(ref counter);
+                numChunk++;
+            }
 
-                //毎ループメッセージ発行するとクソ遅いので、トータル100回送るようにする。そもそもプログレスバーのWidthも100なので100以上送っても意味なし
-                if (i % div_num == 0)
+            Parallel.For(0, numChunk, j =>
+            {
+                long start, end;
+                start = j * CHUNK_SIZE;
+
+                if (j < numChunk - 1)
                 {
-                    context.Post(progress =>
-                    {
-                        this.progressBar.Value = (int)progress;
-                        this.statusLabel.Text = string.Format("{0}%", ((int)progress)*100/arySize);
-                    }, counter);
-                    Application.DoEvents();
+                    end = start + CHUNK_SIZE;
                 }
-
-                //１データ読み込んだらデコード処理にわたす
-                int idxCh;
-
-                //CanDataのCANIDが、DecodeRuleで一致するかチェック
-                int decodeRuleIdx;
-                decodeRuleIdx = decodeRule.IndexOf(aryCanData[i].id);
-
-                //もしCANIDが対象外なら即抜ける
-                if (decodeRuleIdx == -1)
+                else
                 {
-                    // ToDo どう考えても捨てるしかないCANIDは、MotoReco側でフィルターかけるのも有り
-                    // 通常のForループならcontinueとなるが、Parallel.Forの中身はメソッド扱いなのでリターンすれば良い
-                    return;
-                    
+                    end = start + extra;
                 }
+                
 
-                //CAN IDが対象なら、DecodeRuleに従ってデコードする。
-                //なお、DecodeRuleには、同一CANIDのルールは複数存在し得ることに注意。
-                bool running = true;
-                while ((0 <= decodeRuleIdx) & running)
+                for (long i = start; i < end; i++)
                 {
-                    lock (lockobj)
-                    {
-                        //decodeRuleIdxのChNameが登録済かCheck
-                        string chName = decodeRule.GetChName(decodeRuleIdx);
+                    //CanDataのCANIDが、DecodeRuleで一致するかチェック
+                    int decodeRuleIdx;
+                    decodeRuleIdx = decodeRule.IndexOf(aryCanData[i].id);
 
-                        //存在しない場合追加する
-                        if (!DicChName.ContainsKey(chName))
+                    //もしCANIDが対象外なら即抜ける
+                    if (decodeRuleIdx == -1)
+                    {
+                        // ToDo どう考えても捨てるしかないCANIDは、MotoReco側でフィルターかけるのも有り
+                        // 通常のForループならcontinueとなるが、Parallel.Forの中身はメソッド扱いなのでリターンすれば良い
+                        continue;
+
+                    }
+
+                    //毎ループメッセージ発行するとクソ遅いので、トータル100回送るようにする。そもそもプログレスバーのWidthも100なので100以上送っても意味なし
+                    Interlocked.Increment(ref counter);
+                    if (i % div_num == 0)
+                    {
+                        context.Post(progress =>
                         {
-                            int chMax = decodeRule.GetChartMax(decodeRuleIdx);
-                            int chMin = decodeRule.GetChartMin(decodeRuleIdx);
-                            bool chPrev = decodeRule.GetChartPreview(decodeRuleIdx);
-                            int chColor = decodeRule.GetChartColor(decodeRuleIdx);
-                            bool chShow = decodeRule.GetChartShow(decodeRuleIdx);
+                            this.progressBar.Value = (int)progress;
+                            this.statusLabel.Text = string.Format("{0}%", ((int)progress) * 100 / arySize);
+                        }, counter);
+                        Application.DoEvents();
+                    }
 
-                            //DicChNameには、key:chName value:ListChDataのインデックスを登録
-                            DicChName.Add(chName,ListChData.Count);
+                    //１データ読み込んだらデコード処理にわたす
+                    int idxCh;
 
-                            ChData newData = new ChData(chName, chMin, chMax, chColor, chPrev, chShow);
+                    //CAN IDが対象なら、DecodeRuleに従ってデコードする。
+                    //なお、DecodeRuleには、同一CANIDのルールは複数存在し得ることに注意。
+                    bool running = true;
+                    while ((0 <= decodeRuleIdx) & running)
+                    {
+                        lock (lockobj)
+                        {
+                            //decodeRuleIdxのChNameが登録済かCheck
+                            string chName = decodeRule.GetChName(decodeRuleIdx);
 
-                            ListChData.Add(newData);
+                            //存在しない場合追加する
+                            if (!DicChName.ContainsKey(chName))
+                            {
+                                int chMax = decodeRule.GetChartMax(decodeRuleIdx);
+                                int chMin = decodeRule.GetChartMin(decodeRuleIdx);
+                                bool chPrev = decodeRule.GetChartPreview(decodeRuleIdx);
+                                int chColor = decodeRule.GetChartColor(decodeRuleIdx);
+                                bool chShow = decodeRule.GetChartShow(decodeRuleIdx);
+
+                                //DicChNameには、key:chName value:ListChDataのインデックスを登録
+                                DicChName.Add(chName, ListChData.Count);
+
+                                ChData newData = new ChData(chName, chMin, chMax, chColor, chPrev, chShow);
+
+                                ListChData.Add(newData);
+                            }
+
+                            idxCh = DicChName[chName];
                         }
 
-                        idxCh = DicChName[chName];
-                    }
+                        double value;
 
-                    double value;
+                        //計算式が固定式なら（DecodeRuleの1文字目が#なら、固定式とする）
+                        if (decodeRule.GetDecodeRule(decodeRuleIdx)[0] == '#')
+                        {
+                            value = decodeRule.FixedFormula(decodeRule.GetDecodeRule(decodeRuleIdx), aryCanData[i]);
+                        }
+                        //計算式がユーザー定義なら
+                        else
+                        {
+                            //計算式
+                            string exp = decodeRule.DecodeFormula(decodeRule.GetDecodeRule(decodeRuleIdx), aryCanData[i]);
 
-                    //計算式が固定式なら（DecodeRuleの1文字目が#なら、固定式とする）
-                    if (decodeRule.GetDecodeRule(decodeRuleIdx)[0] == '#')
-                    {
-                        value = decodeRule.FixedFormula(decodeRule.GetDecodeRule(decodeRuleIdx), aryCanData[i]);
-                    }
-                    //計算式がユーザー定義なら
-                    else
-                    {                        
-                        //計算式
-                        string exp = decodeRule.DecodeFormula(decodeRule.GetDecodeRule(decodeRuleIdx), aryCanData[i]);
+                            //式を計算する
+                            value = System.Convert.ToDouble(dt.Compute(exp, ""));
 
-                        //式を計算する
-                        value = System.Convert.ToDouble(dt.Compute(exp, ""));
+                        }
+                        //時間計算
+                        // timeMSecの/1000dは、RAM値→物理値変換
+                        double second = aryCanData[i].timeSec + aryCanData[i].timeMSec / 1000d;
 
-                    }
-                    //時間計算
-                    // timeMSecの/1000dは、RAM値→物理値変換
-                    double second = aryCanData[i].timeSec + aryCanData[i].timeMSec / 1000d;
+                        //データ追加
+                        lock (lockobj) { ListChData[idxCh].AddData(second, value); }
 
-                    //データ追加
-                    lock (lockobj) { ListChData[idxCh].AddData(second, value); }
-
-                    //続きのdecodeRuleを探索
-                    if (decodeRuleIdx + 1 < decodeRule.Count)
-                    {
-                        //次の要素を検索する
-                        decodeRuleIdx = decodeRule.IndexOf(aryCanData[i].id, decodeRuleIdx + 1);
-                    }
-                    else
-                    {
-                        //最後まで検索したときはループを抜ける
-                        running = false;
+                        //続きのdecodeRuleを探索
+                        if (decodeRuleIdx + 1 < decodeRule.Count)
+                        {
+                            //次の要素を検索する
+                            decodeRuleIdx = decodeRule.IndexOf(aryCanData[i].id, decodeRuleIdx + 1);
+                        }
+                        else
+                        {
+                            //最後まで検索したときはループを抜ける
+                            running = false;
+                        }
                     }
                 }
             });
