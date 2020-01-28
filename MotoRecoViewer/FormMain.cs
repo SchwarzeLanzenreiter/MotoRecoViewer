@@ -1103,6 +1103,10 @@ namespace MotoRecoViewer
                 ListChData[i].ChPreview = decodeRule.GetChartPreview(idx);
                 ListChData[i].ChShow = decodeRule.GetChartShow(idx);
             }
+
+            //　グラフ再描画
+            PictureMain.Refresh();
+            PictureSub.Refresh();
         }
 
          private void PictureSub_MouseDown(object sender, MouseEventArgs e)
