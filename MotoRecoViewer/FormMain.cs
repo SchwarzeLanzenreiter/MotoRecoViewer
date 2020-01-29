@@ -1539,7 +1539,7 @@ namespace MotoRecoViewer
         private void ToolStripMenuItem2_Click(object sender, EventArgs e)
         {
             //ブラウザで開く
-            System.Diagnostics.Process.Start("https://MotoReco.info");
+            System.Diagnostics.Process.Start("https://github.com/SchwarzeLanzenreiter/MotoRecoViewer");
         }
     }
 }

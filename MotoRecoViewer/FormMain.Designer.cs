@@ -106,21 +106,21 @@
             // 
             this.MenuOpen.Name = "MenuOpen";
             this.MenuOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.MenuOpen.Size = new System.Drawing.Size(224, 26);
+            this.MenuOpen.Size = new System.Drawing.Size(202, 26);
             this.MenuOpen.Text = "Open(&O)";
             this.MenuOpen.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(221, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(199, 6);
             // 
             // MenuConvert
             // 
             this.MenuConvert.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MenuConvertAscii});
             this.MenuConvert.Name = "MenuConvert";
-            this.MenuConvert.Size = new System.Drawing.Size(224, 26);
+            this.MenuConvert.Size = new System.Drawing.Size(202, 26);
             this.MenuConvert.Text = "Export";
             // 
             // MenuConvertAscii
@@ -133,7 +133,7 @@
             // MenuExit
             // 
             this.MenuExit.Name = "MenuExit";
-            this.MenuExit.Size = new System.Drawing.Size(224, 26);
+            this.MenuExit.Size = new System.Drawing.Size(202, 26);
             this.MenuExit.Text = "Exit(&X)";
             this.MenuExit.Click += new System.EventHandler(this.終了ToolStripMenuItem_Click);
             // 
@@ -172,14 +172,14 @@
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(224, 26);
-            this.toolStripMenuItem2.Text = "MotoReco Web";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(244, 26);
+            this.toolStripMenuItem2.Text = "MotoReco Viewer Web";
             this.toolStripMenuItem2.Click += new System.EventHandler(this.ToolStripMenuItem2_Click);
             // 
             // aboutAToolStripMenuItem
             // 
             this.aboutAToolStripMenuItem.Name = "aboutAToolStripMenuItem";
-            this.aboutAToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.aboutAToolStripMenuItem.Size = new System.Drawing.Size(244, 26);
             this.aboutAToolStripMenuItem.Text = "About(&A)";
             this.aboutAToolStripMenuItem.Click += new System.EventHandler(this.AboutAToolStripMenuItem_Click);
             // 
@@ -267,7 +267,7 @@
             this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.Location = new System.Drawing.Point(0, 28);
-            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -287,7 +287,7 @@
             this.splitContainer2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.splitContainer2.Margin = new System.Windows.Forms.Padding(4);
             this.splitContainer2.Name = "splitContainer2";
             this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -307,7 +307,7 @@
             // 
             this.PictureMain.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PictureMain.Location = new System.Drawing.Point(0, 0);
-            this.PictureMain.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.PictureMain.Margin = new System.Windows.Forms.Padding(4);
             this.PictureMain.Name = "PictureMain";
             this.PictureMain.Size = new System.Drawing.Size(876, 325);
             this.PictureMain.TabIndex = 0;
@@ -321,7 +321,7 @@
             // 
             this.PictureSub.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PictureSub.Location = new System.Drawing.Point(0, 0);
-            this.PictureSub.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.PictureSub.Margin = new System.Windows.Forms.Padding(4);
             this.PictureSub.Name = "PictureSub";
             this.PictureSub.Size = new System.Drawing.Size(876, 165);
             this.PictureSub.TabIndex = 0;
@@ -335,7 +335,7 @@
             // 
             this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer3.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.splitContainer3.Margin = new System.Windows.Forms.Padding(4);
             this.splitContainer3.Name = "splitContainer3";
             this.splitContainer3.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -358,7 +358,7 @@
             this.GMapControl.HelperLineOption = GMap.NET.WindowsForms.HelperLineOptions.DontShow;
             this.GMapControl.LevelsKeepInMemory = 5;
             this.GMapControl.Location = new System.Drawing.Point(0, 0);
-            this.GMapControl.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.GMapControl.Margin = new System.Windows.Forms.Padding(4);
             this.GMapControl.MarkersEnabled = true;
             this.GMapControl.MaxZoom = 18;
             this.GMapControl.MinZoom = 3;
@@ -385,7 +385,7 @@
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip);
             this.MainMenuStrip = this.menuStrip;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "FormMain";
             this.Text = "Moto Reco Viewer";
             this.Load += new System.EventHandler(this.FormMain_Load);
