@@ -1374,7 +1374,7 @@ namespace MotoRecoViewer
             delta = e.Delta;
 
             // shift + wheelなら、拡大縮小
-            if((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
+            if((Control.ModifierKeys & Keys.Control) == Keys.Control)
             {
                 // GMapの拡大縮小に合わせて変更。プラスならdivTimeを0.5倍にする。
                 // ホイールを奥に回す→拡大　手前に回す→縮小
@@ -1389,7 +1389,7 @@ namespace MotoRecoViewer
             }
 
             // wheelのみなら、divTime移動
-            if ((Control.ModifierKeys & Keys.Shift) == Keys.None)
+            if ((Control.ModifierKeys & Keys.Control) == Keys.None)
             {
                 // ホイールを奥に回す過去に1divtime移動　手前に回す→未来に1divtime移動
                 if (delta > 0)
@@ -1418,7 +1418,7 @@ namespace MotoRecoViewer
             delta = e.Delta;
 
             // shift + wheelなら、拡大縮小
-            if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
+            if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
             {
                 // GMapの拡大縮小に合わせて変更。プラスならdivTimeを0.5倍にする。
                 // ホイールを奥に回す→拡大　手前に回す→縮小
@@ -1433,7 +1433,7 @@ namespace MotoRecoViewer
             }
 
             // wheelのみなら、divTime移動
-            if ((Control.ModifierKeys & Keys.Shift) == Keys.None)
+            if ((Control.ModifierKeys & Keys.Control) == Keys.None)
             {
                 // ホイールを奥に回す過去に1divtime移動　手前に回す→未来に1divtime移動
                 if (delta > 0)
