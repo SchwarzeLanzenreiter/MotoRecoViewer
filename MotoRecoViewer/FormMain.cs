@@ -1365,21 +1365,43 @@ namespace MotoRecoViewer
         }
 
         // マウスホイールイベント  
+        // ホイール単独　→　divTimeづつ移動
+        // shift + ホイール　→　拡大縮小
         private void PictureMain_MouseWheel(object sender, MouseEventArgs e)
         {
             // スクロール量
             int delta;
             delta = e.Delta;
 
-            // GMapの拡大縮小に合わせて変更。プラスならdivTimeを0.5倍にする。
-            // ホイールを奥に回す→拡大　手前に回す→縮小
-            if (delta > 0)
+            // shift + wheelなら、拡大縮小
+            if((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
             {
-                divTime /= 2;
-            } else
-            {
-                divTime *= 2;
+                // GMapの拡大縮小に合わせて変更。プラスならdivTimeを0.5倍にする。
+                // ホイールを奥に回す→拡大　手前に回す→縮小
+                if (delta > 0)
+                {
+                    divTime /= 2;
+                }
+                else
+                {
+                    divTime *= 2;
+                }
             }
+
+            // wheelのみなら、divTime移動
+            if ((Control.ModifierKeys & Keys.Shift) == Keys.None)
+            {
+                // ホイールを奥に回す過去に1divtime移動　手前に回す→未来に1divtime移動
+                if (delta > 0)
+                {
+                    subPosTime -= divTime;
+                }
+                else
+                {
+                    subPosTime += divTime;
+                }
+            }
+
 
             PictureMain.Refresh();
             PictureSub.Refresh();
@@ -1388,21 +1410,40 @@ namespace MotoRecoViewer
         }
 
         // マウスホイールイベント  
+        // PictureSubでホイール時は、データをdivTimeづつ左右に送る
         private void PictureSub_MouseWheel(object sender, MouseEventArgs e)
         {
             // スクロール量
             int delta;
             delta = e.Delta;
 
-            // GMapの拡大縮小に合わせて変更。プラスならdivTimeを0.5倍にする。
-            // ホイールを奥に回す→拡大　手前に回す→縮小
-            if (delta > 0)
+            // shift + wheelなら、拡大縮小
+            if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift)
             {
-                divTime /= 2;
+                // GMapの拡大縮小に合わせて変更。プラスならdivTimeを0.5倍にする。
+                // ホイールを奥に回す→拡大　手前に回す→縮小
+                if (delta > 0)
+                {
+                    divTime /= 2;
+                }
+                else
+                {
+                    divTime *= 2;
+                }
             }
-            else
+
+            // wheelのみなら、divTime移動
+            if ((Control.ModifierKeys & Keys.Shift) == Keys.None)
             {
-                divTime *= 2;
+                // ホイールを奥に回す過去に1divtime移動　手前に回す→未来に1divtime移動
+                if (delta > 0)
+                {
+                    subPosTime -= divTime;
+                }
+                else
+                {
+                    subPosTime += divTime;
+                }
             }
 
             PictureMain.Refresh();
