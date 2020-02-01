@@ -70,7 +70,6 @@ C:\Users\schwarze\Source\Repos\SchwarzeLanzenreiter\MotoRecoViewer\MotoRecoViewe
 C:\Users\schwarze\Source\Repos\SchwarzeLanzenreiter\MotoRecoViewer\MotoRecoViewer\bin\Debug\Newtonsoft.Json.xml
 C:\Users\schwarze\Source\Repos\SchwarzeLanzenreiter\MotoRecoViewer\MotoRecoViewer\bin\Debug\System.Data.SQLite.xml
 C:\Users\schwarze\Source\Repos\SchwarzeLanzenreiter\MotoRecoViewer\MotoRecoViewer\bin\Debug\System.Data.SQLite.dll.config
-C:\Users\schwarze\Source\Repos\SchwarzeLanzenreiter\MotoRecoViewer\MotoRecoViewer\obj\Debug\MotoRecoViewer.csprojAssemblyReference.cache
 C:\Users\schwarze\Source\Repos\SchwarzeLanzenreiter\MotoRecoViewer\MotoRecoViewer\obj\Debug\MotoRecoViewer.FormAbout.resources
 C:\Users\schwarze\Source\Repos\SchwarzeLanzenreiter\MotoRecoViewer\MotoRecoViewer\obj\Debug\MotoRecoViewer.FormAnalysys.resources
 C:\Users\schwarze\Source\Repos\SchwarzeLanzenreiter\MotoRecoViewer\MotoRecoViewer\obj\Debug\MotoRecoViewer.FormMapOption.resources

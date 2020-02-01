@@ -258,16 +258,16 @@ namespace MotoRecoViewer
                 // HiData6
                 // 1 4 7 8 11 13 が 1-6速に該当
                 case "#K51_Gear":
-                    return (data.data[5] >> 4) switch
+                    switch(data.data[5] >> 4)
                     {
-                        1 => 1,
-                        4 => 2,
-                        7 => 3,
-                        8 => 4,
-                        11 => 5,
-                        13 => 6,
-                        _ => 0,
-                    };
+                        case 1:return 1;
+                        case 4:return 2;
+                        case 7:return 3;
+                        case 8:return 4;
+                        case 11:return 5;
+                        case 13:return 6;
+                        default: return 0;
+                    }
 
                 // CANID 174
                 // K51_YawRate

@@ -30,19 +30,20 @@ namespace MotoRecoViewer
                 //CANIDにData1～Data8まで存在するので一通り追加する
                 for (int j = 1; j < 9; j++)
                 {
-                    var i_color = j switch
+                    int i_color;
+                    switch (j)
                     {
-                        // ToDo もうちょっと色指定いい方法ないか…
-                        1 => -32640,
-                        2 => -128,
-                        3 => -8323200,
-                        4 => -8323073,
-                        5 => -16744193,
-                        6 => -32576,
-                        7 => -65281,
-                        8 => -32768,
-                        _ => 0,
-                    };
+                        case 1: i_color = -32640; break;
+                        case 2: i_color = -128; break;
+                        case 3: i_color = -8323200; break;
+                        case 4: i_color = -8323073; break;
+                        case 5: i_color = -16744193; break;
+                        case 6: i_color = -32576; break;
+                        case 7: i_color = -65281; break;
+                        case 8: i_color = -32768; break;
+                        default:i_color = 0;break;
+                    }
+
                     if (CBByte.Checked) { 
                         fm.decodeRule.AddData(LBAdd.Items[i] + "_Data" + j.ToString(),                                              //Ch Name
                                               ushort.Parse(LBAdd.Items[i].ToString(), System.Globalization.NumberStyles.HexNumber), //CAN ID
