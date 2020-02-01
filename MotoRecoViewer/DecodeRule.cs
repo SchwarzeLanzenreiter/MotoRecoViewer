@@ -155,7 +155,7 @@ namespace MotoRecoViewer
                 // K51 Engine RPM
                 // (LoData4*255+Data3)*4
                 case "#K51_RPM":
-                    return ((nibble & data.data[3]) * 255d + data.data[2]) * 5d;
+                    return ((nibble & data.data[3]) * 256d + data.data[2]) * 5d;
      
                 // CANID 10C
                 // K51 Throttel Valve Position
@@ -216,7 +216,7 @@ namespace MotoRecoViewer
                 // (Data5*90/128-90) * -1
                 // -1を掛けるのは、画面上右側を進行方向と考えて、右コーナーなら画面下側に、左コーナーなら画面上側にリーンアングルを表記したいので
                 case "#K51_LeanAngle":
-                    return (((double)data.data[4] * 90d / 128d) - 90d) * (-1d);
+                    return (((double)data.data[4] * 90d / 127d) - 90d) * (-1d);
 
                 // CANID 293
                 // K51 RrSpeed
@@ -240,10 +240,8 @@ namespace MotoRecoViewer
                 // K51 SlipRate
                 // rrSpeed/frSpeed*100-100
                 case "#K51_SlipRate":
-                    // RrSpeedは、Data5は本来Fr用の為、車速差がある時に繰り上がりタイミングが異なってしまうため、
-                    // 便宜的にFrSpeedと車速差が16km/h以下になるよう調整してしまう
                     rrSpeed = (((nibble & data.data[1]) * 256d) + data.data[0]) / 8d;
-                    frSpeed = (((nibble & data.data[4]) * 256) + data.data[3]) / 8d;
+                    frSpeed = (((nibble & data.data[4]) * 256d) + data.data[3]) / 8d;
 
                     // 0割防止
                     if (frSpeed == 0)
@@ -273,31 +271,31 @@ namespace MotoRecoViewer
                 // K51_YawRate
                 // Data2*125/128+Data1/256-125
                 case "#K51_YawRate":
-                    return data.data[1] * 125d / 128d + data.data[0] / 256d - 125d;
+                    return data.data[1] * 125d / 127d + data.data[0] / 255d - 125d;
 
                 // CANID 174
                 // K51_YAxisG
                 // (Data6+Data5/256-128)/32 
                 case "#K51_YAxisG":
-                    return (data.data[5] + (data.data[4] / 256d) - 128d) / 32d;
+                    return (data.data[5] + (data.data[4] / 255d) - 128d) / 32d;
 
                 // CANID 178
                 // K51_RollRate
                 // Data2*125/128+Data1/256-125
                 case "#K51_RollRate":
-                    return data.data[1] * 125d / 128d + data.data[0] / 256d - 125d;
+                    return data.data[1] * 125d / 127d + data.data[0] / 255d - 125d;
 
                 // CANID 178
                 // K51_XAxisG
                 // (Data6+Data5/256-128)/32
                 case "#K51_XAxisG":
-                    return (data.data[5] + (data.data[4] / 256d) - 128d) / 32d;
+                    return (data.data[5] + (data.data[4] / 255d) - 128d) / 32d;
 
                 // CANID 17C
                 // K51_ZAxisG
                 // (Data6+Data5/256-128)/32
                 case "#K51_ZAxisG":
-                    return (data.data[5] + (data.data[4] / 256d) - 128d) / 32d;
+                    return (data.data[5] + (data.data[4] / 255d) - 128d) / 32d;
 
 
 

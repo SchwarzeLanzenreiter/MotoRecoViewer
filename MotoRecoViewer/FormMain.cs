@@ -824,8 +824,8 @@ namespace MotoRecoViewer
             Pen p = new Pen(Brushes.White);
 
             // ListChNameの項目数すべて描画する
-            //Parallel.For(0, ListChData.Count, i =>
-            for (int i = 0; i < ListChData.Count; i++)
+            Parallel.For(0, ListChData.Count, i =>
+            //for (int i = 0; i < ListChData.Count; i++)
             {
                 int targetIdxPrev = 0;
                 double xPrev = chartMargin;
@@ -877,8 +877,8 @@ namespace MotoRecoViewer
                         yPrev = y;
                     }
                 }
-            //});
-            }
+            });
+            //}
         }
 
         /// <summary>
