@@ -67,7 +67,7 @@ namespace MotoRecoViewer
         //==========================
         private BufferedListView ListViewData;      // ダブルバッファのListView
 
-        private const double chartMargin = 10;      // グリッドとpictureSubの余白
+        private const double chartMargin = 15;      // グリッドとpictureSubの余白
                
         private Dictionary<String, int> DicChName;  // ListChDataに格納しているChData.Nameと、ListChData上のインデックスを保持
         private List<ChData> ListChData;            // ChDataのリスト
@@ -814,6 +814,39 @@ namespace MotoRecoViewer
         }
 
         /// <summary>
+        /// 画面上部のメインChartにタイムスタンプ等の情報を描画する
+        /// </summary>
+        private void DrawMainChartInfo(Graphics g)
+        {
+            //フォントオブジェクトの作成
+            Font fnt = new Font("MS UI Gothic", 9);
+
+            //TimeDivを表示する
+            string str = "1Div:"+divTime.ToString()+"sec";
+            g.DrawString(str, fnt, Brushes.DarkSeaGreen, 1, 1);
+
+            //時刻を下部に表示する
+            //右端の罫線はタイムスタンプ見切れるので表示しない
+            for (int i = 0; i < 20; i++)
+            {
+                // 罫線間ピクセルを算出
+                double rule = (PictureMain.Width - 2d * chartMargin) / 20d;
+
+                // X座標
+                double x = chartMargin + i * rule;
+
+                // Y座標
+                double y2 = PictureMain.Height - chartMargin;
+
+                // 各罫線に対応するタイムスタンプを計算
+                double targetTime = subPosTime + (divTime * i);
+                str = targetTime.ToString("F3");
+
+                g.DrawString(str, fnt, Brushes.DarkSeaGreen, (float)x-5, (float)y2+1);
+            }
+        }
+
+        /// <summary>
         /// 画面上部のメインChartの描画する
         /// </summary>
         private void DrawMainChartData(Graphics g)
@@ -894,6 +927,9 @@ namespace MotoRecoViewer
 
             //Grid描画
             DrawMainChartGrid(g);
+
+            //各種情報描画
+            DrawMainChartInfo(g);
         }
 
         /// <summary>
@@ -1007,6 +1043,42 @@ namespace MotoRecoViewer
             //プログレスバー初期化
             progressBar.Value = 0;
             this.statusLabel.Text = "";
+        }
+
+        /// <summary>
+        /// DatファイルをAsciiのCSVに変換する
+        /// CSVのフォーマットは、"秒","ミリ秒","CAN ID(HEX)","Data1のHEX","Data2のHEX","Data3のHEX","Data4のHEX","Data5のHEX","Data6のHEX","Data7のHEX","Data8のHEX"
+        /// </summary>
+        double MousePointToSubPosTime(MouseEventArgs e)
+        {
+            //クリックした場合、クリックした座標が選択範囲の中心になるように調整する
+            Point getXY = e.Location;
+
+            //選択マーカー幅を計算する
+            //データの時間幅に対する、divTime*20の割合から計算できる
+            //まずデータの時間幅に対するメインチャート時間幅の割合を計算
+            double ratioSelected = (divTime * 20) / (endTime - startTime);
+
+            //ratioSelected上限処理 , データが短くてメインチャート1画面に収まり切る場合に発生
+            if (ratioSelected > 1) { ratioSelected = 1; }
+
+            double rectWidth = (PictureSub.Width - 2 * chartMargin) * ratioSelected;
+
+            //rectWidth下限処理
+            if (rectWidth < 2) { rectWidth = 2; }
+
+            //startPosを算出
+            double startPos = getXY.X - rectWidth / 2;
+
+            //startPos上下限処理
+            if (startPos < chartMargin) { startPos = chartMargin; }
+            if (startPos + rectWidth > PictureSub.Width - 2 * chartMargin) { startPos = PictureSub.Width - chartMargin - rectWidth; }
+
+            //startPosをposTimeに変換する
+            //ToDo　末尾の+startTimeは、canloggerでKeyOn検出時にstartTimeは0で記録されているはずなので、不要のはずである
+            subPosTime = (endTime - startTime) * ((startPos - chartMargin) / (PictureSub.Width - 2 * chartMargin)) + startTime;
+
+            return subPosTime;
         }
 
         //=================================================================================================================================
@@ -1179,32 +1251,8 @@ namespace MotoRecoViewer
 
             if (this.IsDragging && this.DraggingButton == MouseButtons.Left)
             {
-                //クリックした場合、クリックした座標が選択範囲の中心になるように調整する
-                Point getXY = e.Location;
-
-                //選択マーカー幅を計算する
-                //データの時間幅に対する、divTime*20の割合から計算できる
-                //まずデータの時間幅に対するメインチャート時間幅の割合を計算
-                double ratioSelected = (divTime * 20) / (endTime - startTime);
-
-                //ratioSelected上限処理 , データが短くてメインチャート1画面に収まり切る場合に発生
-                if (ratioSelected > 1) { ratioSelected = 1; }
-
-                double rectWidth = (PictureSub.Width - 2 * chartMargin) * ratioSelected;
-
-                //rectWidth下限処理
-                if (rectWidth < 2) { rectWidth = 2; }
-
-                //startPosを算出
-                double startPos = getXY.X - rectWidth / 2;
-
-                //startPos上下限処理
-                if (startPos < chartMargin) { startPos = chartMargin; }
-                if (startPos + rectWidth > PictureSub.Width - 2 * chartMargin) { startPos = PictureSub.Width - chartMargin - rectWidth; }
-
-                //startPosをposTimeに変換する
-                //ToDo　末尾の+startTimeは、canloggerでKeyOn検出時にstartTimeは0で記録されているはずなので、不要のはずである
-                subPosTime = (endTime - startTime) * ((startPos - chartMargin) / (PictureSub.Width - 2 * chartMargin)) + startTime;
+                //PictureSub上のマウス位置から、subPosTimeを算出する
+                subPosTime = MousePointToSubPosTime(e);
 
                 //DrawChart();
                 PictureMain.Refresh();
@@ -1223,7 +1271,9 @@ namespace MotoRecoViewer
                     this.IsDragging = false; // ドラッグが終了していることを記録
                     this.Cursor = Cursors.Default; // マウスポインタを通常のものに戻す
 
-                    //DrawChart();
+                    //PictureSub上のマウス位置から、subPosTimeを算出する
+                    subPosTime = MousePointToSubPosTime(e);
+
                     PictureMain.Refresh();
                     PictureSub.Refresh();
                     UpdateMapMarker();
@@ -1366,14 +1416,14 @@ namespace MotoRecoViewer
 
         // マウスホイールイベント  
         // ホイール単独　→　divTimeづつ移動
-        // shift + ホイール　→　拡大縮小
+        // ctrl + ホイール　→　2倍づつ拡大縮小
         private void PictureMain_MouseWheel(object sender, MouseEventArgs e)
         {
             // スクロール量
             int delta;
             delta = e.Delta;
 
-            // shift + wheelなら、拡大縮小
+            // ctrl + wheelなら、2倍づつ拡大縮小
             if((Control.ModifierKeys & Keys.Control) == Keys.Control)
             {
                 // GMapの拡大縮小に合わせて変更。プラスならdivTimeを0.5倍にする。
