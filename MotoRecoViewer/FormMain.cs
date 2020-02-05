@@ -814,6 +814,20 @@ namespace MotoRecoViewer
         }
 
         /// <summary>
+        /// 小数点以下の桁数を取得
+        /// </summary>
+        private int GetPrecision(double d)
+        {
+            string str = d.ToString().TrimEnd('0');
+
+            int idx = str.IndexOf('.');
+            if (idx == -1)
+                return 0;
+
+            return str.Substring(idx + 1).Length;
+        }
+
+        /// <summary>
         /// 画面上部のメインChartにタイムスタンプ等の情報を描画する
         /// </summary>
         private void DrawMainChartInfo(Graphics g)
@@ -824,6 +838,12 @@ namespace MotoRecoViewer
             //TimeDivを表示する
             string str = "1Div:"+divTime.ToString()+"sec";
             g.DrawString(str, fnt, Brushes.DarkSeaGreen, 1, 1);
+
+            // divTimeの小数点以下桁数を計算
+            int pres = GetPrecision(divTime);
+
+            // 元のCANDATAがせいぜい10ms周期なので、2桁までとする
+            if (pres > 2) { pres = 2; }
 
             //時刻を下部に表示する
             //右端の罫線はタイムスタンプ見切れるので表示しない
@@ -840,7 +860,10 @@ namespace MotoRecoViewer
 
                 // 各罫線に対応するタイムスタンプを計算
                 double targetTime = subPosTime + (divTime * i);
-                str = targetTime.ToString("F3");
+
+      
+
+                str = targetTime.ToString("F" + pres.ToString());
 
                 g.DrawString(str, fnt, Brushes.DarkSeaGreen, (float)x-5, (float)y2+1);
             }
