@@ -65,6 +65,8 @@
             this.BtnBrowsRule = new System.Windows.Forms.Button();
             this.BtnPreAna = new System.Windows.Forms.Button();
             this.OpenFileDAT = new System.Windows.Forms.OpenFileDialog();
+            this.BtnUp = new System.Windows.Forms.Button();
+            this.BtnDown = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // saveFileDialog
@@ -79,6 +81,7 @@
             // column1
             // 
             this.column1.Text = "Ch Name";
+            this.column1.Width = 100;
             // 
             // column2
             // 
@@ -126,7 +129,7 @@
             this.ListViewDecode.Margin = new System.Windows.Forms.Padding(4);
             this.ListViewDecode.MultiSelect = false;
             this.ListViewDecode.Name = "ListViewDecode";
-            this.ListViewDecode.Size = new System.Drawing.Size(781, 506);
+            this.ListViewDecode.Size = new System.Drawing.Size(777, 506);
             this.ListViewDecode.TabIndex = 0;
             this.ListViewDecode.UseCompatibleStateImageBehavior = false;
             this.ListViewDecode.View = System.Windows.Forms.View.Details;
@@ -138,7 +141,7 @@
             // 
             // BtnDel
             // 
-            this.BtnDel.Location = new System.Drawing.Point(141, 626);
+            this.BtnDel.Location = new System.Drawing.Point(139, 667);
             this.BtnDel.Margin = new System.Windows.Forms.Padding(4);
             this.BtnDel.Name = "BtnDel";
             this.BtnDel.Size = new System.Drawing.Size(55, 39);
@@ -150,7 +153,7 @@
             // BtnOK
             // 
             this.BtnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.BtnOK.Location = new System.Drawing.Point(699, 581);
+            this.BtnOK.Location = new System.Drawing.Point(701, 620);
             this.BtnOK.Margin = new System.Windows.Forms.Padding(4);
             this.BtnOK.Name = "BtnOK";
             this.BtnOK.Size = new System.Drawing.Size(67, 39);
@@ -215,7 +218,7 @@
             // 
             // BtnEdit
             // 
-            this.BtnEdit.Location = new System.Drawing.Point(79, 626);
+            this.BtnEdit.Location = new System.Drawing.Point(76, 667);
             this.BtnEdit.Margin = new System.Windows.Forms.Padding(4);
             this.BtnEdit.Name = "BtnEdit";
             this.BtnEdit.Size = new System.Drawing.Size(55, 39);
@@ -226,7 +229,7 @@
             // 
             // BtnSave
             // 
-            this.BtnSave.Location = new System.Drawing.Point(393, 626);
+            this.BtnSave.Location = new System.Drawing.Point(453, 667);
             this.BtnSave.Margin = new System.Windows.Forms.Padding(4);
             this.BtnSave.Name = "BtnSave";
             this.BtnSave.Size = new System.Drawing.Size(55, 39);
@@ -237,7 +240,7 @@
             // 
             // BtnLoad
             // 
-            this.BtnLoad.Location = new System.Drawing.Point(330, 626);
+            this.BtnLoad.Location = new System.Drawing.Point(390, 668);
             this.BtnLoad.Margin = new System.Windows.Forms.Padding(4);
             this.BtnLoad.Name = "BtnLoad";
             this.BtnLoad.Size = new System.Drawing.Size(55, 39);
@@ -249,7 +252,7 @@
             // BtnCancel
             // 
             this.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.BtnCancel.Location = new System.Drawing.Point(699, 626);
+            this.BtnCancel.Location = new System.Drawing.Point(701, 667);
             this.BtnCancel.Margin = new System.Windows.Forms.Padding(4);
             this.BtnCancel.Name = "BtnCancel";
             this.BtnCancel.Size = new System.Drawing.Size(67, 39);
@@ -317,7 +320,7 @@
             // CheckPreview
             // 
             this.CheckPreview.AutoSize = true;
-            this.CheckPreview.Location = new System.Drawing.Point(516, 626);
+            this.CheckPreview.Location = new System.Drawing.Point(108, 626);
             this.CheckPreview.Margin = new System.Windows.Forms.Padding(4);
             this.CheckPreview.Name = "CheckPreview";
             this.CheckPreview.Size = new System.Drawing.Size(79, 19);
@@ -327,7 +330,7 @@
             // 
             // BtnNew
             // 
-            this.BtnNew.Location = new System.Drawing.Point(16, 626);
+            this.BtnNew.Location = new System.Drawing.Point(13, 667);
             this.BtnNew.Margin = new System.Windows.Forms.Padding(4);
             this.BtnNew.Name = "BtnNew";
             this.BtnNew.Size = new System.Drawing.Size(55, 39);
@@ -339,7 +342,7 @@
             // CheckShow
             // 
             this.CheckShow.AutoSize = true;
-            this.CheckShow.Location = new System.Drawing.Point(516, 654);
+            this.CheckShow.Location = new System.Drawing.Point(193, 626);
             this.CheckShow.Margin = new System.Windows.Forms.Padding(4);
             this.CheckShow.Name = "CheckShow";
             this.CheckShow.Size = new System.Drawing.Size(64, 19);
@@ -349,7 +352,7 @@
             // 
             // BtnClear
             // 
-            this.BtnClear.Location = new System.Drawing.Point(204, 626);
+            this.BtnClear.Location = new System.Drawing.Point(516, 667);
             this.BtnClear.Margin = new System.Windows.Forms.Padding(4);
             this.BtnClear.Name = "BtnClear";
             this.BtnClear.Size = new System.Drawing.Size(55, 39);
@@ -371,10 +374,10 @@
             // 
             // BtnPreAna
             // 
-            this.BtnPreAna.Location = new System.Drawing.Point(267, 626);
+            this.BtnPreAna.Location = new System.Drawing.Point(701, 525);
             this.BtnPreAna.Margin = new System.Windows.Forms.Padding(4);
             this.BtnPreAna.Name = "BtnPreAna";
-            this.BtnPreAna.Size = new System.Drawing.Size(55, 39);
+            this.BtnPreAna.Size = new System.Drawing.Size(67, 39);
             this.BtnPreAna.TabIndex = 24;
             this.BtnPreAna.Text = "Ana";
             this.BtnPreAna.UseVisualStyleBackColor = true;
@@ -385,11 +388,35 @@
             this.OpenFileDAT.FileName = "openFileDialog1";
             this.OpenFileDAT.Filter = "datファイル|*.dat";
             // 
+            // BtnUp
+            // 
+            this.BtnUp.Location = new System.Drawing.Point(202, 667);
+            this.BtnUp.Margin = new System.Windows.Forms.Padding(4);
+            this.BtnUp.Name = "BtnUp";
+            this.BtnUp.Size = new System.Drawing.Size(55, 39);
+            this.BtnUp.TabIndex = 25;
+            this.BtnUp.Text = "Up";
+            this.BtnUp.UseVisualStyleBackColor = true;
+            this.BtnUp.Click += new System.EventHandler(this.BtnUp_Click);
+            // 
+            // BtnDown
+            // 
+            this.BtnDown.Location = new System.Drawing.Point(265, 667);
+            this.BtnDown.Margin = new System.Windows.Forms.Padding(4);
+            this.BtnDown.Name = "BtnDown";
+            this.BtnDown.Size = new System.Drawing.Size(55, 39);
+            this.BtnDown.TabIndex = 26;
+            this.BtnDown.Text = "Down";
+            this.BtnDown.UseVisualStyleBackColor = true;
+            this.BtnDown.Click += new System.EventHandler(this.BtnDown_Click);
+            // 
             // FormDecodeOption
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(781, 678);
+            this.ClientSize = new System.Drawing.Size(777, 719);
+            this.Controls.Add(this.BtnDown);
+            this.Controls.Add(this.BtnUp);
             this.Controls.Add(this.BtnPreAna);
             this.Controls.Add(this.BtnBrowsRule);
             this.Controls.Add(this.BtnClear);
@@ -462,5 +489,7 @@
         private System.Windows.Forms.Button BtnBrowsRule;
         private System.Windows.Forms.Button BtnPreAna;
         private System.Windows.Forms.OpenFileDialog OpenFileDAT;
+        private System.Windows.Forms.Button BtnUp;
+        private System.Windows.Forms.Button BtnDown;
     }
 }

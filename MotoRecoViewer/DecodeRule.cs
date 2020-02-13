@@ -359,6 +359,28 @@ namespace MotoRecoViewer
         }
 
         /// <summary>
+        /// Decodeルールを挿入する
+        /// </summary>
+        /// <param name="chName">デコードルールの識別名。</param>
+        /// <param name="id">デコードルールのCAN ID（16進数表記）。</param>
+        /// <param name="formula">デコード計算式。</param>
+        public void InsData(int idx,string chName, ushort id, string formula, int chColor, int chMin, int chMax, bool chPreview, bool chShow)
+        {
+            if (idx < 0) { return; }
+            if (idx >= this.ChName.Count) { return; }
+
+
+            this.ChName.Insert(idx,chName);
+            this.Id.Insert(idx, id);
+            this.Formula.Insert(idx, formula);
+            this.ChMin.Insert(idx, chMin);
+            this.ChMax.Insert(idx, chMax);
+            this.ChColor.Insert(idx, chColor);
+            this.ChPreview.Insert(idx, chPreview);
+            this.ChShow.Insert(idx, chShow);
+        }
+
+        /// <summary>
         /// Decodeルールを編集する
         /// </summary>
         /// <param name="chName">デコードルールの識別名。</param>

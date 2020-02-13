@@ -97,6 +97,9 @@ namespace MotoRecoViewer
                 return;
             }
 
+            //ListViewのSelectedChangeイベント削除
+            ListViewDecode.SelectedIndexChanged -= ListViewDecode_SelectedIndexChanged;
+
             //ListView描画停止
             ListViewDecode.BeginUpdate();
 
@@ -134,6 +137,32 @@ namespace MotoRecoViewer
 
             //ListView描画再開
             ListViewDecode.EndUpdate();
+
+            //ListViewのSelectedChangeイベント復活
+            ListViewDecode.SelectedIndexChanged += ListViewDecode_SelectedIndexChanged;
+        }
+
+        /// <summary>
+        /// ListViewの内容をthis.decodeRuleに反映する
+        /// </summary>
+        private void ListViewToDecodeRule()
+        {
+            //DecodeRuleをクリア
+            this.decodeRule.Clear();
+
+            foreach (ListViewItem row in ListViewDecode.Items)
+            {
+                //ListViewの内容をFormMainのListDecodeRuleに反映する
+                this.decodeRule.AddData(row.SubItems[0].Text,                                                             //Ch Name
+                                      ushort.Parse(row.SubItems[1].Text, System.Globalization.NumberStyles.HexNumber),  //CAN ID
+                                      row.SubItems[2].Text,                                                             //Formula
+                                      int.Parse(row.SubItems[3].Text),                                                  //Ch Color
+                                      int.Parse(row.SubItems[4].Text),                                                  //Min
+                                      int.Parse(row.SubItems[5].Text),                                                  //Max
+                                      bool.Parse(row.SubItems[6].Text),                                                 //flg Preview
+                                      bool.Parse(row.SubItems[7].Text)                                                  //flg Show
+                                      );
+            }
         }
 
         /// <summary>
@@ -472,6 +501,56 @@ namespace MotoRecoViewer
 
         private void BtnCancel_Click(object sender, EventArgs e)
         {
+
+        }
+
+        private void BtnUp_Click(object sender, EventArgs e)
+        {
+            //アイテムが選択されていない場合抜ける
+            if (ListViewDecode.SelectedItems.Count == 0) { return; }
+
+            //先頭のアイテムが選択されている場合抜ける
+            if (ListViewDecode.SelectedItems[0].Index == 0) { return; }
+
+            //挿入先のインデックス
+            int insPos = ListViewDecode.SelectedItems[0].Index - 1;
+
+            //選択されたアイテム
+            ListViewItem selItem = ListViewDecode.SelectedItems[0];
+
+            //選択されたアイテムを削除する
+            ListViewDecode.Items.Remove(selItem);
+
+            //アイテムを挿入する
+            ListViewDecode.Items.Insert(insPos, selItem);
+
+            //ListViewの内容をdecodeRuleにコピー
+            ListViewToDecodeRule();
+
+        }
+
+        private void BtnDown_Click(object sender, EventArgs e)
+        {
+            //アイテムが選択されていない場合抜ける
+            if (ListViewDecode.SelectedItems.Count == 0) { return; }
+
+            //末尾のアイテムが選択されている場合抜ける
+            if (ListViewDecode.SelectedItems[0].Index == ListViewDecode.Items.Count -1) { return; }
+
+            //挿入先のインデックス
+            int insPos = ListViewDecode.SelectedItems[0].Index + 1;
+
+            //選択されたアイテム
+            ListViewItem selItem = ListViewDecode.SelectedItems[0];
+
+            //選択されたアイテムを削除する
+            ListViewDecode.Items.Remove(selItem);
+
+            //アイテムを挿入する
+            ListViewDecode.Items.Insert(insPos, selItem);
+
+            //ListViewの内容をdecodeRuleにコピー
+            ListViewToDecodeRule();
 
         }
     }
