@@ -42,7 +42,6 @@ namespace MotoRecoViewer
 
     class DecodeRule
     {
-        // ToDo Structで宣言して、StructのListとしたい
         private List<DecodeData> Data;
 
         /// <summary>
@@ -53,6 +52,9 @@ namespace MotoRecoViewer
             Data = new List<DecodeData>();
         }
 
+        /// <summary>
+        /// Decode情報をdddファイルとしてセーブ
+        /// </summary>
         public void SaveToCSV(string FilePath)
         {
             //Itemが0なら即抜ける
@@ -344,6 +346,11 @@ namespace MotoRecoViewer
         /// <param name="chName">デコードルールの識別名。</param>
         /// <param name="id">デコードルールのCAN ID（16進数表記）。</param>
         /// <param name="formula">デコード計算式。</param>
+        /// <param name="chColor">チャンネル表示色</param>
+        /// <param name="chMin">チャンネル下限値</param>
+        /// <param name="chMax">チャンネル上限値</param>
+        /// <param name="chPreview">SubChartに表示する/しない</param>
+        /// <param name="chShow">MainChartに表示する/しない</param>
         public void AddData(string chName, string id, string formula, string chColor, string chMin, string chMax, string chPreview, string chShow)
         {
             DecodeData newData = new DecodeData();
@@ -363,9 +370,15 @@ namespace MotoRecoViewer
         /// <summary>
         /// Decodeルールを編集する
         /// </summary>
+        /// <param name="idx">編集するアイテムのインデックス</param>
         /// <param name="chName">デコードルールの識別名。</param>
         /// <param name="id">デコードルールのCAN ID（16進数表記）。</param>
         /// <param name="formula">デコード計算式。</param>
+        /// <param name="chColor">チャンネル表示色</param>
+        /// <param name="chMin">チャンネル下限値</param>
+        /// <param name="chMax">チャンネル上限値</param>
+        /// <param name="chPreview">SubChartに表示する/しない</param>
+        /// <param name="chShow">MainChartに表示する/しない</param>
         public void EditData(int idx,string chName, string id, string formula, string chColor, string chMin, string chMax, string chPreview, string chShow)
         {
             if (idx < 0)
@@ -395,9 +408,7 @@ namespace MotoRecoViewer
         /// <summary>
         /// Decodeルールを削除する
         /// </summary>
-        /// <param name="chName">デコードルールの識別名。</param>
-        /// <param name="id">デコードルールのCAN ID（16進数表記）。</param>
-        /// <param name="formula">デコード計算式。</param>
+        /// <param name="idx">削除するアイテムのインデックス</param>
         public void DelData(int idx)
         {
             if (idx < 0)
@@ -418,42 +429,47 @@ namespace MotoRecoViewer
         public void Clear()
         {
             Data.Clear();
+        }
 
         /// <summary>
-        /// 引数のチャンネル名のインデックスを返す
+        /// 引数のCANIDのインデックスを検索する
         /// </summary>
-        /// <param name="str">検索するチャンネル名</param>
+        /// <param name="usid">検索するCANID</param>
+        /// <returns>Dataのインデックス</returns>
         public int IndexOf(ushort usid)
         {
-            return this.Id.IndexOf(usid);
+            return Data.FindIndex(x => x.Id == usid);
         }
 
         /// <summary>
-        /// 引数のチャンネル名のインデックスを返す2
+        /// 引数のCANIDのインデックスを検索する
         /// </summary>
-        /// <param name="str">検索するチャンネル名</param>
-        /// <param name = "index" > 検索開始するIndex </ param >
+        /// <param name="usid">検索するCANID</param>
+        /// <param name="index">検索を開始するindex</param>
+        /// <returns>Dataのインデックス</returns>
         public int IndexOf(ushort usid, int index)
         {
-            return this.Id.IndexOf(usid, index);
+            return Data.FindIndex(index, x => x.Id == usid);
         }
 
         /// <summary>
         /// 引数のFormulaのインデックスを返す
         /// </summary>
-        /// <param name="str">検索するFormula</param>
+        /// <param name="formula">検索するFormula</param>
+        /// <returns>Dataのインデックス</returns>
         public int FormulaIndexOf(string formula)
         {
-            return this.Formula.IndexOf(formula);
+            return Data.FindIndex(x => x.Formula == formula);
         }
 
         /// <summary>
-        /// 引数のFormulaのインデックスを返す
+        /// 引数のchNameのインデックスを返す
         /// </summary>
-        /// <param name="str">検索するFormula</param>
+        /// <param name="chName">検索するchName</param>
+        /// <returns>Dataのインデックス</returns>
         public int ChNameIndexOf(string chName)
         {
-            return this.ChName.IndexOf(chName);
+            return Data.FindIndex(x => x.ChName == chName);
         }
 
         /// <summary>
@@ -470,7 +486,7 @@ namespace MotoRecoViewer
         /// <summary>
         /// 引数のインデックスのチャンネル名を返す
         /// </summary>
-        /// <param name="index">検索するチャンネル名</param>
+        /// <param name="index">データ取得するインデックス</param>
         public string GetChName(int index)
         {
             return Data[index].ChName;
@@ -479,7 +495,7 @@ namespace MotoRecoViewer
         /// <summary>
         /// 引数のCANIDを返す
         /// </summary>
-        /// <param name="index">検索するチャンネル名</param>
+        /// <param name="index">データ取得するインデックス</param>
         public ushort GetCANID(int index)
         {
             return Data[index].Id;
@@ -488,7 +504,7 @@ namespace MotoRecoViewer
         /// <summary>
         /// 引数のインデックスのデコードルールを返す
         /// </summary>
-        /// <param name="index">検索するチャンネル名</param>
+        /// <param name="index">データ取得するインデックス</param>
         public string GetDecodeRule(int index)
         {
             return Data[index].Formula;
@@ -497,7 +513,7 @@ namespace MotoRecoViewer
         /// <summary>
         /// 引数のインデックスのChartMinを返す
         /// </summary>
-        /// <param name="index">検索するチャンネル名</param>
+        /// <param name="index">データ取得するインデックス</param>
         public int GetChartMin(int index)
         {
             return Data[index].ChMin;
@@ -506,7 +522,7 @@ namespace MotoRecoViewer
         /// <summary>
         /// 引数のインデックスのChartMaxを返す
         /// </summary>
-        /// <param name="index">検索するチャンネル名</param>
+        /// <param name="index">データ取得するインデックス</param>
         public int GetChartMax(int index)
         {
             return Data[index].ChMax;
@@ -515,7 +531,7 @@ namespace MotoRecoViewer
         /// <summary>
         /// 引数のインデックスのChartColorを返す
         /// </summary>
-        /// <param name="index">検索するチャンネル名</param>
+        /// <param name="index">データ取得するインデックス</param>
         public int GetChartColor(int index)
         {
             return Data[index].ChColor;
@@ -524,7 +540,7 @@ namespace MotoRecoViewer
         /// <summary>
         /// 引数のインデックスのChartPreviewを返す
         /// </summary>
-        /// <param name="index">検索するチャンネル名</param>
+        /// <param name="index">データ取得するインデックス</param>
         public bool GetChartPreview(int index)
         {
             return Data[index].ChPreview;
@@ -533,7 +549,7 @@ namespace MotoRecoViewer
         /// <summary>
         /// 引数のインデックスのChartShowを返す
         /// </summary>
-        /// <param name="index">検索するチャンネル名</param>
+        /// <param name="index">データ取得するインデックス</param>
         public bool GetChartShow(int index)
         {
             return Data[index].ChShow;
