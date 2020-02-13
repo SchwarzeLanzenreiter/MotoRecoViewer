@@ -45,38 +45,38 @@ namespace MotoRecoViewer
                     }
 
                     if (CBByte.Checked) { 
-                        fm.decodeRule.AddData(LBAdd.Items[i] + "_Data" + j.ToString(),                                              //Ch Name
-                                              ushort.Parse(LBAdd.Items[i].ToString(), System.Globalization.NumberStyles.HexNumber), //CAN ID
-                                              "Data" + j.ToString(),                                                                //Formula
-                                              i_color,                                                                              //Ch Color
-                                              0,                                                                                    //Min
-                                              255,                                                                                  //Max
-                                              false,                                                                                //flg Preview
-                                              false);                                                                               //flg Show
+                        fm.decodeRule.AddData(LBAdd.Items[i] + "_Data" + j.ToString(),  //Ch Name
+                                              LBAdd.Items[i].ToString(),                //CAN ID
+                                              "Data" + j.ToString(),                    //Formula
+                                              i_color.ToString(),                       //Ch Color
+                                              "0",                                      //Min
+                                              "255",                                    //Max
+                                              "false",                                  //flg Preview
+                                              "false");                                 //flg Show
                     }
 
                     if (CBHigh.Checked)
                     {
-                        fm.decodeRule.AddData(LBAdd.Items[i] + "_HiData" + j.ToString(),                                            //Ch Name
-                                              ushort.Parse(LBAdd.Items[i].ToString(), System.Globalization.NumberStyles.HexNumber), //CAN ID
-                                              "HiData" + j.ToString(),                                                              //Formula
-                                              i_color,                                                                              //Ch Color
-                                              0,                                                                                    //Min
-                                              255,                                                                                  //Max
-                                              false,                                                                                //flg Preview
-                                              false);                                                                               //flg Show
+                        fm.decodeRule.AddData(LBAdd.Items[i] + "_HiData" + j.ToString(),//Ch Name
+                                              LBAdd.Items[i].ToString(),                //CAN ID
+                                              "HiData" + j.ToString(),                  //Formula
+                                              i_color.ToString(),                       //Ch Color
+                                              "0",                                      //Min
+                                              "255",                                    //Max
+                                              "false",                                  //flg Preview
+                                              "false");                                 //flg Show
                     }
 
                     if (CBLow.Checked)
                     {
-                        fm.decodeRule.AddData(LBAdd.Items[i] + "_LoData" + j.ToString(),                                            //Ch Name
-                                              ushort.Parse(LBAdd.Items[i].ToString(), System.Globalization.NumberStyles.HexNumber), //CAN ID
-                                              "LoData" + j.ToString(),                                                              //Formula
-                                              i_color,                                                                              //Ch Color
-                                              0,                                                                                    //Min
-                                              255,                                                                                  //Max
-                                              false,                                                                                //flg Preview
-                                              false);                                                                               //flg Show
+                        fm.decodeRule.AddData(LBAdd.Items[i] + "_LoData" + j.ToString(),//Ch Name
+                                              LBAdd.Items[i].ToString(),                //CAN ID
+                                              "LoData" + j.ToString(),                  //Formula
+                                              i_color.ToString(),                       //Ch Color
+                                              "0",                                      //Min
+                                              "255",                                    //Max
+                                              "false",                                  //flg Preview
+                                              "false");                                 //flg Show
                     }
                 }
             }

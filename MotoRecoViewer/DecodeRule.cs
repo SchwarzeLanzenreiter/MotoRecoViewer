@@ -346,38 +346,16 @@ namespace MotoRecoViewer
         /// <param name="chName">デコードルールの識別名。</param>
         /// <param name="id">デコードルールのCAN ID（16進数表記）。</param>
         /// <param name="formula">デコード計算式。</param>
-        public void AddData(string chName, ushort id, string formula, int chColor, int chMin, int chMax,  bool chPreview, bool chShow)
+        public void AddData(string chName, string id, string formula, string chColor, string chMin, string chMax, string chPreview, string chShow)
         {
             this.ChName.Add(chName);
-            this.Id.Add(id);
+            this.Id.Add(ushort.Parse(id, System.Globalization.NumberStyles.HexNumber));
             this.Formula.Add(formula);
-            this.ChMin.Add(chMin);
-            this.ChMax.Add(chMax);
-            this.ChColor.Add(chColor);
-            this.ChPreview.Add(chPreview);
-            this.ChShow.Add(chShow);
-        }
-
-        /// <summary>
-        /// Decodeルールを挿入する
-        /// </summary>
-        /// <param name="chName">デコードルールの識別名。</param>
-        /// <param name="id">デコードルールのCAN ID（16進数表記）。</param>
-        /// <param name="formula">デコード計算式。</param>
-        public void InsData(int idx,string chName, ushort id, string formula, int chColor, int chMin, int chMax, bool chPreview, bool chShow)
-        {
-            if (idx < 0) { return; }
-            if (idx >= this.ChName.Count) { return; }
-
-
-            this.ChName.Insert(idx,chName);
-            this.Id.Insert(idx, id);
-            this.Formula.Insert(idx, formula);
-            this.ChMin.Insert(idx, chMin);
-            this.ChMax.Insert(idx, chMax);
-            this.ChColor.Insert(idx, chColor);
-            this.ChPreview.Insert(idx, chPreview);
-            this.ChShow.Insert(idx, chShow);
+            this.ChMin.Add(int.Parse(chMin));
+            this.ChMax.Add(int.Parse(chMax));
+            this.ChColor.Add(int.Parse(chColor));
+            this.ChPreview.Add(bool.Parse(chPreview));
+            this.ChShow.Add(bool.Parse(chShow));
         }
 
         /// <summary>
@@ -386,7 +364,7 @@ namespace MotoRecoViewer
         /// <param name="chName">デコードルールの識別名。</param>
         /// <param name="id">デコードルールのCAN ID（16進数表記）。</param>
         /// <param name="formula">デコード計算式。</param>
-        public void EditData(int idx,string chName, ushort id, string formula, int chColor, int chMin, int chMax, bool chPreview, bool chShow)
+        public void EditData(int idx,string chName, string id, string formula, string chColor, string chMin, string chMax, string chPreview, string chShow)
         {
             if (idx < 0)
             {
@@ -400,13 +378,13 @@ namespace MotoRecoViewer
 
 
             this.ChName[idx] = chName;
-            this.Id[idx] = id;
+            this.Id[idx] = ushort.Parse(id, System.Globalization.NumberStyles.HexNumber) ;
             this.Formula[idx] = formula;
-            this.ChMin[idx] = chMin;
-            this.ChMax[idx] = chMax;
-            this.ChColor[idx] = chColor;
-            this.ChPreview[idx] = chPreview;
-            this.ChShow[idx] = chShow;
+            this.ChMin[idx] = int.Parse(chMin);
+            this.ChMax[idx] = int.Parse(chMax);
+            this.ChColor[idx] = int.Parse(chColor);
+            this.ChPreview[idx] = bool.Parse(chPreview);
+            this.ChShow[idx] = bool.Parse(chShow);
         }
 
         /// <summary>

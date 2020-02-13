@@ -153,14 +153,14 @@ namespace MotoRecoViewer
             foreach (ListViewItem row in ListViewDecode.Items)
             {
                 //ListViewの内容をFormMainのListDecodeRuleに反映する
-                this.decodeRule.AddData(row.SubItems[0].Text,                                                             //Ch Name
-                                      ushort.Parse(row.SubItems[1].Text, System.Globalization.NumberStyles.HexNumber),  //CAN ID
-                                      row.SubItems[2].Text,                                                             //Formula
-                                      int.Parse(row.SubItems[3].Text),                                                  //Ch Color
-                                      int.Parse(row.SubItems[4].Text),                                                  //Min
-                                      int.Parse(row.SubItems[5].Text),                                                  //Max
-                                      bool.Parse(row.SubItems[6].Text),                                                 //flg Preview
-                                      bool.Parse(row.SubItems[7].Text)                                                  //flg Show
+                this.decodeRule.AddData(row.SubItems[0].Text,       //Ch Name
+                                      row.SubItems[1].Text,         //CAN ID
+                                      row.SubItems[2].Text,         //Formula
+                                      row.SubItems[3].Text,         //Ch Color
+                                      row.SubItems[4].Text,         //Min
+                                      row.SubItems[5].Text,         //Max
+                                      row.SubItems[6].Text,         //flg Preview
+                                      row.SubItems[7].Text          //flg Show
                                       );
             }
         }
@@ -184,14 +184,14 @@ namespace MotoRecoViewer
             //DecodeRuleの内容をListViewDecodeに反映する
             for (int i = 0; i < fm.decodeRule.Count; i++)
             {
-                this.decodeRule.AddData(fm.decodeRule.GetChName(i),                                 //Ch Name
-                                        fm.decodeRule.GetCANID(i),                                  //CAN ID
-                                        fm.decodeRule.GetDecodeRule(i),                             //Formula
-                                        fm.decodeRule.GetChartColor(i),                             //Ch Color
-                                        fm.decodeRule.GetChartMin(i),                               //Min
-                                        fm.decodeRule.GetChartMax(i),                               //Max
-                                        fm.decodeRule.GetChartPreview(i),                           //flg Preview
-                                        fm.decodeRule.GetChartShow(i));                             //flg Show
+                this.decodeRule.AddData(fm.decodeRule.GetChName(i),                        //Ch Name
+                                        fm.decodeRule.GetCANID(i).ToString(),              //CAN ID
+                                        fm.decodeRule.GetDecodeRule(i),                    //Formula
+                                        fm.decodeRule.GetChartColor(i).ToString(),         //Ch Color
+                                        fm.decodeRule.GetChartMin(i).ToString(),           //Min
+                                        fm.decodeRule.GetChartMax(i).ToString(),           //Max
+                                        fm.decodeRule.GetChartPreview(i).ToString(),       //flg Preview
+                                        fm.decodeRule.GetChartShow(i).ToString());         //flg Show
             }
         }
 
@@ -208,14 +208,14 @@ namespace MotoRecoViewer
             //DecodeRuleの内容をListViewDecodeに反映する
             for (int i = 0; i < this.decodeRule.Count; i++)
             {
-                fm.decodeRule.AddData(this.decodeRule.GetChName(i),                                 //Ch Name
-                                      this.decodeRule.GetCANID(i),                                  //CAN ID
-                                      this.decodeRule.GetDecodeRule(i),                             //Formula
-                                      this.decodeRule.GetChartColor(i),                             //Ch Color
-                                      this.decodeRule.GetChartMin(i),                               //Min
-                                      this.decodeRule.GetChartMax(i),                               //Max
-                                      this.decodeRule.GetChartPreview(i),                           //flg Preview
-                                      this.decodeRule.GetChartShow(i));                             //flg Show
+                fm.decodeRule.AddData(this.decodeRule.GetChName(i),                        //Ch Name
+                                      this.decodeRule.GetCANID(i).ToString(),              //CAN ID
+                                      this.decodeRule.GetDecodeRule(i),                    //Formula
+                                      this.decodeRule.GetChartColor(i).ToString(),         //Ch Color
+                                      this.decodeRule.GetChartMin(i).ToString(),           //Min
+                                      this.decodeRule.GetChartMax(i).ToString(),           //Max
+                                      this.decodeRule.GetChartPreview(i).ToString(),       //flg Preview
+                                      this.decodeRule.GetChartShow(i).ToString());         //flg Show
             }
         }
 
@@ -236,14 +236,14 @@ namespace MotoRecoViewer
             //TextBoxの内容をdecodeRuleに反映
             try
             {
-                decodeRule.AddData(TextChName.Text,                                                         //ChName
-                                ushort.Parse(TextCanId.Text, System.Globalization.NumberStyles.HexNumber),  //ID
-                                TextFormula.Text,                                                           //Formula
-                                i_color,                                                                    //Ch Color
-                                int.Parse(TextMin.Text),                                                    //Min
-                                int.Parse(TextMax.Text),                                                    //Max
-                                bool.Parse(CheckPreview.Checked.ToString()),                                //flg Preview
-                                bool.Parse(CheckShow.Checked.ToString()));                                  //flg Show
+                decodeRule.AddData(TextChName.Text,                                              //ChName
+                                   TextCanId.Text,                                               //ID
+                                   TextFormula.Text,                                             //Formula
+                                   i_color.ToString(),                                           //Ch Color
+                                   TextMin.Text,                                                 //Min
+                                   TextMax.Text,                                                 //Max
+                                   CheckPreview.Checked.ToString(),                              //flg Preview
+                                   CheckShow.Checked.ToString());                                //flg Show
             }
             catch (Exception)
             {
@@ -281,14 +281,14 @@ namespace MotoRecoViewer
                 {
                     string[] cols = reader.ReadLine().Split(',');
                      
-                    decodeRule.AddData(cols[0],                                                                    //Ch Name
-                                       ushort.Parse(cols[1], System.Globalization.NumberStyles.HexNumber),         //CAN ID
-                                       cols[2],                                                                    //Formula
-                                       int.Parse(cols[3]),                                                         //Ch Color
-                                       int.Parse(cols[4]),                                                         //Min
-                                       int.Parse(cols[5]),                                                         //Max
-                                       bool.Parse(cols[6]),                                                        //flg Preview
-                                       bool.Parse(cols[7]));                                                       //flg Show
+                    decodeRule.AddData(cols[0],   //Ch Name
+                                       cols[1],   //CAN ID
+                                       cols[2],   //Formula
+                                       cols[3],   //Ch Color
+                                       cols[4],   //Min
+                                       cols[5],   //Max
+                                       cols[6],   //flg Preview
+                                       cols[7]);  //flg Show
                 }
                 reader.Close();
             }
@@ -325,14 +325,14 @@ namespace MotoRecoViewer
             foreach (ListViewItem row in ListViewDecode.Items)
             {
                 //ListViewの内容をFormMainのListDecodeRuleに反映する
-                fm.decodeRule.AddData(row.SubItems[0].Text,                                                             //Ch Name
-                                      ushort.Parse(row.SubItems[1].Text, System.Globalization.NumberStyles.HexNumber),  //CAN ID
-                                      row.SubItems[2].Text,                                                             //Formula
-                                      int.Parse(row.SubItems[3].Text),                                                  //Ch Color
-                                      int.Parse(row.SubItems[4].Text),                                                  //Min
-                                      int.Parse(row.SubItems[5].Text),                                                  //Max
-                                      bool.Parse(row.SubItems[6].Text),                                                 //flg Preview
-                                      bool.Parse(row.SubItems[7].Text)                                                  //flg Show
+                fm.decodeRule.AddData(row.SubItems[0].Text,  //Ch Name
+                                      row.SubItems[1].Text,  //CAN ID
+                                      row.SubItems[2].Text,  //Formula
+                                      row.SubItems[3].Text,  //Ch Color
+                                      row.SubItems[4].Text,  //Min
+                                      row.SubItems[5].Text,  //Max
+                                      row.SubItems[6].Text,  //flg Preview
+                                      row.SubItems[7].Text   //flg Show
                                       );
             }
 
@@ -356,15 +356,15 @@ namespace MotoRecoViewer
             i_color = TextColor.BackColor.ToArgb();
 
             //TextBoxの内容をdecodeRuleに反映
-            decodeRule.EditData(idx,                                                                        //idx
-                                TextChName.Text,                                                            //ChName
-                                ushort.Parse(TextCanId.Text, System.Globalization.NumberStyles.HexNumber),  //ID
-                                TextFormula.Text,                                                           //Formula
-                                i_color,                                                                    //Ch Color
-                                int.Parse(TextMin.Text),                                                    //Min
-                                int.Parse(TextMax.Text),                                                    //Max
-                                bool.Parse(CheckPreview.Checked.ToString()),                                //flg Preview
-                                bool.Parse(CheckShow.Checked.ToString()));                                  //flg Show                                                     
+            decodeRule.EditData(idx,                              //idx
+                                TextChName.Text,                  //ChName
+                                TextCanId.Text,                   //ID
+                                TextFormula.Text,                 //Formula
+                                i_color.ToString(),               //Ch Color
+                                TextMin.Text,                     //Min
+                                TextMax.Text,                     //Max
+                                CheckPreview.Checked.ToString(),  //flg Preview
+                                CheckShow.Checked.ToString());    //flg Show                                                     
 
             //ListViewをリロード
             LoadDecodeRuleToListView();
