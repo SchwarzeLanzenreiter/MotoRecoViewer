@@ -185,7 +185,7 @@ namespace MotoRecoViewer
             for (int i = 0; i < fm.decodeRule.Count; i++)
             {
                 this.decodeRule.AddData(fm.decodeRule.GetChName(i),                        //Ch Name
-                                        fm.decodeRule.GetCANID(i).ToString(),              //CAN ID
+                                        fm.decodeRule.GetCANID(i).ToString("X3"),              //CAN ID
                                         fm.decodeRule.GetDecodeRule(i),                    //Formula
                                         fm.decodeRule.GetChartColor(i).ToString(),         //Ch Color
                                         fm.decodeRule.GetChartMin(i).ToString(),           //Min
@@ -209,7 +209,7 @@ namespace MotoRecoViewer
             for (int i = 0; i < this.decodeRule.Count; i++)
             {
                 fm.decodeRule.AddData(this.decodeRule.GetChName(i),                        //Ch Name
-                                      this.decodeRule.GetCANID(i).ToString(),              //CAN ID
+                                      this.decodeRule.GetCANID(i).ToString("X3"),              //CAN ID
                                       this.decodeRule.GetDecodeRule(i),                    //Formula
                                       this.decodeRule.GetChartColor(i).ToString(),         //Ch Color
                                       this.decodeRule.GetChartMin(i).ToString(),           //Min
