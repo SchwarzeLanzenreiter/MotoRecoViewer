@@ -28,37 +28,35 @@ using System.Threading.Tasks;
 
 namespace MotoRecoViewer
 {
+    public struct DecodeData
+    {
+        public string ChName { get; set; }
+        public ushort Id { get; set; }
+        public string Formula { get; set; }
+        public int ChMin { get; set; }
+        public int ChMax { get; set; }
+        public int ChColor { get; set; }
+        public bool ChPreview { get; set; }
+        public bool ChShow { get; set; }
+    }
+
     class DecodeRule
     {
         // ToDo Structで宣言して、StructのListとしたい
-        private List<string> ChName;
-        private List<ushort> Id;
-        private List<string> Formula;
-        private List<int> ChMin;
-        private List<int> ChMax;
-        private List<int> ChColor;
-        private List<bool> ChPreview;
-        private List<bool> ChShow;
+        private List<DecodeData> Data;
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
         public DecodeRule()
         {
-            ChName = new List<string>();
-            Id = new List<ushort>();
-            Formula = new List<string>();
-            ChMin = new List<int>();
-            ChMax = new List<int>();
-            ChColor = new List<int>();
-            ChPreview = new List<bool>();
-            ChShow = new List<bool>();
+            Data = new List<DecodeData>();
         }
 
         public void SaveToCSV(string FilePath)
         {
             //Itemが0なら即抜ける
-            if (ChName.Count < 1)
+            if (Data.Count < 1)
             {
                 return;
             }
@@ -72,16 +70,16 @@ namespace MotoRecoViewer
             new System.IO.StreamWriter(FilePath, false, enc);
             
             //レコードを書き込む
-            for (int i=0; i<ChName.Count; i++)
+            for (int i=0; i<Data.Count; i++)
             {
-                sr.Write(ChName[i] + ",");
-                sr.Write(Id[i].ToString("X3") + ",");
-                sr.Write(Formula[i] + ",");
-                sr.Write(ChColor[i].ToString() + ",");
-                sr.Write(ChMin[i].ToString() + ",");
-                sr.Write(ChMax[i].ToString() + ",");
-                sr.Write(ChPreview[i].ToString() + ",");
-                sr.Write(ChShow[i].ToString());
+                sr.Write(Data[i].ChName + ",");
+                sr.Write(Data[i].Id.ToString("X3") + ",");
+                sr.Write(Data[i].Formula + ",");
+                sr.Write(Data[i].ChColor.ToString() + ",");
+                sr.Write(Data[i].ChMin.ToString() + ",");
+                sr.Write(Data[i].ChMax.ToString() + ",");
+                sr.Write(Data[i].ChPreview.ToString() + ",");
+                sr.Write(Data[i].ChShow.ToString());
 
                 //改行する
                 sr.Write("\r\n");
@@ -348,14 +346,18 @@ namespace MotoRecoViewer
         /// <param name="formula">デコード計算式。</param>
         public void AddData(string chName, string id, string formula, string chColor, string chMin, string chMax, string chPreview, string chShow)
         {
-            this.ChName.Add(chName);
-            this.Id.Add(ushort.Parse(id, System.Globalization.NumberStyles.HexNumber));
-            this.Formula.Add(formula);
-            this.ChMin.Add(int.Parse(chMin));
-            this.ChMax.Add(int.Parse(chMax));
-            this.ChColor.Add(int.Parse(chColor));
-            this.ChPreview.Add(bool.Parse(chPreview));
-            this.ChShow.Add(bool.Parse(chShow));
+            DecodeData newData = new DecodeData();
+
+            newData.ChName = chName;
+            newData.Id = (ushort.Parse(id, System.Globalization.NumberStyles.HexNumber));
+            newData.Formula = formula;
+            newData.ChMin = int.Parse(chMin);
+            newData.ChMax = int.Parse(chMax);
+            newData.ChColor = int.Parse(chColor);
+            newData.ChPreview = bool.Parse(chPreview);
+            newData.ChShow = bool.Parse(chShow);
+
+            Data.Add(newData);
         }
 
         /// <summary>
@@ -371,20 +373,23 @@ namespace MotoRecoViewer
                 return;
             }
 
-            if (idx >= ChName.Count)
+            if (idx >= Data.Count)
             {
                 return;
             }
 
+            DecodeData newData = new DecodeData();
 
-            this.ChName[idx] = chName;
-            this.Id[idx] = ushort.Parse(id, System.Globalization.NumberStyles.HexNumber) ;
-            this.Formula[idx] = formula;
-            this.ChMin[idx] = int.Parse(chMin);
-            this.ChMax[idx] = int.Parse(chMax);
-            this.ChColor[idx] = int.Parse(chColor);
-            this.ChPreview[idx] = bool.Parse(chPreview);
-            this.ChShow[idx] = bool.Parse(chShow);
+            newData.ChName = chName;
+            newData.Id = (ushort.Parse(id, System.Globalization.NumberStyles.HexNumber));
+            newData.Formula = formula;
+            newData.ChMin = int.Parse(chMin);
+            newData.ChMax = int.Parse(chMax);
+            newData.ChColor = int.Parse(chColor);
+            newData.ChPreview = bool.Parse(chPreview);
+            newData.ChShow = bool.Parse(chShow);
+
+            Data[idx] = newData;
         }
 
         /// <summary>
@@ -400,19 +405,11 @@ namespace MotoRecoViewer
                 return;
             }
 
-            if (idx >= ChName.Count)
+            if (idx >= Data.Count)
             {
                 return;
             }
-
-            this.ChName.RemoveAt(idx);
-            this.Id.RemoveAt(idx);
-            this.Formula.RemoveAt(idx);
-            this.ChMin.RemoveAt(idx);
-            this.ChMax.RemoveAt(idx);
-            this.ChColor.RemoveAt(idx);
-            this.ChPreview.RemoveAt(idx);
-            this.ChShow.RemoveAt(idx);
+            Data.RemoveAt(idx);
         }
 
         /// <summary>
@@ -420,15 +417,7 @@ namespace MotoRecoViewer
         /// </summary>
         public void Clear()
         {
-            this.ChName.Clear();
-            this.Id.Clear();
-            this.Formula.Clear();
-            this.ChMin.Clear();
-            this.ChMax.Clear();
-            this.ChColor.Clear();
-            this.ChPreview.Clear();
-            this.ChShow.Clear();
-        }
+            Data.Clear();
 
         /// <summary>
         /// 引数のチャンネル名のインデックスを返す
@@ -474,7 +463,7 @@ namespace MotoRecoViewer
         {
             get
             {
-                return this.Id.Count;
+                return Data.Count;
             }
         }
 
@@ -484,7 +473,7 @@ namespace MotoRecoViewer
         /// <param name="index">検索するチャンネル名</param>
         public string GetChName(int index)
         {
-            return this.ChName[index];
+            return Data[index].ChName;
         }
 
         /// <summary>
@@ -493,7 +482,7 @@ namespace MotoRecoViewer
         /// <param name="index">検索するチャンネル名</param>
         public ushort GetCANID(int index)
         {
-            return this.Id[index];
+            return Data[index].Id;
         }
 
         /// <summary>
@@ -502,7 +491,7 @@ namespace MotoRecoViewer
         /// <param name="index">検索するチャンネル名</param>
         public string GetDecodeRule(int index)
         {
-            return this.Formula[index];
+            return Data[index].Formula;
         }
 
         /// <summary>
@@ -511,7 +500,7 @@ namespace MotoRecoViewer
         /// <param name="index">検索するチャンネル名</param>
         public int GetChartMin(int index)
         {
-            return this.ChMin[index];
+            return Data[index].ChMin;
         }
 
         /// <summary>
@@ -520,7 +509,7 @@ namespace MotoRecoViewer
         /// <param name="index">検索するチャンネル名</param>
         public int GetChartMax(int index)
         {
-            return this.ChMax[index];
+            return Data[index].ChMax;
         }
 
         /// <summary>
@@ -529,7 +518,7 @@ namespace MotoRecoViewer
         /// <param name="index">検索するチャンネル名</param>
         public int GetChartColor(int index)
         {
-            return this.ChColor[index];
+            return Data[index].ChColor;
         }
 
         /// <summary>
@@ -538,7 +527,7 @@ namespace MotoRecoViewer
         /// <param name="index">検索するチャンネル名</param>
         public bool GetChartPreview(int index)
         {
-            return this.ChPreview[index];
+            return Data[index].ChPreview;
         }
 
         /// <summary>
@@ -547,7 +536,7 @@ namespace MotoRecoViewer
         /// <param name="index">検索するチャンネル名</param>
         public bool GetChartShow(int index)
         {
-            return this.ChShow[index];
+            return Data[index].ChShow;
         }
     }
 }
