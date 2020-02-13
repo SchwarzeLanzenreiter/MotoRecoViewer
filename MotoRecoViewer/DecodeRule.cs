@@ -391,18 +391,18 @@ namespace MotoRecoViewer
                 return;
             }
 
-            DecodeData newData = new DecodeData();
+            DecodeData tempData = Data[idx];
 
-            newData.ChName = chName;
-            newData.Id = (ushort.Parse(id, System.Globalization.NumberStyles.HexNumber));
-            newData.Formula = formula;
-            newData.ChMin = int.Parse(chMin);
-            newData.ChMax = int.Parse(chMax);
-            newData.ChColor = int.Parse(chColor);
-            newData.ChPreview = bool.Parse(chPreview);
-            newData.ChShow = bool.Parse(chShow);
+            tempData.ChName = chName;
+            tempData.Id = (ushort.Parse(id, System.Globalization.NumberStyles.HexNumber));
+            tempData.Formula = formula;
+            tempData.ChMin = int.Parse(chMin);
+            tempData.ChMax = int.Parse(chMax);
+            tempData.ChColor = int.Parse(chColor);
+            tempData.ChPreview = bool.Parse(chPreview);
+            tempData.ChShow = bool.Parse(chShow);
 
-            Data[idx] = newData;
+            Data[idx] = tempData;
         }
 
         /// <summary>
