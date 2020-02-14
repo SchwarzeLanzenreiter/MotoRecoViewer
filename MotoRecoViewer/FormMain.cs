@@ -1069,8 +1069,7 @@ namespace MotoRecoViewer
         }
 
         /// <summary>
-        /// DatファイルをAsciiのCSVに変換する
-        /// CSVのフォーマットは、"秒","ミリ秒","CAN ID(HEX)","Data1のHEX","Data2のHEX","Data3のHEX","Data4のHEX","Data5のHEX","Data6のHEX","Data7のHEX","Data8のHEX"
+        /// マウスポインタ位置をデータ現在位置時間に変換する
         /// </summary>
         double MousePointToSubPosTime(MouseEventArgs e)
         {

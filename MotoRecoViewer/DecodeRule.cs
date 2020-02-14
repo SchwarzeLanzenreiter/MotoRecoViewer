@@ -177,25 +177,25 @@ namespace MotoRecoViewer
                 // K51 FrBrake1
                 // Data3
                 case "#K51_FrBrake1":     
-                    return data.data[2];
+                    return data.data[2] / 4d;
 
                 // CANID 120
                 // K51 FrBrake2
                 // Data5
                 case "#K51_FrBrake2":
-                    return data.data[4];
+                    return data.data[4] / 4d;
 
                 // CANID 120
                 // K51 RrBrake1
                 // Data4
                 case "#K51_RrBrake1":
-                    return data.data[3];
+                    return data.data[3] / 2d;
 
                 // CANID 120
                 // K51 RrBrake2
                 // Data6
                 case "#K51_RrBrake2":
-                    return data.data[5];
+                    return data.data[5] / 2d;
 
                 // CANID 29C
                 // K51 FrStroke
