@@ -1560,6 +1560,9 @@ namespace MotoRecoViewer
             // Form位置ロード
             this.Location = Properties.Settings.Default.FormMainLocation;
             this.Size = Properties.Settings.Default.FormMainSize;
+            this.splitContainer1.SplitterDistance = Properties.Settings.Default.FormMainSplit1;
+            this.splitContainer2.SplitterDistance = Properties.Settings.Default.FormMainSplit2;
+            this.splitContainer3.SplitterDistance = Properties.Settings.Default.FormMainSplit3;
         }
 
         private void MenuConvertAscii_Click(object sender, EventArgs e)
@@ -1670,6 +1673,11 @@ namespace MotoRecoViewer
             Properties.Settings.Default.FormMainSplit3 = this.splitContainer3.SplitterDistance;
 
             Properties.Settings.Default.Save();
+        }
+
+        private void FormMain_Shown(object sender, EventArgs e)
+        {
+
         }
     }
 }
