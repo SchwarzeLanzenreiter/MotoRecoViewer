@@ -49,13 +49,49 @@ namespace MotoRecoViewer.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        [global::System.Configuration.DefaultSettingValueAttribute("800, 500")]
         public global::System.Drawing.Size FormMainSize {
             get {
                 return ((global::System.Drawing.Size)(this["FormMainSize"]));
             }
             set {
                 this["FormMainSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("800")]
+        public int FormMainSplit1 {
+            get {
+                return ((int)(this["FormMainSplit1"]));
+            }
+            set {
+                this["FormMainSplit1"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("400")]
+        public int FormMainSplit2 {
+            get {
+                return ((int)(this["FormMainSplit2"]));
+            }
+            set {
+                this["FormMainSplit2"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("400")]
+        public int FormMainSplit3 {
+            get {
+                return ((int)(this["FormMainSplit3"]));
+            }
+            set {
+                this["FormMainSplit3"] = value;
             }
         }
     }

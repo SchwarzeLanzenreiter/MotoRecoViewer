@@ -172,14 +172,14 @@
             // toolStripMenuItem2
             // 
             this.toolStripMenuItem2.Name = "toolStripMenuItem2";
-            this.toolStripMenuItem2.Size = new System.Drawing.Size(244, 26);
-            this.toolStripMenuItem2.Text = "MotoReco Viewer Web";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(224, 26);
+            this.toolStripMenuItem2.Text = "MotoReco.net";
             this.toolStripMenuItem2.Click += new System.EventHandler(this.ToolStripMenuItem2_Click);
             // 
             // aboutAToolStripMenuItem
             // 
             this.aboutAToolStripMenuItem.Name = "aboutAToolStripMenuItem";
-            this.aboutAToolStripMenuItem.Size = new System.Drawing.Size(244, 26);
+            this.aboutAToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
             this.aboutAToolStripMenuItem.Text = "About(&A)";
             this.aboutAToolStripMenuItem.Click += new System.EventHandler(this.AboutAToolStripMenuItem_Click);
             // 
@@ -265,6 +265,7 @@
             // splitContainer1
             // 
             this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.splitContainer1.DataBindings.Add(new System.Windows.Forms.Binding("SplitterDistance", global::MotoRecoViewer.Properties.Settings.Default, "FormMainSplit1", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.Location = new System.Drawing.Point(0, 28);
             this.splitContainer1.Margin = new System.Windows.Forms.Padding(4);
@@ -278,13 +279,14 @@
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer3);
             this.splitContainer1.Size = new System.Drawing.Size(1259, 499);
-            this.splitContainer1.SplitterDistance = 878;
+            this.splitContainer1.SplitterDistance = global::MotoRecoViewer.Properties.Settings.Default.FormMainSplit1;
             this.splitContainer1.SplitterWidth = 5;
             this.splitContainer1.TabIndex = 9;
             // 
             // splitContainer2
             // 
             this.splitContainer2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.splitContainer2.DataBindings.Add(new System.Windows.Forms.Binding("SplitterDistance", global::MotoRecoViewer.Properties.Settings.Default, "FormMainSplit2", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer2.Location = new System.Drawing.Point(0, 0);
             this.splitContainer2.Margin = new System.Windows.Forms.Padding(4);
@@ -298,8 +300,8 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.PictureSub);
-            this.splitContainer2.Size = new System.Drawing.Size(878, 499);
-            this.splitContainer2.SplitterDistance = 327;
+            this.splitContainer2.Size = new System.Drawing.Size(800, 499);
+            this.splitContainer2.SplitterDistance = global::MotoRecoViewer.Properties.Settings.Default.FormMainSplit2;
             this.splitContainer2.SplitterWidth = 5;
             this.splitContainer2.TabIndex = 0;
             // 
@@ -309,7 +311,7 @@
             this.PictureMain.Location = new System.Drawing.Point(0, 0);
             this.PictureMain.Margin = new System.Windows.Forms.Padding(4);
             this.PictureMain.Name = "PictureMain";
-            this.PictureMain.Size = new System.Drawing.Size(876, 325);
+            this.PictureMain.Size = new System.Drawing.Size(798, 398);
             this.PictureMain.TabIndex = 0;
             this.PictureMain.TabStop = false;
             this.PictureMain.Paint += new System.Windows.Forms.PaintEventHandler(this.PictureMain_Paint);
@@ -323,7 +325,7 @@
             this.PictureSub.Location = new System.Drawing.Point(0, 0);
             this.PictureSub.Margin = new System.Windows.Forms.Padding(4);
             this.PictureSub.Name = "PictureSub";
-            this.PictureSub.Size = new System.Drawing.Size(876, 165);
+            this.PictureSub.Size = new System.Drawing.Size(798, 92);
             this.PictureSub.TabIndex = 0;
             this.PictureSub.TabStop = false;
             this.PictureSub.Paint += new System.Windows.Forms.PaintEventHandler(this.PictureSub_Paint);
@@ -333,6 +335,8 @@
             // 
             // splitContainer3
             // 
+            this.splitContainer3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.splitContainer3.DataBindings.Add(new System.Windows.Forms.Binding("SplitterDistance", global::MotoRecoViewer.Properties.Settings.Default, "FormMainSplit3", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
             this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer3.Location = new System.Drawing.Point(0, 0);
             this.splitContainer3.Margin = new System.Windows.Forms.Padding(4);
@@ -342,8 +346,8 @@
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.GMapControl);
-            this.splitContainer3.Size = new System.Drawing.Size(374, 497);
-            this.splitContainer3.SplitterDistance = 302;
+            this.splitContainer3.Size = new System.Drawing.Size(454, 499);
+            this.splitContainer3.SplitterDistance = global::MotoRecoViewer.Properties.Settings.Default.FormMainSplit3;
             this.splitContainer3.SplitterWidth = 5;
             this.splitContainer3.TabIndex = 2;
             // 
@@ -372,7 +376,7 @@
             this.GMapControl.ScaleMode = GMap.NET.WindowsForms.ScaleModes.Integer;
             this.GMapControl.SelectedAreaFillColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(65)))), ((int)(((byte)(105)))), ((int)(((byte)(225)))));
             this.GMapControl.ShowTileGridLines = false;
-            this.GMapControl.Size = new System.Drawing.Size(374, 190);
+            this.GMapControl.Size = new System.Drawing.Size(452, 92);
             this.GMapControl.TabIndex = 4;
             this.GMapControl.Zoom = 3D;
             // 

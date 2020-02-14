@@ -1657,7 +1657,7 @@ namespace MotoRecoViewer
         private void ToolStripMenuItem2_Click(object sender, EventArgs e)
         {
             //ブラウザで開く
-            System.Diagnostics.Process.Start("https://github.com/SchwarzeLanzenreiter/MotoRecoViewer");
+            System.Diagnostics.Process.Start("https://motoreco.net");
         }
 
         private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
@@ -1665,6 +1665,10 @@ namespace MotoRecoViewer
             // Form位置セーブ
             Properties.Settings.Default.FormMainLocation = this.Location;
             Properties.Settings.Default.FormMainSize = this.Size;
+            Properties.Settings.Default.FormMainSplit1 = this.splitContainer1.SplitterDistance;
+            Properties.Settings.Default.FormMainSplit2 = this.splitContainer2.SplitterDistance;
+            Properties.Settings.Default.FormMainSplit3 = this.splitContainer3.SplitterDistance;
+
             Properties.Settings.Default.Save();
         }
     }
