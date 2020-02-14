@@ -370,11 +370,6 @@ namespace MotoRecoViewer
             LoadDecodeRuleToListView();
         }
 
-        private void TextColor_TextChanged(object sender, EventArgs e)
-        {
-            
-        }
-
         private void BtnDel_Click(object sender, EventArgs e)
         {
             //ListViewで選択がなければ即抜ける
@@ -401,15 +396,6 @@ namespace MotoRecoViewer
                 //選択された色の取得
                 TextColor.BackColor = colorDialog.Color;
             }
-        }
-
-        private void Button1_Click(object sender, EventArgs e)
-        {
-            //decodeRuleクリア
-            this.decodeRule.Clear();
-
-            //List Viewクリア
-            ListViewDecode.Items.Clear();
         }
 
         private void BtnBrowsRule_Click(object sender, EventArgs e)
@@ -552,6 +538,15 @@ namespace MotoRecoViewer
             //ListViewの内容をdecodeRuleにコピー
             ListViewToDecodeRule();
 
+        }
+
+        private void BtnClear_Click(object sender, EventArgs e)
+        {
+            //decodeRuleクリア
+            this.decodeRule.Clear();
+
+            //List Viewクリア
+            ListViewDecode.Items.Clear();
         }
     }
 }
