@@ -22,5 +22,41 @@ namespace MotoRecoViewer.Properties {
                 return defaultInstance;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string GoogleAPI {
+            get {
+                return ((string)(this["GoogleAPI"]));
+            }
+            set {
+                this["GoogleAPI"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Point FormMainLocation {
+            get {
+                return ((global::System.Drawing.Point)(this["FormMainLocation"]));
+            }
+            set {
+                this["FormMainLocation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Size FormMainSize {
+            get {
+                return ((global::System.Drawing.Size)(this["FormMainSize"]));
+            }
+            set {
+                this["FormMainSize"] = value;
+            }
+        }
     }
 }

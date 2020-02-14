@@ -149,14 +149,14 @@
             // cANDecodeSettingToolStripMenuItem
             // 
             this.cANDecodeSettingToolStripMenuItem.Name = "cANDecodeSettingToolStripMenuItem";
-            this.cANDecodeSettingToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.cANDecodeSettingToolStripMenuItem.Size = new System.Drawing.Size(173, 26);
             this.cANDecodeSettingToolStripMenuItem.Text = "Ch Setting";
             this.cANDecodeSettingToolStripMenuItem.Click += new System.EventHandler(this.CANDecodeSettingToolStripMenuItem_Click);
             // 
             // mapSettingToolStripMenuItem
             // 
             this.mapSettingToolStripMenuItem.Name = "mapSettingToolStripMenuItem";
-            this.mapSettingToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.mapSettingToolStripMenuItem.Size = new System.Drawing.Size(173, 26);
             this.mapSettingToolStripMenuItem.Text = "Map Setting";
             this.mapSettingToolStripMenuItem.Click += new System.EventHandler(this.MapSettingToolStripMenuItem_Click);
             // 
@@ -388,6 +388,7 @@
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "FormMain";
             this.Text = "Moto Reco Viewer";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormMain_FormClosed);
             this.Load += new System.EventHandler(this.FormMain_Load);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();

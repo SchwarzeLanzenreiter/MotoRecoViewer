@@ -1143,6 +1143,7 @@ namespace MotoRecoViewer
 
             this.PictureSub.MouseWheel
                += new System.Windows.Forms.MouseEventHandler(this.PictureSub_MouseWheel);
+
         }
 
         private void 終了ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -1533,11 +1534,10 @@ namespace MotoRecoViewer
 
             // レジストリ情報読み取り
             // Google Map APIがレジストリにあれば、Google Mapを表示
-            string KeyName = "MotoRecoViewer";
-            RegistryKey rkey = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\" + KeyName, true);
-            if (rkey != null)
+            string strGoogleMapAPIKey = Properties.Settings.Default.GoogleAPI;
+
+            if (strGoogleMapAPIKey != "")
             {
-                string strGoogleMapAPIKey = (string)rkey.GetValue("GoogleMapAPI");
                 GMapProviders.GoogleMap.ApiKey = strGoogleMapAPIKey;
                 GMapControl.MapProvider = GMap.NET.MapProviders.GoogleMapProvider.Instance;
             }
@@ -1556,6 +1556,10 @@ namespace MotoRecoViewer
             GMapOverlayRoute = new GMapOverlay("route");
             GMapControl.Overlays.Add(GMapOverlayMarker);
             GMapControl.Overlays.Add(GMapOverlayRoute);
+
+            // Form位置ロード
+            this.Location = Properties.Settings.Default.FormMainLocation;
+            this.Size = Properties.Settings.Default.FormMainSize;
         }
 
         private void MenuConvertAscii_Click(object sender, EventArgs e)
@@ -1654,6 +1658,14 @@ namespace MotoRecoViewer
         {
             //ブラウザで開く
             System.Diagnostics.Process.Start("https://github.com/SchwarzeLanzenreiter/MotoRecoViewer");
+        }
+
+        private void FormMain_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            // Form位置セーブ
+            Properties.Settings.Default.FormMainLocation = this.Location;
+            Properties.Settings.Default.FormMainSize = this.Size;
+            Properties.Settings.Default.Save();
         }
     }
 }

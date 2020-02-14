@@ -101,9 +101,7 @@ namespace MotoRecoViewer
             //計算式
             System.Text.StringBuilder exp = new System.Text.StringBuilder(Formula);
 
-            //string exp = string.Copy(Formula);
             string str;
-
             byte nibble = (byte)(0x0F);
 
             //式中のLoData1～LoData8の文字列を、数値に置き換える
@@ -153,7 +151,7 @@ namespace MotoRecoViewer
             {
                 // CANID 10C
                 // K51 Engine RPM
-                // (LoData4*255+Data3)*4
+                // (LoData4*255+Data3)*5
                 case "#K51_RPM":
                     return ((nibble & data.data[3]) * 256d + data.data[2]) * 5d;
      
