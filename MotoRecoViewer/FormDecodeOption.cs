@@ -185,13 +185,14 @@ namespace MotoRecoViewer
             for (int i = 0; i < fm.decodeRule.Count; i++)
             {
                 this.decodeRule.AddData(fm.decodeRule.GetChName(i),                        //Ch Name
-                                        fm.decodeRule.GetCANID(i).ToString("X3"),              //CAN ID
+                                        fm.decodeRule.GetCANID(i).ToString("X3"),          //CAN ID
                                         fm.decodeRule.GetDecodeRule(i),                    //Formula
                                         fm.decodeRule.GetChartColor(i).ToString(),         //Ch Color
                                         fm.decodeRule.GetChartMin(i).ToString(),           //Min
                                         fm.decodeRule.GetChartMax(i).ToString(),           //Max
                                         fm.decodeRule.GetChartPreview(i).ToString(),       //flg Preview
-                                        fm.decodeRule.GetChartShow(i).ToString());         //flg Show
+                                        fm.decodeRule.GetChartShow(i).ToString()　         //flg Show
+                                        );
             }
         }
 
@@ -209,13 +210,14 @@ namespace MotoRecoViewer
             for (int i = 0; i < this.decodeRule.Count; i++)
             {
                 fm.decodeRule.AddData(this.decodeRule.GetChName(i),                        //Ch Name
-                                      this.decodeRule.GetCANID(i).ToString("X3"),              //CAN ID
+                                      this.decodeRule.GetCANID(i).ToString("X3"),          //CAN ID
                                       this.decodeRule.GetDecodeRule(i),                    //Formula
                                       this.decodeRule.GetChartColor(i).ToString(),         //Ch Color
                                       this.decodeRule.GetChartMin(i).ToString(),           //Min
                                       this.decodeRule.GetChartMax(i).ToString(),           //Max
                                       this.decodeRule.GetChartPreview(i).ToString(),       //flg Preview
-                                      this.decodeRule.GetChartShow(i).ToString());         //flg Show
+                                      this.decodeRule.GetChartShow(i).ToString()　　       //flg Show
+                                      );
             }
         }
 
@@ -236,14 +238,31 @@ namespace MotoRecoViewer
             //TextBoxの内容をdecodeRuleに反映
             try
             {
-                decodeRule.AddData(TextChName.Text,                                              //ChName
-                                   TextCanId.Text,                                               //ID
-                                   TextFormula.Text,                                             //Formula
-                                   i_color.ToString(),                                           //Ch Color
-                                   TextMin.Text,                                                 //Min
-                                   TextMax.Text,                                                 //Max
-                                   CheckPreview.Checked.ToString(),                              //flg Preview
-                                   CheckShow.Checked.ToString());                                //flg Show
+                // もしListViewで最後尾が選択されているか、何も選択されていない場合、最後尾に追加
+                if ((ListViewDecode.SelectedItems.Count == 0) || (ListViewDecode.SelectedItems[0].Index == ListViewDecode.Items.Count - 1)) {
+                    decodeRule.AddData(TextChName.Text,                                              //ChName
+                                       TextCanId.Text,                                               //ID
+                                       TextFormula.Text,                                             //Formula
+                                       i_color.ToString(),                                           //Ch Color
+                                       TextMin.Text,                                                 //Min
+                                       TextMax.Text,                                                 //Max
+                                       CheckPreview.Checked.ToString(),                              //flg Preview
+                                       CheckShow.Checked.ToString()　                                //flg Show
+                                       );
+                } else
+                {
+                    // それ以外の場合、選択されている位置に挿入
+                    decodeRule.InsData(ListViewDecode.SelectedItems[0].Index,                        //index
+                                       TextChName.Text,                                              //ChName
+                                       TextCanId.Text,                                               //ID
+                                       TextFormula.Text,                                             //Formula
+                                       i_color.ToString(),                                           //Ch Color
+                                       TextMin.Text,                                                 //Min
+                                       TextMax.Text,                                                 //Max
+                                       CheckPreview.Checked.ToString(),                              //flg Preview
+                                       CheckShow.Checked.ToString()　　                              //flg Show
+                                       );
+                }
             }
             catch (Exception)
             {
@@ -288,7 +307,8 @@ namespace MotoRecoViewer
                                        cols[4],   //Min
                                        cols[5],   //Max
                                        cols[6],   //flg Preview
-                                       cols[7]);  //flg Show
+                                       cols[7]　  //flg Show
+                                       );
                 }
                 reader.Close();
             }
@@ -364,7 +384,8 @@ namespace MotoRecoViewer
                                 TextMin.Text,                     //Min
                                 TextMax.Text,                     //Max
                                 CheckPreview.Checked.ToString(),  //flg Preview
-                                CheckShow.Checked.ToString());    //flg Show                                                     
+                                CheckShow.Checked.ToString()　　  //flg Show                                                     
+                                );
 
             //ListViewをリロード
             LoadDecodeRuleToListView();

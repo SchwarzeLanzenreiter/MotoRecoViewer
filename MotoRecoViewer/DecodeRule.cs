@@ -366,6 +366,34 @@ namespace MotoRecoViewer
         }
 
         /// <summary>
+        /// Decodeルールを追加する
+        /// </summary>
+        /// <param name="idx">編集するアイテムのインデックス</param>
+        /// <param name="chName">デコードルールの識別名。</param>
+        /// <param name="id">デコードルールのCAN ID（16進数表記）。</param>
+        /// <param name="formula">デコード計算式。</param>
+        /// <param name="chColor">チャンネル表示色</param>
+        /// <param name="chMin">チャンネル下限値</param>
+        /// <param name="chMax">チャンネル上限値</param>
+        /// <param name="chPreview">SubChartに表示する/しない</param>
+        /// <param name="chShow">MainChartに表示する/しない</param>
+        public void InsData(int idx, string chName, string id, string formula, string chColor, string chMin, string chMax, string chPreview, string chShow)
+        {
+            DecodeData newData = new DecodeData();
+
+            newData.ChName = chName;
+            newData.Id = (ushort.Parse(id, System.Globalization.NumberStyles.HexNumber));
+            newData.Formula = formula;
+            newData.ChMin = int.Parse(chMin);
+            newData.ChMax = int.Parse(chMax);
+            newData.ChColor = int.Parse(chColor);
+            newData.ChPreview = bool.Parse(chPreview);
+            newData.ChShow = bool.Parse(chShow);
+
+            Data.Insert(idx, newData);
+        }
+
+        /// <summary>
         /// Decodeルールを編集する
         /// </summary>
         /// <param name="idx">編集するアイテムのインデックス</param>
