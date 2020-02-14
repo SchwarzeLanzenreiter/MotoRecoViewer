@@ -1533,7 +1533,7 @@ namespace MotoRecoViewer
             GMapProvider.WebProxy.Credentials = CredentialCache.DefaultNetworkCredentials;
 
             // レジストリ情報読み取り
-            // Google Map APIがレジストリにあれば、Google Mapを表示
+            // Google Map APIが入力済なら、Google Mapを表示
             string strGoogleMapAPIKey = Properties.Settings.Default.GoogleAPI;
 
             if (strGoogleMapAPIKey != "")
@@ -1549,6 +1549,12 @@ namespace MotoRecoViewer
 
             GMaps.Instance.Mode = AccessMode.ServerOnly;
             GMapControl.SetPositionByKeywords("Iwata, Japan");
+
+            //地図中心を、先回最終位置に合わせる
+            double lat, lon;
+            lat = Properties.Settings.Default.FormMainLat;
+            lon = Properties.Settings.Default.FormMainLon;
+            GMapControl.Position = new PointLatLng(lat, lon);
             GMapControl.Zoom = 13;
 
             //マーカー用オーバーレイ生成
@@ -1671,6 +1677,10 @@ namespace MotoRecoViewer
             Properties.Settings.Default.FormMainSplit1 = this.splitContainer1.SplitterDistance;
             Properties.Settings.Default.FormMainSplit2 = this.splitContainer2.SplitterDistance;
             Properties.Settings.Default.FormMainSplit3 = this.splitContainer3.SplitterDistance;
+
+            // 地図中心セーブ
+            Properties.Settings.Default.FormMainLat = GMapControl.Position.Lat;
+            Properties.Settings.Default.FormMainLon = GMapControl.Position.Lng;
 
             Properties.Settings.Default.Save();
         }

@@ -94,5 +94,29 @@ namespace MotoRecoViewer.Properties {
                 this["FormMainSplit3"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double FormMainLon {
+            get {
+                return ((double)(this["FormMainLon"]));
+            }
+            set {
+                this["FormMainLon"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public double FormMainLat {
+            get {
+                return ((double)(this["FormMainLat"]));
+            }
+            set {
+                this["FormMainLat"] = value;
+            }
+        }
     }
 }
