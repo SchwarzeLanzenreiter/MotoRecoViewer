@@ -487,8 +487,10 @@ namespace MotoRecoViewer
             reader.Close();
 
             // 収集したCANIDの選択ダイアログを表示
-            FormAnalysys f = new FormAnalysys();
-            f.ListCANID = ListCANID;
+            FormAnalysys f = new FormAnalysys
+            {
+                ListCANID = ListCANID
+            };
 
             f.ShowDialog(this);
             f.Dispose();
@@ -504,11 +506,6 @@ namespace MotoRecoViewer
 
             //decodeRule内容をListViewにロード
             LoadDecodeRuleToListView();
-        }
-
-        private void BtnCancel_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void BtnUp_Click(object sender, EventArgs e)

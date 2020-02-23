@@ -1683,10 +1683,5 @@ namespace MotoRecoViewer
 
             Properties.Settings.Default.Save();
         }
-
-        private void FormMain_Shown(object sender, EventArgs e)
-        {
-
-        }
     }
 }
