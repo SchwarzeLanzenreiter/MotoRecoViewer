@@ -30,6 +30,7 @@
         {
             System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("K51");
             System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("GPS");
+            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("MISC");
             System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new string[] {
             "RPM",
             "engine RPM",
@@ -147,9 +148,12 @@
             treeNode1.Text = "K51";
             treeNode2.Name = "TreeNodeGPS";
             treeNode2.Text = "GPS";
+            treeNode3.Name = "TreeNodeMisc";
+            treeNode3.Text = "MISC";
             this.TreeViewBike.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
             treeNode1,
-            treeNode2});
+            treeNode2,
+            treeNode3});
             this.TreeViewBike.Size = new System.Drawing.Size(354, 562);
             this.TreeViewBike.TabIndex = 0;
             this.TreeViewBike.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeViewBike_AfterSelect);

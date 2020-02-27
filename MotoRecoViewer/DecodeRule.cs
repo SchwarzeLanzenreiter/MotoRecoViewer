@@ -332,6 +332,83 @@ namespace MotoRecoViewer
                     return 0;
 
 
+
+                // CANID any
+                // Data1
+                case "#Data1":
+                    return data.data[0];
+
+                case "#HiData1":
+                    return data.data[0] >> 4;
+
+                case "#LoData1":
+                    return (nibble & data.data[0]);
+
+                case "#Data2":
+                    return data.data[1];
+
+                case "#HiData2":
+                    return data.data[1] >> 4;
+
+                case "#LoData2":
+                    return (nibble & data.data[1]);
+
+                case "#Data3":
+                    return data.data[2];
+
+                case "#HiData3":
+                    return data.data[2] >> 4;
+
+                case "#LoData3":
+                    return (nibble & data.data[2]);
+
+                case "#Data4":
+                    return data.data[3];
+
+                case "#HiData4":
+                    return data.data[3] >> 4;
+
+                case "#LoData4":
+                    return (nibble & data.data[3]);
+
+                case "#Data5":
+                    return data.data[4];
+
+                case "#HiData5":
+                    return data.data[4] >> 4;
+
+                case "#LoData5":
+                    return (nibble & data.data[4]);
+
+                case "#Data6":
+                    return data.data[5];
+
+                case "#HiData6":
+                    return data.data[5] >> 4;
+
+                case "#LoData6":
+                    return (nibble & data.data[5]);
+
+                case "#Data7":
+                    return data.data[6];
+
+                case "#HiData7":
+                    return data.data[6] >> 4;
+
+                case "#LoData7":
+                    return (nibble & data.data[6]);
+
+                case "#Data8":
+                    return data.data[7];
+
+                case "#HiData8":
+                    return data.data[7] >> 4;
+
+                case "#LoData8":
+                    return (nibble & data.data[7]);
+
+
+
                 // 計算定義が間違っていてここまで来た場合は0を返す
                 default:
                     return 0;
