@@ -428,16 +428,17 @@ namespace MotoRecoViewer
         /// <param name="chShow">MainChartに表示する/しない</param>
         public void AddData(string chName, string id, string formula, string chColor, string chMin, string chMax, string chPreview, string chShow)
         {
-            DecodeData newData = new DecodeData();
-
-            newData.ChName = chName;
-            newData.Id = (ushort.Parse(id, System.Globalization.NumberStyles.HexNumber));
-            newData.Formula = formula;
-            newData.ChMin = int.Parse(chMin);
-            newData.ChMax = int.Parse(chMax);
-            newData.ChColor = int.Parse(chColor);
-            newData.ChPreview = bool.Parse(chPreview);
-            newData.ChShow = bool.Parse(chShow);
+            DecodeData newData = new DecodeData
+            {
+                ChName = chName,
+                Id = (ushort.Parse(id, System.Globalization.NumberStyles.HexNumber)),
+                Formula = formula,
+                ChMin = int.Parse(chMin),
+                ChMax = int.Parse(chMax),
+                ChColor = int.Parse(chColor),
+                ChPreview = bool.Parse(chPreview),
+                ChShow = bool.Parse(chShow)
+            };
 
             Data.Add(newData);
         }
@@ -456,16 +457,17 @@ namespace MotoRecoViewer
         /// <param name="chShow">MainChartに表示する/しない</param>
         public void InsData(int idx, string chName, string id, string formula, string chColor, string chMin, string chMax, string chPreview, string chShow)
         {
-            DecodeData newData = new DecodeData();
-
-            newData.ChName = chName;
-            newData.Id = (ushort.Parse(id, System.Globalization.NumberStyles.HexNumber));
-            newData.Formula = formula;
-            newData.ChMin = int.Parse(chMin);
-            newData.ChMax = int.Parse(chMax);
-            newData.ChColor = int.Parse(chColor);
-            newData.ChPreview = bool.Parse(chPreview);
-            newData.ChShow = bool.Parse(chShow);
+            DecodeData newData = new DecodeData
+            {
+                ChName = chName,
+                Id = (ushort.Parse(id, System.Globalization.NumberStyles.HexNumber)),
+                Formula = formula,
+                ChMin = int.Parse(chMin),
+                ChMax = int.Parse(chMax),
+                ChColor = int.Parse(chColor),
+                ChPreview = bool.Parse(chPreview),
+                ChShow = bool.Parse(chShow)
+            };
 
             Data.Insert(idx, newData);
         }
