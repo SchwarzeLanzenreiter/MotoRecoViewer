@@ -386,8 +386,8 @@ namespace MotoRecoViewer
             // ListViewDataのValue1を更新
             // MainChartのカーソル位置1に対応するタイムスタンプを計算
             // mainCur1Posは、PictureMain上の絶対的なX座標の為、グラフ描画領域幅に対するポジションに変換する
-            double ratioMainCurPos = (mainCur1Pos - chartMargin) / (PictureMain.Width - 2 * chartMargin) ;
-            double targetTime = subPosTime + (divTime * 20) * ratioMainCurPos;
+            double ratioMainCurPos1 = (mainCur1Pos - chartMargin) / (PictureMain.Width - 2 * chartMargin) ;
+            double targetTime1 = subPosTime + (divTime * 20) * ratioMainCurPos1;
             
             for (int i = 0; i < ListViewData.Items.Count; i++)
             {
@@ -399,15 +399,15 @@ namespace MotoRecoViewer
                 }
 
                 int idx = DicChName[ListViewData.Items[i].Text];
-                int targetIdx = ListChData[idx].FindLeftIndex(targetTime);
+                int targetIdx = ListChData[idx].FindLeftIndex(targetTime1);
 
                 ListViewData.Items[i].SubItems[1].Text = ListChData[idx].LogData[targetIdx].DataValue.ToString();
             }
 
             // MainChartのカーソル位置2に対応するタイムスタンプを計算
             // mainCur1Posは、PictureMain上の絶対的なX座標の為、グラフ描画領域幅に対するポジションに変換する
-            ratioMainCurPos = (mainCur2Pos - chartMargin) / (PictureMain.Width - 2 * chartMargin);
-            targetTime = subPosTime + (divTime * 20) * ratioMainCurPos;
+            double ratioMainCurPos2 = (mainCur2Pos - chartMargin) / (PictureMain.Width - 2 * chartMargin);
+            double targetTime2 = subPosTime + (divTime * 20) * ratioMainCurPos2;
 
             for (int i = 0; i < ListViewData.Items.Count; i++)
             {
@@ -419,9 +419,63 @@ namespace MotoRecoViewer
                 }
 
                 int idx = DicChName[ListViewData.Items[i].Text];
-                int targetIdx = ListChData[idx].FindLeftIndex(targetTime);
+                int targetIdx = ListChData[idx].FindLeftIndex(targetTime2);
 
                 ListViewData.Items[i].SubItems[2].Text = ListChData[idx].LogData[targetIdx].DataValue.ToString();
+            }
+
+            // MainChartのカーソル1とカーソル2の間のデータでのMAX-MINを計算する
+
+            //diff格納用List
+            var ListDiff = new List<double>();
+
+            //0で初期化
+            for (int i = 0; i < ListViewData.Items.Count; i++)
+            {
+                ListDiff.Add(0.0);
+            }
+
+            //並列処理でMAX,MIN,DIFFを算出
+            //ここはListViewDataでチャンネル名にアクセスできない（∵別スレッドから画面部品にはアクセスできない）
+            //ので、ListViewDataの元になるdecodeRuleから判断する
+            Parallel.For(0, decodeRule.Count, i =>
+            {
+                //　該当CAN IDが存在しないケースも有りうることに注意
+                // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
+                if (!DicChName.ContainsKey(decodeRule.GetChName(i)))
+                {
+                    //Parallel.Forの中では、continueはreturnとなる
+                    return;
+                }
+
+               int idx = DicChName[decodeRule.GetChName(i)];
+               int targetIdxStart = ListChData[idx].FindLeftIndex(targetTime1);
+               int targetIdxEnd = ListChData[idx].FindLeftIndex(targetTime2);
+
+               double dataMax = double.MinValue;
+               double dataMin = double.MaxValue;
+
+               for (int j = targetIdxStart; j <= targetIdxEnd; j++)
+               {
+                   if (ListChData[idx].LogData[j].DataValue > dataMax) { dataMax = ListChData[idx].LogData[j].DataValue; }
+                   if (ListChData[idx].LogData[j].DataValue < dataMin) { dataMin = ListChData[idx].LogData[j].DataValue; }
+               }
+
+               double diff = dataMax - dataMin;
+               ListDiff[i]= diff;
+            });
+
+            //ListViewDataにDiff計算結果を反映
+            for (int i = 0; i < ListViewData.Items.Count; i++)
+            {
+                //　該当CAN IDが存在しないケースも有りうることに注意
+                // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
+                if (!DicChName.ContainsKey(ListViewData.Items[i].Text))
+                {
+                    continue;
+                }
+
+                ListViewData.Items[i].SubItems[3].Text = ListDiff[i].ToString();
             }
 
             // ListView描画
@@ -1129,9 +1183,11 @@ namespace MotoRecoViewer
             ListViewData.Columns.Add("Ch Name");
             ListViewData.Columns.Add("CurSor1");
             ListViewData.Columns.Add("CurSor2");
+            ListViewData.Columns.Add("Max-Min");
             ListViewData.Columns[0].Width = 100;
             ListViewData.Columns[1].Width = 100;
             ListViewData.Columns[2].Width = 100;
+            ListViewData.Columns[3].Width = 100;
             ListViewData.CheckBoxes = true;
             ListViewData.ItemChecked += ListViewData_ItemChecked;
 
@@ -1177,6 +1233,7 @@ namespace MotoRecoViewer
                 };
 
                 newItem.SubItems[0].Text = decodeRule.GetChName(i);
+                newItem.SubItems.Add("");
                 newItem.SubItems.Add("");
                 newItem.SubItems.Add("");
                 newItem.Checked = decodeRule.GetChartShow(i);
