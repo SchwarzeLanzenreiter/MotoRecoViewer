@@ -32,6 +32,7 @@
             this.menuStrip = new System.Windows.Forms.MenuStrip();
             this.MenuFile = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuOpen = new System.Windows.Forms.ToolStripMenuItem();
+            this.MenuAppend = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.MenuConvert = new System.Windows.Forms.ToolStripMenuItem();
             this.MenuConvertAscii = new System.Windows.Forms.ToolStripMenuItem();
@@ -95,6 +96,7 @@
             // 
             this.MenuFile.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MenuOpen,
+            this.MenuAppend,
             this.toolStripMenuItem1,
             this.MenuConvert,
             this.MenuExit});
@@ -106,21 +108,29 @@
             // 
             this.MenuOpen.Name = "MenuOpen";
             this.MenuOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.MenuOpen.Size = new System.Drawing.Size(202, 26);
+            this.MenuOpen.Size = new System.Drawing.Size(224, 26);
             this.MenuOpen.Text = "Open(&O)";
             this.MenuOpen.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
+            // 
+            // MenuAppend
+            // 
+            this.MenuAppend.Name = "MenuAppend";
+            this.MenuAppend.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
+            this.MenuAppend.Size = new System.Drawing.Size(224, 26);
+            this.MenuAppend.Text = "Append(&A)";
+            this.MenuAppend.Click += new System.EventHandler(this.MenuAppend_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(199, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(221, 6);
             // 
             // MenuConvert
             // 
             this.MenuConvert.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.MenuConvertAscii});
             this.MenuConvert.Name = "MenuConvert";
-            this.MenuConvert.Size = new System.Drawing.Size(202, 26);
+            this.MenuConvert.Size = new System.Drawing.Size(224, 26);
             this.MenuConvert.Text = "Export";
             // 
             // MenuConvertAscii
@@ -133,7 +143,7 @@
             // MenuExit
             // 
             this.MenuExit.Name = "MenuExit";
-            this.MenuExit.Size = new System.Drawing.Size(202, 26);
+            this.MenuExit.Size = new System.Drawing.Size(224, 26);
             this.MenuExit.Text = "Exit(&X)";
             this.MenuExit.Click += new System.EventHandler(this.終了ToolStripMenuItem_Click);
             // 
@@ -446,5 +456,6 @@
         private System.Windows.Forms.ToolStripMenuItem helpHToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem aboutAToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem2;
+        private System.Windows.Forms.ToolStripMenuItem MenuAppend;
     }
 }

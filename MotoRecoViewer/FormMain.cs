@@ -78,6 +78,7 @@ namespace MotoRecoViewer
         private double mainCur1Pos;                 //メインチャートカーソル1X位置
         private double mainCur2Pos;                 //メインチャートカーソル2X位置
         private double divTime;                     //メインチャートの1divisionあたり時間、デフォルト1秒
+        private double initTimeOffset;              //データ読み込み時の先頭データ時間オフセット
 
         private bool IsDragging;                    // 現在ドラッグ中かどうか                                 
         private MouseButtons DraggingButton;        // どのボタンが押されているのか(右ボタンで別の処理をしたい時に、区別するため)
@@ -264,7 +265,8 @@ namespace MotoRecoViewer
                         }
                         //時間計算
                         // timeMSecの/1000dは、RAM値→物理値変換
-                        double second = aryCanData[i].timeSec + aryCanData[i].timeMSec / 1000d;
+                        // initTimeOffsetには、Menu→File→Append時に直前データの最終タイムスタンプが入ってくる
+                        double second = aryCanData[i].timeSec + aryCanData[i].timeMSec / 1000d + initTimeOffset;
 
                         //データ追加
                         lock (lockobj) { ListChData[idxCh].AddData(second, value); }
@@ -295,12 +297,15 @@ namespace MotoRecoViewer
             CalcGPSDistance();
 
             //開始時間を計算しておく
-            startTime = aryCanData[0].timeSec + aryCanData[0].timeMSec / 1000;
+            if (startTime == 0.0)
+            {
+                startTime = aryCanData[0].timeSec + aryCanData[0].timeMSec / 1000;
+            }
             subPosTime = startTime;
             divTime = 1;
                        
             //終了時間を計算しておく
-            endTime = aryCanData[arySize - 1].timeSec + aryCanData[arySize - 1].timeMSec / 1000;
+            endTime = aryCanData[arySize - 1].timeSec + aryCanData[arySize - 1].timeMSec / 1000 + endTime;
 
             //CANデータ読み取り終了
             IsReadingCanData = false;
@@ -1479,6 +1484,8 @@ namespace MotoRecoViewer
 
                 ListChData.Clear();
                 DicChName.Clear();
+                initTimeOffset = 0.0;
+                startTime = 0.0;
 
                 // バイナリファイルからCANデータ抽出する
                 ReadCANData(openFileDialog.FileName);
@@ -1588,7 +1595,6 @@ namespace MotoRecoViewer
             GMapProvider.WebProxy = WebRequest.GetSystemWebProxy();
             GMapProvider.WebProxy.Credentials = CredentialCache.DefaultNetworkCredentials;
 
-            // レジストリ情報読み取り
             // Google Map APIが入力済なら、Google Mapを表示
             string strGoogleMapAPIKey = Properties.Settings.Default.GoogleAPI;
 
@@ -1604,7 +1610,7 @@ namespace MotoRecoViewer
             }
 
             GMaps.Instance.Mode = AccessMode.ServerOnly;
-            GMapControl.SetPositionByKeywords("Iwata, Japan");
+            GMapControl.SetPositionByKeywords("Tokyo, Japan");
 
             //地図中心を、先回最終位置に合わせる
             double lat, lon;
@@ -1739,6 +1745,29 @@ namespace MotoRecoViewer
             Properties.Settings.Default.FormMainLon = GMapControl.Position.Lng;
 
             Properties.Settings.Default.Save();
+        }
+
+        private void MenuAppend_Click(object sender, EventArgs e)
+        {
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                //選択したファイル名を保持する
+                currentDatFile = openFileDialog.FileName;
+
+                initTimeOffset = endTime;
+
+                // バイナリファイルからCANデータ抽出する
+                ReadCANData(openFileDialog.FileName);
+
+                // 初回描画する
+                //DrawChart();
+                PictureMain.Refresh();
+                PictureSub.Refresh();
+                UpdateMap();
+                UpdateMapMarker();
+
+                this.Text = openFileDialog.FileName;
+            }
         }
     }
 }
