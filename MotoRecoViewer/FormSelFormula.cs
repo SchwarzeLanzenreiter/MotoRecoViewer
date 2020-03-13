@@ -129,6 +129,16 @@ namespace MotoRecoViewer
                     ListViewItem.Items.Add(new ListViewItem(item34));
 
 
+                    string[] item35 = { "AirTemp", "3FA", "#K51_AirTemp" };
+                    ListViewItem.Items.Add(new ListViewItem(item35));
+
+                    string[] item36 = { "WaterTemp", "2BC", "#K51_WaterTemp" };
+                    ListViewItem.Items.Add(new ListViewItem(item36));
+
+                    string[] item37 = { "OilTemp", "3FA", "#K51_OilTemp" };
+                    ListViewItem.Items.Add(new ListViewItem(item37));
+
+
 
                     return;
 

@@ -30,6 +30,7 @@
         {
             System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("K51");
             System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("GPS");
+            System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Data");
             System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new string[] {
             "RPM",
             "engine RPM",
@@ -122,7 +123,6 @@
             // 
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer1.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -132,25 +132,26 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.ListViewItem);
-            this.splitContainer1.Size = new System.Drawing.Size(1067, 562);
-            this.splitContainer1.SplitterDistance = 354;
-            this.splitContainer1.SplitterWidth = 5;
+            this.splitContainer1.Size = new System.Drawing.Size(800, 450);
+            this.splitContainer1.SplitterDistance = 265;
             this.splitContainer1.TabIndex = 0;
             // 
             // TreeViewBike
             // 
             this.TreeViewBike.Dock = System.Windows.Forms.DockStyle.Fill;
             this.TreeViewBike.Location = new System.Drawing.Point(0, 0);
-            this.TreeViewBike.Margin = new System.Windows.Forms.Padding(4);
             this.TreeViewBike.Name = "TreeViewBike";
             treeNode1.Name = "TreeNodeK51";
             treeNode1.Text = "K51";
             treeNode2.Name = "TreeNodeGPS";
             treeNode2.Text = "GPS";
+            treeNode3.Name = "TreeNodeData";
+            treeNode3.Text = "Data";
             this.TreeViewBike.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
             treeNode1,
-            treeNode2});
-            this.TreeViewBike.Size = new System.Drawing.Size(354, 562);
+            treeNode2,
+            treeNode3});
+            this.TreeViewBike.Size = new System.Drawing.Size(265, 450);
             this.TreeViewBike.TabIndex = 0;
             this.TreeViewBike.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.TreeViewBike_AfterSelect);
             // 
@@ -184,9 +185,8 @@
             listViewItem18,
             listViewItem19});
             this.ListViewItem.Location = new System.Drawing.Point(0, 0);
-            this.ListViewItem.Margin = new System.Windows.Forms.Padding(4);
             this.ListViewItem.Name = "ListViewItem";
-            this.ListViewItem.Size = new System.Drawing.Size(708, 562);
+            this.ListViewItem.Size = new System.Drawing.Size(531, 450);
             this.ListViewItem.TabIndex = 0;
             this.ListViewItem.UseCompatibleStateImageBehavior = false;
             this.ListViewItem.View = System.Windows.Forms.View.Details;
@@ -210,11 +210,10 @@
             // 
             // FormSelFormula
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1067, 562);
+            this.ClientSize = new System.Drawing.Size(800, 450);
             this.Controls.Add(this.splitContainer1);
-            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "FormSelFormula";
             this.Text = "Form1";
             this.splitContainer1.Panel1.ResumeLayout(false);

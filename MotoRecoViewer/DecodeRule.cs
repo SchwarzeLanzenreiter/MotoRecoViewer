@@ -296,8 +296,23 @@ namespace MotoRecoViewer
                     return (data.data[5] + (data.data[4] / 255d) - 128d) / 32d;
 
 
+                // CANID 3FA
+                // K51_AirTemp
+                // Data1*0.75-50
+                case "#K51_AirTemp":
+                    return data.data[0] * 0.75 - 50d;
 
+                // CANID 3FA
+                // K51_OilTemp
+                // Data2-25
+                case "#K51_OilTemp":
+                    return data.data[1] - 25d;
 
+                // CANID 2BC
+                // K51_WaterTemp
+                // Data3*0.76-25
+                case "#K51_WaterTemp":
+                    return data.data[2] * 0.76 - 25d;
 
 
                 // CANID 7FF

@@ -1486,6 +1486,7 @@ namespace MotoRecoViewer
                 DicChName.Clear();
                 initTimeOffset = 0.0;
                 startTime = 0.0;
+                endTime = 0.0;
 
                 // バイナリファイルからCANデータ抽出する
                 ReadCANData(openFileDialog.FileName);
