@@ -139,6 +139,25 @@ namespace MotoRecoViewer
                     ListViewItem.Items.Add(new ListViewItem(item37));
 
 
+                    string[] item38 = { "DistanceCounter", "2B0", "#K51_DistCount" };
+                    ListViewItem.Items.Add(new ListViewItem(item38));
+
+                    string[] item39 = { "AccumulatedDistanceCounter", "2B0", "#K51_AccumulatedDistCount" };
+                    ListViewItem.Items.Add(new ListViewItem(item39));
+
+                    string[] item40 = { "FuelCounter", "2BC", "#K51_FuelCount" };
+                    ListViewItem.Items.Add(new ListViewItem(item40));
+
+                    string[] item41 = { "AccumulatedFuelCounter", "2BC", "#K51_AccumulatedFuelCount" };
+                    ListViewItem.Items.Add(new ListViewItem(item41));
+
+                    string[] item42 = { "FuelLevel", "2D0", "#K51_FuelLevel" };
+                    ListViewItem.Items.Add(new ListViewItem(item42));
+
+                    string[] item43 = { "OdMeter", "3F8", "#K51_OdMeter" };
+                    ListViewItem.Items.Add(new ListViewItem(item43));
+
+
 
                     return;
 

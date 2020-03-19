@@ -315,6 +315,43 @@ namespace MotoRecoViewer
                     return data.data[2] * 0.76 - 25d;
 
 
+                // CANID 2B0
+                // K51_DistanceCounter
+                // Data3*256+Data4
+                case "#K51_DistCount":
+                    return data.data[2]* 250d + data.data[3];
+
+                // CANID 2B0
+                // K51_DistanceCounter
+                // 
+                case "#K51_AccumulatedDistCount":
+                    return 0;
+
+                // CANID 2BC
+                // K51_FuelCounter
+                // 
+                case "#K51_FuelCount":
+                    return data.data[2] * 0.76 - 25d;
+
+                // CANID 2BC
+                // K51_FuelCounter
+                // 
+                case "#K51_AccumulatedFuelCount":
+                    return 0;
+
+                // CANID 2D0
+                // K51_FuelLevel
+                // 
+                case "#K51_FuelLevel":
+                    return data.data[2] * 0.76 - 25d;
+
+                // CANID 3F8
+                // K51_OdMeter
+                // 
+                case "#K51_OdMeter":
+                    return data.data[2] * 0.76 - 25d;
+
+
                 // CANID 7FF
                 // GPS Latitude
                 // (Data8*16777216+Data7*65536+Data6*256+Data5-90000000)/1000000

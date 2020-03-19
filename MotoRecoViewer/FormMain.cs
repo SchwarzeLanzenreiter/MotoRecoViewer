@@ -296,6 +296,9 @@ namespace MotoRecoViewer
             //GPS積算距離を計算
             CalcGPSDistance();
 
+            //燃料積算量を計算
+            CalcAccumulatedDistCount();
+
             //開始時間を計算しておく
             if (startTime == 0.0)
             {
@@ -374,6 +377,135 @@ namespace MotoRecoViewer
 
                 // time diff unit:sec
                 double timeDiff = ListChData[idx_GPSSpeed].LogData[i].DataTime - ListChData[idx_GPSSpeed].LogData[i-1].DataTime;
+
+                tvData = ListChData[idx_GPSDistance].LogData[i];
+
+                // 積算距離は km で考える
+                tvData.DataValue = ListChData[idx_GPSDistance].LogData[i - 1].DataValue + (dSpeed / 3600) * timeDiff;
+                ListChData[idx_GPSDistance].LogData[i] = tvData;
+            }
+        }
+
+        /// <summary>
+        /// ＃K51_DistCount から #K51_AccumulatedDistCountを計算する
+        /// </summary>
+        private void CalcAccumulatedDistCount()
+        {
+            //#K51_DistCountのChName取得
+            int i = decodeRule.FormulaIndexOf("#K51_DistCount");
+
+            //DecodeRuleに定義がない
+            if (i == -1)
+            {
+                return;
+            }
+
+            string chNameDistCount= decodeRule.GetChName(i);
+
+            //　該当CAN IDが存在しないケースも有りうることに注意
+            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
+            if (!DicChName.ContainsKey(chNameDistCount))
+            {
+                return;
+            }
+            int idx_DistCount = DicChName[chNameDistCount];
+
+            //K51_AccumulatedDistCountのChName取得
+            i = decodeRule.FormulaIndexOf("#K51_AccumulatedDistCount");
+
+            //DecodeRuleに定義がない
+            if (i == -1)
+            {
+                return;
+            }
+
+            string chNameAccumulatedDistCount = decodeRule.GetChName(i);
+
+            //　該当CAN IDが存在しないケースも有りうることに注意
+            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
+            if (!DicChName.ContainsKey(chNameAccumulatedDistCount))
+            {
+                return;
+            }
+            int idx_AccumulatedDistCount = DicChName[chNameAccumulatedDistCount];
+
+            //#K51_DistCountの積分計算
+            TVData tvData;
+
+            tvData = ListChData[idx_AccumulatedDistCount].LogData[0];
+            tvData.DataValue = 0.0;
+            ListChData[idx_AccumulatedDistCount].LogData[0] = tvData;
+
+            for (i = 1; i < ListChData[idx_DistCount].Count; i++)
+            {
+                // DistCount unit:?
+                double dCounter = ListChData[idx_DistCount].LogData[i].DataValue - ListChData[idx_DistCount].LogData[i-1].DataValue;
+
+                tvData = ListChData[idx_AccumulatedDistCount].LogData[i];
+
+                // 積算カウンタ
+                tvData.DataValue =+ dCounter;
+                ListChData[idx_AccumulatedDistCount].LogData[i] = tvData;
+            }
+        }
+
+        /// <summary>
+        /// ＃K51_FuelCount から #K51_AccumulatedFuelCount
+        /// </summary>
+        private void CalcAccumulatedFuelCount()
+        {
+            //#GPS_SpeedのChName取得
+            int i = decodeRule.FormulaIndexOf("#GPS_Speed");
+
+            //DecodeRuleに定義がない
+            if (i == -1)
+            {
+                return;
+            }
+
+            string chNameGPSSpeed = decodeRule.GetChName(i);
+
+            //　該当CAN IDが存在しないケースも有りうることに注意
+            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
+            if (!DicChName.ContainsKey(chNameGPSSpeed))
+            {
+                return;
+            }
+            int idx_GPSSpeed = DicChName[chNameGPSSpeed];
+
+            //#GPS_DistanceのChName取得
+            i = decodeRule.FormulaIndexOf("#GPS_Distance");
+
+            //DecodeRuleに定義がない
+            if (i == -1)
+            {
+                return;
+            }
+
+            string chNameGPSDistance = decodeRule.GetChName(i);
+
+            //　該当CAN IDが存在しないケースも有りうることに注意
+            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
+            if (!DicChName.ContainsKey(chNameGPSDistance))
+            {
+                return;
+            }
+            int idx_GPSDistance = DicChName[chNameGPSDistance];
+
+            //#GPS_Distanceの積分計算
+            TVData tvData;
+
+            tvData = ListChData[idx_GPSDistance].LogData[0];
+            tvData.DataValue = 0.0;
+            ListChData[idx_GPSDistance].LogData[0] = tvData;
+
+            for (i = 1; i < ListChData[idx_GPSSpeed].Count; i++)
+            {
+                // GPSSpeed unit:km/h
+                double dSpeed = ListChData[idx_GPSSpeed].LogData[i].DataValue;
+
+                // time diff unit:sec
+                double timeDiff = ListChData[idx_GPSSpeed].LogData[i].DataTime - ListChData[idx_GPSSpeed].LogData[i - 1].DataTime;
 
                 tvData = ListChData[idx_GPSDistance].LogData[i];
 
