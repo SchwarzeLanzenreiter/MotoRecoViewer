@@ -526,6 +526,7 @@ namespace MotoRecoViewer
 
                 // カウンタ1周すると負の値になるのでその場合は253*16足す
                 // 極稀に-1とかの場合は、普通に引いてしまう
+                // また、RPMが0の時は、何もしない
                 if (dCounter < -3000)
                 {
                     // DistCountFrは、MAX3951
@@ -602,6 +603,7 @@ namespace MotoRecoViewer
                 //ToDo File Append時、工夫が必要
 
                 // カウンタ1周すると負の値になるのでその場合は256*256足す
+                // 但しRPMが0の場合は、何もしない
                 if (dCounter < 0)
                 {
                     dCounter += 256*256;

@@ -45,19 +45,19 @@ namespace MotoRecoViewer
             {
                 case "GPS":
                     // ListViewコントロールにデータ追加
-                    string[] item1 = { "Latitude", "7FF", "#GPS_Latitude" };
+                    string[] item1 = { "GPS Latitude", "7FF", "#GPS_Latitude" };
                     ListViewItem.Items.Add(new ListViewItem(item1));
 
-                    string[] item2 = { "Longitude", "7FF", "#GPS_Longitude" };
+                    string[] item2 = { "GPS Longitude", "7FF", "#GPS_Longitude" };
                     ListViewItem.Items.Add(new ListViewItem(item2));
 
-                    string[] item3 = { "Speed", "7FE", "#GPS_Speed" };
+                    string[] item3 = { "GPS Speed", "7FE", "#GPS_Speed" };
                     ListViewItem.Items.Add(new ListViewItem(item3));
 
-                    string[] item4 = { "Altitude", "7FE", "#GPS_Altitude" };
+                    string[] item4 = { "GPS Altitude", "7FE", "#GPS_Altitude" };
                     ListViewItem.Items.Add(new ListViewItem(item4));
 
-                    string[] item5 = { "GPSDistance", "7FE", "#GPS_Distance" };
+                    string[] item5 = { "GPS Distance", "7FE", "#GPS_Distance" };
                     ListViewItem.Items.Add(new ListViewItem(item5));
 
                     return;
