@@ -359,15 +359,15 @@ namespace MotoRecoViewer
 
                 // CANID 2D0
                 // K51_FuelLevel
-                // 
+                // Data2*256+Data1
                 case "#K51_FuelLevel":
-                    return data.data[2] * 0.76 - 25d;
+                    return (data.data[1] * 256d + data.data[0] ) / 562d * 100d;
 
                 // CANID 3F8
                 // K51_OdMeter
-                // 
+                // Data4*65536+Data3*256+Data2
                 case "#K51_OdMeter":
-                    return data.data[2] * 0.76 - 25d;
+                    return data.data[3]*65536d + data.data[2]*256d + data.data[1];
 
                 // CANID 2BC
                 // K51_FuelConsumption
@@ -375,8 +375,8 @@ namespace MotoRecoViewer
                 case "#K51_FuelConsumption":
                     return 0;
 
-                // CANID 3F8
-                // K51_OdMeter
+                // CANID 2BC
+                // K51_Range
                 // 後処理で必要になるので、ダミーで0を返すだけとする。
                 case "#K51_Range":
                     return 0;

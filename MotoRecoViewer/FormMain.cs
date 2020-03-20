@@ -310,6 +310,9 @@ namespace MotoRecoViewer
             //燃費を計算
             CalcFuelConsumption();
 
+            //走行可能距離を計算
+            CalcRange();
+
             //開始時間を計算しておく
             if (startTime == 0.0)
             {
@@ -519,8 +522,11 @@ namespace MotoRecoViewer
                 // DistCount unit:?
                 double dCounter = ListChData[idx_DistCount].LogData[i].DataValue - ListChData[idx_DistCount].LogData[i-1].DataValue;
 
+                //ToDo File Append時、工夫が必要
+
                 // カウンタ1周すると負の値になるのでその場合は253*16足す
-                if (dCounter < 0)
+                // 極稀に-1とかの場合は、普通に引いてしまう
+                if (dCounter < -3000)
                 {
                     // DistCountFrは、MAX3951
                     dCounter += 3951;
@@ -592,6 +598,8 @@ namespace MotoRecoViewer
             {
                 // DistCount unit:?
                 double dCounter = ListChData[idx_FuelCount].LogData[i].DataValue - ListChData[idx_FuelCount].LogData[i - 1].DataValue;
+
+                //ToDo File Append時、工夫が必要
 
                 // カウンタ1周すると負の値になるのでその場合は256*256足す
                 if (dCounter < 0)
@@ -696,6 +704,100 @@ namespace MotoRecoViewer
                     tvData.DataValue = 0;
                 }
                 ListChData[idx_FuelConsumption].LogData[i] = tvData;
+            }
+        }
+
+        /// <summary>
+        /// 燃費とFuelLevelから走行可能距離を計算する
+        /// 2BCと同じデータタイミングとする
+        /// </summary>
+        private void CalcRange()
+        {
+            const double K51_TANK_CAPA = 30d;
+
+
+            //K51_FuelLevelのChName取得
+            int i = decodeRule.FormulaIndexOf("#K51_FuelLevel");
+
+            //DecodeRuleに定義がない
+            if (i == -1)
+            {
+                return;
+            }
+
+            string chNameFuelLevel = decodeRule.GetChName(i);
+
+            //　該当CAN IDが存在しないケースも有りうることに注意
+            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
+            if (!DicChName.ContainsKey(chNameFuelLevel))
+            {
+                return;
+            }
+            int idx_FuelLevel = DicChName[chNameFuelLevel];
+
+            //K51_AccumulatedDistCountのChName取得
+            i = decodeRule.FormulaIndexOf("#K51_FuelConsumption");
+
+            //DecodeRuleに定義がない
+            if (i == -1)
+            {
+                return;
+            }
+
+            string chNameFuelConsumption = decodeRule.GetChName(i);
+
+            //　該当CAN IDが存在しないケースも有りうることに注意
+            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
+            if (!DicChName.ContainsKey(chNameFuelConsumption))
+            {
+                return;
+            }
+            int idx_FuelConsumption = DicChName[chNameFuelConsumption];
+
+            //K51_RangeのChName取得
+            i = decodeRule.FormulaIndexOf("#K51_Range");
+
+            //DecodeRuleに定義がない
+            if (i == -1)
+            {
+                return;
+            }
+
+            string chNameRange = decodeRule.GetChName(i);
+
+            //　該当CAN IDが存在しないケースも有りうることに注意
+            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
+            if (!DicChName.ContainsKey(chNameRange))
+            {
+                return;
+            }
+            int idx_Range = DicChName[chNameRange];
+
+            //Range計算
+            TVData tvData;
+
+            for (i = 0; i < ListChData[idx_Range].Count; i++)
+            {
+                //燃費取得
+                double time = ListChData[idx_FuelConsumption].LogData[i].DataTime;
+                double fuelConsump = ListChData[idx_FuelConsumption].LogData[i].DataValue;
+
+                //燃費計算時点のFuelLevel取得
+                int idx_dist = ListChData[idx_FuelLevel].FindLeftIndex(time);
+                double fuelLevel = ListChData[idx_FuelLevel].LogData[idx_dist].DataValue;
+
+                tvData = ListChData[idx_Range].LogData[i];
+
+                // 燃費
+                if (fuelConsump != 0)
+                {
+                    tvData.DataValue = K51_TANK_CAPA * (fuelLevel / 100d) * fuelConsump;
+                }
+                else
+                {
+                    tvData.DataValue = 0;
+                }
+                ListChData[idx_Range].LogData[i] = tvData;
             }
         }
 

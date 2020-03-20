@@ -169,7 +169,7 @@ namespace MotoRecoViewer
                     string[] item46 = { "FuelConsumption", "2BC", "#K51_FuelConsumption" };
                     ListViewItem.Items.Add(new ListViewItem(item46));
 
-                    string[] item47 = { "Range", "2D0", "#K51_Range" };
+                    string[] item47 = { "Range", "2BC", "#K51_Range" };
                     ListViewItem.Items.Add(new ListViewItem(item47));
 
 
