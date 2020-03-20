@@ -304,6 +304,12 @@ namespace MotoRecoViewer
             //距離カウンタから積算距離を計算
             CalcAccumulatedDistCountFr();
 
+            //燃料カウンタから消費燃料を計算
+            CalcAccumulatedFuelCount();
+
+            //燃費を計算
+            CalcFuelConsumption();
+
             //開始時間を計算しておく
             if (startTime == 0.0)
             {
@@ -536,8 +542,8 @@ namespace MotoRecoViewer
         /// </summary>
         private void CalcAccumulatedFuelCount()
         {
-            //#GPS_SpeedのChName取得
-            int i = decodeRule.FormulaIndexOf("#GPS_Speed");
+            //#K51_DistCountのChName取得
+            int i = decodeRule.FormulaIndexOf("#K51_FuelCount");
 
             //DecodeRuleに定義がない
             if (i == -1)
@@ -545,18 +551,18 @@ namespace MotoRecoViewer
                 return;
             }
 
-            string chNameGPSSpeed = decodeRule.GetChName(i);
+            string chNameFuelCount = decodeRule.GetChName(i);
 
             //　該当CAN IDが存在しないケースも有りうることに注意
             // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
-            if (!DicChName.ContainsKey(chNameGPSSpeed))
+            if (!DicChName.ContainsKey(chNameFuelCount))
             {
                 return;
             }
-            int idx_GPSSpeed = DicChName[chNameGPSSpeed];
+            int idx_FuelCount = DicChName[chNameFuelCount];
 
-            //#GPS_DistanceのChName取得
-            i = decodeRule.FormulaIndexOf("#GPS_Distance");
+            //K51_AccumulatedDistCountのChName取得
+            i = decodeRule.FormulaIndexOf("#K51_AccumulatedFuelCount");
 
             //DecodeRuleに定義がない
             if (i == -1)
@@ -564,36 +570,132 @@ namespace MotoRecoViewer
                 return;
             }
 
-            string chNameGPSDistance = decodeRule.GetChName(i);
+            string chNameAccumulatedFuelCount = decodeRule.GetChName(i);
 
             //　該当CAN IDが存在しないケースも有りうることに注意
             // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
-            if (!DicChName.ContainsKey(chNameGPSDistance))
+            if (!DicChName.ContainsKey(chNameAccumulatedFuelCount))
             {
                 return;
             }
-            int idx_GPSDistance = DicChName[chNameGPSDistance];
+            int idx_AccumulatedFuelCount = DicChName[chNameAccumulatedFuelCount];
 
-            //#GPS_Distanceの積分計算
+            //#K51_DistCountの積分計算
             TVData tvData;
+            double AccumulatedCounter = 0.0;
 
-            tvData = ListChData[idx_GPSDistance].LogData[0];
-            tvData.DataValue = 0.0;
-            ListChData[idx_GPSDistance].LogData[0] = tvData;
+            tvData = ListChData[idx_AccumulatedFuelCount].LogData[0];
+            tvData.DataValue = AccumulatedCounter;
+            ListChData[idx_AccumulatedFuelCount].LogData[0] = tvData;
 
-            for (i = 1; i < ListChData[idx_GPSSpeed].Count; i++)
+            for (i = 1; i < ListChData[idx_FuelCount].Count; i++)
             {
-                // GPSSpeed unit:km/h
-                double dSpeed = ListChData[idx_GPSSpeed].LogData[i].DataValue;
+                // DistCount unit:?
+                double dCounter = ListChData[idx_FuelCount].LogData[i].DataValue - ListChData[idx_FuelCount].LogData[i - 1].DataValue;
 
-                // time diff unit:sec
-                double timeDiff = ListChData[idx_GPSSpeed].LogData[i].DataTime - ListChData[idx_GPSSpeed].LogData[i - 1].DataTime;
+                // カウンタ1周すると負の値になるのでその場合は256*256足す
+                if (dCounter < 0)
+                {
+                    dCounter += 256*256;
+                }
 
-                tvData = ListChData[idx_GPSDistance].LogData[i];
+                AccumulatedCounter += dCounter;
 
-                // 積算距離は km で考える
-                tvData.DataValue = ListChData[idx_GPSDistance].LogData[i - 1].DataValue + (dSpeed / 3600) * timeDiff;
-                ListChData[idx_GPSDistance].LogData[i] = tvData;
+                tvData = ListChData[idx_AccumulatedFuelCount].LogData[i];
+
+                // 積算カウンタ
+                // 燃料カウンタは1000000で割るとちょうど良さそう
+                tvData.DataValue = AccumulatedCounter / 1000000;
+                ListChData[idx_AccumulatedFuelCount].LogData[i] = tvData;
+            }
+        }
+
+        /// <summary>
+        /// 燃料カウンタと距離カウンタから、燃費を計算する
+        /// 燃費カウンタデータは、2BCと同じデータタイミングとする
+        /// </summary>
+        private void CalcFuelConsumption()
+        {
+            //K51_AccumulatedDistCountのChName取得
+            int i = decodeRule.FormulaIndexOf("#K51_AccumulatedFuelCount");
+
+            //DecodeRuleに定義がない
+            if (i == -1)
+            {
+                return;
+            }
+
+            string chNameAccumulatedFuelCount = decodeRule.GetChName(i);
+
+            //　該当CAN IDが存在しないケースも有りうることに注意
+            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
+            if (!DicChName.ContainsKey(chNameAccumulatedFuelCount))
+            {
+                return;
+            }
+            int idx_AccumulatedFuelCount = DicChName[chNameAccumulatedFuelCount];
+
+            //K51_AccumulatedDistCountのChName取得
+            i = decodeRule.FormulaIndexOf("#K51_AccumulatedDistCountFr");
+
+            //DecodeRuleに定義がない
+            if (i == -1)
+            {
+                return;
+            }
+
+            string chNameAccumulatedDistCount = decodeRule.GetChName(i);
+
+            //　該当CAN IDが存在しないケースも有りうることに注意
+            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
+            if (!DicChName.ContainsKey(chNameAccumulatedDistCount))
+            {
+                return;
+            }
+            int idx_AccumulatedDistCount = DicChName[chNameAccumulatedDistCount];
+
+            //K51_FuelConsumptionのChName取得
+            i = decodeRule.FormulaIndexOf("#K51_FuelConsumption");
+
+            //DecodeRuleに定義がない
+            if (i == -1)
+            {
+                return;
+            }
+
+            string chNameFuelConsumption = decodeRule.GetChName(i);
+
+            //　該当CAN IDが存在しないケースも有りうることに注意
+            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
+            if (!DicChName.ContainsKey(chNameFuelConsumption))
+            {
+                return;
+            }
+            int idx_FuelConsumption = DicChName[chNameFuelConsumption];
+
+            //燃費計算
+            TVData tvData;
+            
+            for (i = 0; i < ListChData[idx_FuelConsumption].Count; i++)
+            {
+                //積算燃料量取得
+                double time = ListChData[idx_AccumulatedFuelCount].LogData[i].DataTime;
+                double fuel = ListChData[idx_AccumulatedFuelCount].LogData[i].DataValue;
+
+                //積算燃料取得時間に対応した、積算距離を取得
+                int idx_dist = ListChData[idx_AccumulatedDistCount].FindLeftIndex(time);
+                double dist = ListChData[idx_AccumulatedDistCount].LogData[idx_dist].DataValue;
+
+                tvData = ListChData[idx_FuelConsumption].LogData[i];
+
+                // 燃費
+                if (fuel != 0) {
+                    tvData.DataValue = dist  / fuel ;
+                } else
+                {
+                    tvData.DataValue = 0;
+                }
+                ListChData[idx_FuelConsumption].LogData[i] = tvData;
             }
         }
 

@@ -145,13 +145,13 @@ namespace MotoRecoViewer
                     string[] item38 = { "DistCountFr", "2B0", "#K51_DistCountFr" };
                     ListViewItem.Items.Add(new ListViewItem(item38));
 
-                    string[] item39 = { "AccumulatedDistanceCounterFr", "2B0", "#K51_AccumulatedDistCountFr" };
+                    string[] item39 = { "AccumulatedDistCountFr", "2B0", "#K51_AccumulatedDistCountFr" };
                     ListViewItem.Items.Add(new ListViewItem(item39));
 
                     string[] item40 = { "DistanceCounterRr", "2B0", "#K51_DistCountRr" };
                     ListViewItem.Items.Add(new ListViewItem(item40));
 
-                    string[] item41 = { "AccumulatedDistanceCounterRr", "2B0", "#K51_AccumulatedDistCountRr" };
+                    string[] item41 = { "AccumulatedDistCountRr", "2B0", "#K51_AccumulatedDistCountRr" };
                     ListViewItem.Items.Add(new ListViewItem(item41));
 
                     string[] item42 = { "FuelCounter", "2BC", "#K51_FuelCount" };
@@ -166,6 +166,11 @@ namespace MotoRecoViewer
                     string[] item45 = { "OdMeter", "3F8", "#K51_OdMeter" };
                     ListViewItem.Items.Add(new ListViewItem(item45));
 
+                    string[] item46 = { "FuelConsumption", "2BC", "#K51_FuelConsumption" };
+                    ListViewItem.Items.Add(new ListViewItem(item46));
+
+                    string[] item47 = { "Range", "2D0", "#K51_Range" };
+                    ListViewItem.Items.Add(new ListViewItem(item47));
 
 
                     return;
