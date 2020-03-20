@@ -57,7 +57,7 @@ namespace MotoRecoViewer
                     string[] item4 = { "Altitude", "7FE", "#GPS_Altitude" };
                     ListViewItem.Items.Add(new ListViewItem(item4));
 
-                    string[] item5 = { "Distance", "7FE", "#GPS_Distance" };
+                    string[] item5 = { "GPSDistance", "7FE", "#GPS_Distance" };
                     ListViewItem.Items.Add(new ListViewItem(item5));
 
                     return;
@@ -100,6 +100,9 @@ namespace MotoRecoViewer
                     string[] item22 = { "FrSpeed1", "293", "#K51_FrSpeed1" };
                     ListViewItem.Items.Add(new ListViewItem(item22));
 
+                    string[] item221 = { "DistFrSpeed1", "293", "#K51_DistFrSpeed1" };
+                    ListViewItem.Items.Add(new ListViewItem(item221));
+
                     string[] item23 = { "FrSpeed2", "293", "#K51_FrSpeed2" };
                     ListViewItem.Items.Add(new ListViewItem(item23));
 
@@ -139,23 +142,29 @@ namespace MotoRecoViewer
                     ListViewItem.Items.Add(new ListViewItem(item37));
 
 
-                    string[] item38 = { "DistanceCounter", "2B0", "#K51_DistCount" };
+                    string[] item38 = { "DistCountFr", "2B0", "#K51_DistCountFr" };
                     ListViewItem.Items.Add(new ListViewItem(item38));
 
-                    string[] item39 = { "AccumulatedDistanceCounter", "2B0", "#K51_AccumulatedDistCount" };
+                    string[] item39 = { "AccumulatedDistanceCounterFr", "2B0", "#K51_AccumulatedDistCountFr" };
                     ListViewItem.Items.Add(new ListViewItem(item39));
 
-                    string[] item40 = { "FuelCounter", "2BC", "#K51_FuelCount" };
+                    string[] item40 = { "DistanceCounterRr", "2B0", "#K51_DistCountRr" };
                     ListViewItem.Items.Add(new ListViewItem(item40));
 
-                    string[] item41 = { "AccumulatedFuelCounter", "2BC", "#K51_AccumulatedFuelCount" };
+                    string[] item41 = { "AccumulatedDistanceCounterRr", "2B0", "#K51_AccumulatedDistCountRr" };
                     ListViewItem.Items.Add(new ListViewItem(item41));
 
-                    string[] item42 = { "FuelLevel", "2D0", "#K51_FuelLevel" };
+                    string[] item42 = { "FuelCounter", "2BC", "#K51_FuelCount" };
                     ListViewItem.Items.Add(new ListViewItem(item42));
 
-                    string[] item43 = { "OdMeter", "3F8", "#K51_OdMeter" };
+                    string[] item43 = { "AccumulatedFuelCounter", "2BC", "#K51_AccumulatedFuelCount" };
                     ListViewItem.Items.Add(new ListViewItem(item43));
+
+                    string[] item44 = { "FuelLevel", "2D0", "#K51_FuelLevel" };
+                    ListViewItem.Items.Add(new ListViewItem(item44));
+
+                    string[] item45 = { "OdMeter", "3F8", "#K51_OdMeter" };
+                    ListViewItem.Items.Add(new ListViewItem(item45));
 
 
 

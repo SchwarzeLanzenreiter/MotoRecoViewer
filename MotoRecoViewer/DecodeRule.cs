@@ -235,6 +235,12 @@ namespace MotoRecoViewer
                     return ((nibble & data.data[4]) * 256 + data.data[3]) / 8d;
 
                 // CANID 293
+                // K51_DistFrSpeed1
+                // 積分計算が後処理で必要になるので、ダミーで0を返すだけとする。
+                case "#K51_DistFrSpeed1":
+                    return 0;
+
+                // CANID 293
                 // K51 SlipRate
                 // rrSpeed/frSpeed*100-100
                 case "#K51_SlipRate":
@@ -300,7 +306,7 @@ namespace MotoRecoViewer
                 // K51_AirTemp
                 // Data1*0.75-50
                 case "#K51_AirTemp":
-                    return data.data[0] * 0.75 - 50d;
+                    return data.data[0] * 0.75 - 48d;
 
                 // CANID 3FA
                 // K51_OilTemp
@@ -316,15 +322,27 @@ namespace MotoRecoViewer
 
 
                 // CANID 2B0
-                // K51_DistanceCounter
-                // Data3*256+Data4
-                case "#K51_DistCount":
-                    return data.data[2]* 250d + data.data[3];
+                // K51_DistanceCounterFr
+                // LoData5*253+Data4
+                case "#K51_DistCountFr":
+                    return (nibble & data.data[4]) * 253d + data.data[3];
 
                 // CANID 2B0
-                // K51_DistanceCounter
+                // K51_DistanceCounterFr
                 // 
-                case "#K51_AccumulatedDistCount":
+                case "#K51_AccumulatedDistCountFr":
+                    return 0;
+
+                // CANID 2B0
+                // K51_DistanceCounterRr
+                // Data3
+                case "#K51_DistCountRr":
+                    return data.data[2];
+
+                // CANID 2B0
+                // K51_DistanceCounterRr
+                // 積分計算が後処理で必要になるので、ダミーで0を返すだけとする。
+                case "#K51_AccumulatedDistCountRr":
                     return 0;
 
                 // CANID 2BC
@@ -335,7 +353,7 @@ namespace MotoRecoViewer
 
                 // CANID 2BC
                 // K51_FuelCounter
-                // 
+                // 積分計算が後処理で必要になるので、ダミーで0を返すだけとする。
                 case "#K51_AccumulatedFuelCount":
                     return 0;
 

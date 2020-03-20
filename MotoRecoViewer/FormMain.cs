@@ -293,11 +293,16 @@ namespace MotoRecoViewer
                 ListChData[i].Sort();
             });
 
+            //ToDo この下のCalcXXもAsyncで並列処理できる
+
             //GPS積算距離を計算
             CalcGPSDistance();
 
-            //燃料積算量を計算
-            CalcAccumulatedDistCount();
+            //FrSpeed積算距離を計算
+            CalcFrSpeedDistance();
+
+            //距離カウンタから積算距離を計算
+            CalcAccumulatedDistCountFr();
 
             //開始時間を計算しておく
             if (startTime == 0.0)
@@ -387,12 +392,78 @@ namespace MotoRecoViewer
         }
 
         /// <summary>
+        /// ＃K51_FrSpeed1から#K51_DistFrSpeed1を計算する
+        /// </summary>
+        private void CalcFrSpeedDistance()
+        {
+            //#K51_FrSpeed1から
+            int i = decodeRule.FormulaIndexOf("#K51_FrSpeed1");
+
+            //DecodeRuleに定義がない
+            if (i == -1)
+            {
+                return;
+            }
+
+            string chNameFrSpeed = decodeRule.GetChName(i);
+
+            //　該当CAN IDが存在しないケースも有りうることに注意
+            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
+            if (!DicChName.ContainsKey(chNameFrSpeed))
+            {
+                return;
+            }
+            int idx_FrSpeed = DicChName[chNameFrSpeed];
+
+            //#GPS_DistanceのChName取得
+            i = decodeRule.FormulaIndexOf("#K51_DistFrSpeed1");
+
+            //DecodeRuleに定義がない
+            if (i == -1)
+            {
+                return;
+            }
+
+            string chNameDistFrSpeed = decodeRule.GetChName(i);
+
+            //　該当CAN IDが存在しないケースも有りうることに注意
+            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
+            if (!DicChName.ContainsKey(chNameDistFrSpeed))
+            {
+                return;
+            }
+            int idx_GPSDistance = DicChName[chNameDistFrSpeed];
+
+            //#GPS_Distanceの積分計算
+            TVData tvData;
+
+            tvData = ListChData[idx_GPSDistance].LogData[0];
+            tvData.DataValue = 0.0;
+            ListChData[idx_GPSDistance].LogData[0] = tvData;
+
+            for (i = 1; i < ListChData[idx_FrSpeed].Count; i++)
+            {
+                // GPSSpeed unit:km/h
+                double dSpeed = ListChData[idx_FrSpeed].LogData[i].DataValue;
+
+                // time diff unit:sec
+                double timeDiff = ListChData[idx_FrSpeed].LogData[i].DataTime - ListChData[idx_FrSpeed].LogData[i - 1].DataTime;
+
+                tvData = ListChData[idx_GPSDistance].LogData[i];
+
+                // 積算距離は km で考える
+                tvData.DataValue = ListChData[idx_GPSDistance].LogData[i - 1].DataValue + (dSpeed / 3600) * timeDiff;
+                ListChData[idx_GPSDistance].LogData[i] = tvData;
+            }
+        }
+
+        /// <summary>
         /// ＃K51_DistCount から #K51_AccumulatedDistCountを計算する
         /// </summary>
-        private void CalcAccumulatedDistCount()
+        private void CalcAccumulatedDistCountFr()
         {
             //#K51_DistCountのChName取得
-            int i = decodeRule.FormulaIndexOf("#K51_DistCount");
+            int i = decodeRule.FormulaIndexOf("#K51_DistCountFr");
 
             //DecodeRuleに定義がない
             if (i == -1)
@@ -411,7 +482,7 @@ namespace MotoRecoViewer
             int idx_DistCount = DicChName[chNameDistCount];
 
             //K51_AccumulatedDistCountのChName取得
-            i = decodeRule.FormulaIndexOf("#K51_AccumulatedDistCount");
+            i = decodeRule.FormulaIndexOf("#K51_AccumulatedDistCountFr");
 
             //DecodeRuleに定義がない
             if (i == -1)
@@ -431,9 +502,10 @@ namespace MotoRecoViewer
 
             //#K51_DistCountの積分計算
             TVData tvData;
+            double AccumulatedCounter = 0.0;
 
             tvData = ListChData[idx_AccumulatedDistCount].LogData[0];
-            tvData.DataValue = 0.0;
+            tvData.DataValue = AccumulatedCounter;
             ListChData[idx_AccumulatedDistCount].LogData[0] = tvData;
 
             for (i = 1; i < ListChData[idx_DistCount].Count; i++)
@@ -441,10 +513,20 @@ namespace MotoRecoViewer
                 // DistCount unit:?
                 double dCounter = ListChData[idx_DistCount].LogData[i].DataValue - ListChData[idx_DistCount].LogData[i-1].DataValue;
 
+                // カウンタ1周すると負の値になるのでその場合は253*16足す
+                if (dCounter < 0)
+                {
+                    // DistCountFrは、MAX3951
+                    dCounter += 3951;
+                }
+
+                AccumulatedCounter += dCounter;
+
                 tvData = ListChData[idx_AccumulatedDistCount].LogData[i];
 
                 // 積算カウンタ
-                tvData.DataValue =+ dCounter;
+                // カウンタ値に0.000255掛けると、ちょうどFr車速を積分した積算距離に等しくなっている
+                tvData.DataValue = AccumulatedCounter * 0.000255;
                 ListChData[idx_AccumulatedDistCount].LogData[i] = tvData;
             }
         }
