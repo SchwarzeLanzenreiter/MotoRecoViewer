@@ -293,26 +293,22 @@ namespace MotoRecoViewer
                 ListChData[i].Sort();
             });
 
-            //ToDo この下のCalcXXもAsyncで並列処理できる
-            {
-                //GPS積算距離を計算
-                CalcGPSDistance();
+            // この4関数は依存関係なし→並列処理可
+            Parallel.Invoke(
+                () => CalcGPSDistance(),                    //GPS積算距離を計算
+                () => CalcFrSpeedDistance(),                //FrSpeed積算距離を計算
+                () => CalcAccumulatedDistCountFr(),         //距離カウンタから積算距離を計算
+                () => CalcAccumulatedFuelCount()            //燃料カウンタから消費燃料を計算
+            );
 
-                //FrSpeed積算距離を計算
-                CalcFrSpeedDistance();
+            //燃費を出すには、積算距離と積算燃料が計算できていないといけない
+            //燃費を計算
+            CalcFuelConsumption();
 
-                //距離カウンタから積算距離を計算
-                CalcAccumulatedDistCountFr();
-
-                //燃料カウンタから消費燃料を計算
-                CalcAccumulatedFuelCount();
-
-                //燃費を計算
-                CalcFuelConsumption();
-
-                //走行可能距離を計算
-                CalcRange();
-            }
+            //Rangeを出すには、燃費が計算できていないといけない
+            //走行可能距離を計算
+            CalcRange();
+            
 
             //開始時間を計算しておく
             if (startTime == 0.0)
