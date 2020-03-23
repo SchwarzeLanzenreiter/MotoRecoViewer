@@ -459,9 +459,8 @@ namespace MotoRecoViewer
                 //ToDo File Append時、工夫が必要
 
                 // カウンタ1周すると負の値になるのでその場合は253*16足す
-                // 極稀に-1とかの場合は、普通に引いてしまう
-                // また、RPMが0の時は、何もしない
-                if (dCounter < -3000)
+                // 0で判定すると、EG STOP時もカウントアップしてしまうので、明らかに1周カウンタが回ったときだけ+3951する
+                if (dCounter < -3900)
                 {
                     // DistCountFrは、MAX3951
                     dCounter += 3951;
@@ -507,8 +506,8 @@ namespace MotoRecoViewer
                 //ToDo File Append時、工夫が必要
 
                 // カウンタ1周すると負の値になるのでその場合は256*256足す
-                // 但しRPMが0の場合は、何もしない
-                if (dCounter < 0)
+                // 0で判定すると、EG STOP時もカウントアップしてしまうので、明らかに1周カウンタが回ったときだけ+256*256する
+                if (dCounter < -65000)
                 {
                     dCounter += 256*256;
                 }
