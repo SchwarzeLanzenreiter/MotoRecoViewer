@@ -404,15 +404,15 @@ namespace MotoRecoViewer
             if (idx_FrSpeed < 0) { return; }
 
             //#K51_DistFrSpeed1 のChName取得
-            int idx_GPSDistance = GetIndexOfFixedFormula("#K51_DistFrSpeed1");
-            if (idx_FrSpeed < 0) { return; }
+            int idx_DistFrSpeed = GetIndexOfFixedFormula("#K51_DistFrSpeed1");
+            if (idx_DistFrSpeed < 0) { return; }
 
             //#GPS_Distanceの積分計算
             TVData tvData;
 
-            tvData = ListChData[idx_GPSDistance].LogData[0];
+            tvData = ListChData[idx_DistFrSpeed].LogData[0];
             tvData.DataValue = 0.0;
-            ListChData[idx_GPSDistance].LogData[0] = tvData;
+            ListChData[idx_DistFrSpeed].LogData[0] = tvData;
 
             for (int i = 1; i < ListChData[idx_FrSpeed].Count; i++)
             {
@@ -422,11 +422,11 @@ namespace MotoRecoViewer
                 // time diff unit:sec
                 double timeDiff = ListChData[idx_FrSpeed].LogData[i].DataTime - ListChData[idx_FrSpeed].LogData[i - 1].DataTime;
 
-                tvData = ListChData[idx_GPSDistance].LogData[i];
+                tvData = ListChData[idx_DistFrSpeed].LogData[i];
 
                 // 積算距離は km で考える
-                tvData.DataValue = ListChData[idx_GPSDistance].LogData[i - 1].DataValue + (dSpeed / 3600) * timeDiff;
-                ListChData[idx_GPSDistance].LogData[i] = tvData;
+                tvData.DataValue = ListChData[idx_DistFrSpeed].LogData[i - 1].DataValue + (dSpeed / 3600) * timeDiff;
+                ListChData[idx_DistFrSpeed].LogData[i] = tvData;
             }
         }
 
