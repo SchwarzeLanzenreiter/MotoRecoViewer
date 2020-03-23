@@ -294,24 +294,25 @@ namespace MotoRecoViewer
             });
 
             //ToDo この下のCalcXXもAsyncで並列処理できる
+            {
+                //GPS積算距離を計算
+                CalcGPSDistance();
 
-            //GPS積算距離を計算
-            CalcGPSDistance();
+                //FrSpeed積算距離を計算
+                CalcFrSpeedDistance();
 
-            //FrSpeed積算距離を計算
-            CalcFrSpeedDistance();
+                //距離カウンタから積算距離を計算
+                CalcAccumulatedDistCountFr();
 
-            //距離カウンタから積算距離を計算
-            CalcAccumulatedDistCountFr();
+                //燃料カウンタから消費燃料を計算
+                CalcAccumulatedFuelCount();
 
-            //燃料カウンタから消費燃料を計算
-            CalcAccumulatedFuelCount();
+                //燃費を計算
+                CalcFuelConsumption();
 
-            //燃費を計算
-            CalcFuelConsumption();
-
-            //走行可能距離を計算
-            CalcRange();
+                //走行可能距離を計算
+                CalcRange();
+            }
 
             //開始時間を計算しておく
             if (startTime == 0.0)
@@ -335,47 +336,40 @@ namespace MotoRecoViewer
             }, null);
         }
 
+        private int GetIndexOfFixedFormula(string FixedFormula)
+        {
+            //FixedFormulaのChName取得
+            int i = decodeRule.FormulaIndexOf(FixedFormula);
+
+            //DecodeRuleに定義がない
+            if (i == -1)
+            {
+                return -1;
+            }
+
+            string chNameDistCount = decodeRule.GetChName(i);
+
+            //　該当CAN IDが存在しないケースも有りうることに注意
+            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
+            if (!DicChName.ContainsKey(chNameDistCount))
+            {
+                return -1;
+            }
+            return DicChName[chNameDistCount];
+        }
+
         /// <summary>
         /// ＃GPS_Speedから#GPS_Distanceを計算する
         /// </summary>
         private void CalcGPSDistance() {
-            //#GPS_SpeedのChName取得
-            int i = decodeRule.FormulaIndexOf("#GPS_Speed");
+            //#GPS_Speed のindex取得
+            int idx_GPSSpeed = GetIndexOfFixedFormula("#GPS_Speed");
+            if (idx_GPSSpeed < 0) { return; }
 
-            //DecodeRuleに定義がない
-            if (i == -1)
-            {
-                return;
-            }
+            //#GPS_Distanc のChName取得
+            int idx_GPSDistance = GetIndexOfFixedFormula("#GPS_Distanc");
+            if (idx_GPSDistance < 0) { return; }
 
-            string chNameGPSSpeed = decodeRule.GetChName(i);
-
-            //　該当CAN IDが存在しないケースも有りうることに注意
-            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
-            if (!DicChName.ContainsKey(chNameGPSSpeed))
-            {
-                return;
-            }
-            int idx_GPSSpeed = DicChName[chNameGPSSpeed];
-
-            //#GPS_DistanceのChName取得
-            i = decodeRule.FormulaIndexOf("#GPS_Distance");
-
-            //DecodeRuleに定義がない
-            if (i == -1)
-            {
-                return;
-            }
-
-            string chNameGPSDistance = decodeRule.GetChName(i);
-
-            //　該当CAN IDが存在しないケースも有りうることに注意
-            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
-            if (!DicChName.ContainsKey(chNameGPSDistance))
-            {
-                return;
-            }
-            int idx_GPSDistance = DicChName[chNameGPSDistance];
 
             //#GPS_Distanceの積分計算
             TVData tvData;
@@ -384,7 +378,7 @@ namespace MotoRecoViewer
             tvData.DataValue = 0.0;
             ListChData[idx_GPSDistance].LogData[0] = tvData;
 
-            for (i=1; i<ListChData[idx_GPSSpeed].Count; i++)
+            for (int i=1; i<ListChData[idx_GPSSpeed].Count; i++)
             { 
                 // GPSSpeed unit:km/h
                 double dSpeed = ListChData[idx_GPSSpeed].LogData[i].DataValue;
@@ -405,43 +399,13 @@ namespace MotoRecoViewer
         /// </summary>
         private void CalcFrSpeedDistance()
         {
-            //#K51_FrSpeed1から
-            int i = decodeRule.FormulaIndexOf("#K51_FrSpeed1");
+            //#K51_FrSpeed1 のChName取得
+            int idx_FrSpeed = GetIndexOfFixedFormula("#K51_FrSpeed1");
+            if (idx_FrSpeed < 0) { return; }
 
-            //DecodeRuleに定義がない
-            if (i == -1)
-            {
-                return;
-            }
-
-            string chNameFrSpeed = decodeRule.GetChName(i);
-
-            //　該当CAN IDが存在しないケースも有りうることに注意
-            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
-            if (!DicChName.ContainsKey(chNameFrSpeed))
-            {
-                return;
-            }
-            int idx_FrSpeed = DicChName[chNameFrSpeed];
-
-            //#GPS_DistanceのChName取得
-            i = decodeRule.FormulaIndexOf("#K51_DistFrSpeed1");
-
-            //DecodeRuleに定義がない
-            if (i == -1)
-            {
-                return;
-            }
-
-            string chNameDistFrSpeed = decodeRule.GetChName(i);
-
-            //　該当CAN IDが存在しないケースも有りうることに注意
-            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
-            if (!DicChName.ContainsKey(chNameDistFrSpeed))
-            {
-                return;
-            }
-            int idx_GPSDistance = DicChName[chNameDistFrSpeed];
+            //#K51_DistFrSpeed1 のChName取得
+            int idx_GPSDistance = GetIndexOfFixedFormula("#K51_DistFrSpeed1");
+            if (idx_FrSpeed < 0) { return; }
 
             //#GPS_Distanceの積分計算
             TVData tvData;
@@ -450,7 +414,7 @@ namespace MotoRecoViewer
             tvData.DataValue = 0.0;
             ListChData[idx_GPSDistance].LogData[0] = tvData;
 
-            for (i = 1; i < ListChData[idx_FrSpeed].Count; i++)
+            for (int i = 1; i < ListChData[idx_FrSpeed].Count; i++)
             {
                 // GPSSpeed unit:km/h
                 double dSpeed = ListChData[idx_FrSpeed].LogData[i].DataValue;
@@ -471,43 +435,13 @@ namespace MotoRecoViewer
         /// </summary>
         private void CalcAccumulatedDistCountFr()
         {
-            //#K51_DistCountのChName取得
-            int i = decodeRule.FormulaIndexOf("#K51_DistCountFr");
+            //#K51_DistCountFr のChName取得
+            int idx_DistCount = GetIndexOfFixedFormula("#K51_DistCountFr");
+            if (idx_DistCount < 0) { return; }
 
-            //DecodeRuleに定義がない
-            if (i == -1)
-            {
-                return;
-            }
-
-            string chNameDistCount= decodeRule.GetChName(i);
-
-            //　該当CAN IDが存在しないケースも有りうることに注意
-            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
-            if (!DicChName.ContainsKey(chNameDistCount))
-            {
-                return;
-            }
-            int idx_DistCount = DicChName[chNameDistCount];
-
-            //K51_AccumulatedDistCountのChName取得
-            i = decodeRule.FormulaIndexOf("#K51_AccumulatedDistCountFr");
-
-            //DecodeRuleに定義がない
-            if (i == -1)
-            {
-                return;
-            }
-
-            string chNameAccumulatedDistCount = decodeRule.GetChName(i);
-
-            //　該当CAN IDが存在しないケースも有りうることに注意
-            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
-            if (!DicChName.ContainsKey(chNameAccumulatedDistCount))
-            {
-                return;
-            }
-            int idx_AccumulatedDistCount = DicChName[chNameAccumulatedDistCount];
+            //#K51_AccumulatedDistCountFr のChName取得
+            int idx_AccumulatedDistCount = GetIndexOfFixedFormula("#K51_AccumulatedDistCountFr");
+            if (idx_AccumulatedDistCount < 0) { return; }
 
             //#K51_DistCountの積分計算
             TVData tvData;
@@ -517,7 +451,7 @@ namespace MotoRecoViewer
             tvData.DataValue = AccumulatedCounter;
             ListChData[idx_AccumulatedDistCount].LogData[0] = tvData;
 
-            for (i = 1; i < ListChData[idx_DistCount].Count; i++)
+            for (int i = 1; i < ListChData[idx_DistCount].Count; i++)
             {
                 // DistCount unit:?
                 double dCounter = ListChData[idx_DistCount].LogData[i].DataValue - ListChData[idx_DistCount].LogData[i-1].DataValue;
@@ -549,43 +483,13 @@ namespace MotoRecoViewer
         /// </summary>
         private void CalcAccumulatedFuelCount()
         {
-            //#K51_DistCountのChName取得
-            int i = decodeRule.FormulaIndexOf("#K51_FuelCount");
+            //#K51_FuelCount のChName取得
+            int idx_FuelCount = GetIndexOfFixedFormula("#K51_FuelCount");
+            if (idx_FuelCount < 0) { return; }
 
-            //DecodeRuleに定義がない
-            if (i == -1)
-            {
-                return;
-            }
-
-            string chNameFuelCount = decodeRule.GetChName(i);
-
-            //　該当CAN IDが存在しないケースも有りうることに注意
-            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
-            if (!DicChName.ContainsKey(chNameFuelCount))
-            {
-                return;
-            }
-            int idx_FuelCount = DicChName[chNameFuelCount];
-
-            //K51_AccumulatedDistCountのChName取得
-            i = decodeRule.FormulaIndexOf("#K51_AccumulatedFuelCount");
-
-            //DecodeRuleに定義がない
-            if (i == -1)
-            {
-                return;
-            }
-
-            string chNameAccumulatedFuelCount = decodeRule.GetChName(i);
-
-            //　該当CAN IDが存在しないケースも有りうることに注意
-            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
-            if (!DicChName.ContainsKey(chNameAccumulatedFuelCount))
-            {
-                return;
-            }
-            int idx_AccumulatedFuelCount = DicChName[chNameAccumulatedFuelCount];
+            //#K51_AccumulatedFuelCount のChName取得
+            int idx_AccumulatedFuelCount = GetIndexOfFixedFormula("#K51_AccumulatedFuelCount");
+            if (idx_AccumulatedFuelCount < 0) { return; }
 
             //#K51_DistCountの積分計算
             TVData tvData;
@@ -595,7 +499,7 @@ namespace MotoRecoViewer
             tvData.DataValue = AccumulatedCounter;
             ListChData[idx_AccumulatedFuelCount].LogData[0] = tvData;
 
-            for (i = 1; i < ListChData[idx_FuelCount].Count; i++)
+            for (int i = 1; i < ListChData[idx_FuelCount].Count; i++)
             {
                 // DistCount unit:?
                 double dCounter = ListChData[idx_FuelCount].LogData[i].DataValue - ListChData[idx_FuelCount].LogData[i - 1].DataValue;
@@ -626,67 +530,22 @@ namespace MotoRecoViewer
         /// </summary>
         private void CalcFuelConsumption()
         {
-            //K51_AccumulatedDistCountのChName取得
-            int i = decodeRule.FormulaIndexOf("#K51_AccumulatedFuelCount");
+            //#K51_AccumulatedFuelCount のChName取得
+            int idx_AccumulatedFuelCount = GetIndexOfFixedFormula("#K51_AccumulatedFuelCount");
+            if (idx_AccumulatedFuelCount < 0) { return; }
 
-            //DecodeRuleに定義がない
-            if (i == -1)
-            {
-                return;
-            }
+            //#K51_AccumulatedDistCountFr のChName取得
+            int idx_AccumulatedDistCount = GetIndexOfFixedFormula("#K51_AccumulatedDistCountFr");
+            if (idx_AccumulatedDistCount < 0) { return; }
 
-            string chNameAccumulatedFuelCount = decodeRule.GetChName(i);
-
-            //　該当CAN IDが存在しないケースも有りうることに注意
-            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
-            if (!DicChName.ContainsKey(chNameAccumulatedFuelCount))
-            {
-                return;
-            }
-            int idx_AccumulatedFuelCount = DicChName[chNameAccumulatedFuelCount];
-
-            //K51_AccumulatedDistCountのChName取得
-            i = decodeRule.FormulaIndexOf("#K51_AccumulatedDistCountFr");
-
-            //DecodeRuleに定義がない
-            if (i == -1)
-            {
-                return;
-            }
-
-            string chNameAccumulatedDistCount = decodeRule.GetChName(i);
-
-            //　該当CAN IDが存在しないケースも有りうることに注意
-            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
-            if (!DicChName.ContainsKey(chNameAccumulatedDistCount))
-            {
-                return;
-            }
-            int idx_AccumulatedDistCount = DicChName[chNameAccumulatedDistCount];
-
-            //K51_FuelConsumptionのChName取得
-            i = decodeRule.FormulaIndexOf("#K51_FuelConsumption");
-
-            //DecodeRuleに定義がない
-            if (i == -1)
-            {
-                return;
-            }
-
-            string chNameFuelConsumption = decodeRule.GetChName(i);
-
-            //　該当CAN IDが存在しないケースも有りうることに注意
-            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
-            if (!DicChName.ContainsKey(chNameFuelConsumption))
-            {
-                return;
-            }
-            int idx_FuelConsumption = DicChName[chNameFuelConsumption];
+            //#K51_FuelConsumption のChName取得
+            int idx_FuelConsumption = GetIndexOfFixedFormula("#K51_FuelConsumption");
+            if (idx_FuelConsumption < 0) { return; }
 
             //燃費計算
             TVData tvData;
             
-            for (i = 0; i < ListChData[idx_FuelConsumption].Count; i++)
+            for (int i = 0; i < ListChData[idx_FuelConsumption].Count; i++)
             {
                 //積算燃料量取得
                 double time = ListChData[idx_AccumulatedFuelCount].LogData[i].DataTime;
@@ -717,68 +576,22 @@ namespace MotoRecoViewer
         {
             const double K51_TANK_CAPA = 30d;
 
+            //#K51_FuelLevel のChName取得
+            int idx_FuelLevel = GetIndexOfFixedFormula("#K51_FuelLevel");
+            if (idx_FuelLevel < 0) { return; }
 
-            //K51_FuelLevelのChName取得
-            int i = decodeRule.FormulaIndexOf("#K51_FuelLevel");
+            //#K51_FuelConsumption のChName取得
+            int idx_FuelConsumption = GetIndexOfFixedFormula("#K51_FuelConsumption");
+            if (idx_FuelConsumption < 0) { return; }
 
-            //DecodeRuleに定義がない
-            if (i == -1)
-            {
-                return;
-            }
-
-            string chNameFuelLevel = decodeRule.GetChName(i);
-
-            //　該当CAN IDが存在しないケースも有りうることに注意
-            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
-            if (!DicChName.ContainsKey(chNameFuelLevel))
-            {
-                return;
-            }
-            int idx_FuelLevel = DicChName[chNameFuelLevel];
-
-            //K51_AccumulatedDistCountのChName取得
-            i = decodeRule.FormulaIndexOf("#K51_FuelConsumption");
-
-            //DecodeRuleに定義がない
-            if (i == -1)
-            {
-                return;
-            }
-
-            string chNameFuelConsumption = decodeRule.GetChName(i);
-
-            //　該当CAN IDが存在しないケースも有りうることに注意
-            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
-            if (!DicChName.ContainsKey(chNameFuelConsumption))
-            {
-                return;
-            }
-            int idx_FuelConsumption = DicChName[chNameFuelConsumption];
-
-            //K51_RangeのChName取得
-            i = decodeRule.FormulaIndexOf("#K51_Range");
-
-            //DecodeRuleに定義がない
-            if (i == -1)
-            {
-                return;
-            }
-
-            string chNameRange = decodeRule.GetChName(i);
-
-            //　該当CAN IDが存在しないケースも有りうることに注意
-            // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
-            if (!DicChName.ContainsKey(chNameRange))
-            {
-                return;
-            }
-            int idx_Range = DicChName[chNameRange];
+            //#K51_Range のChName取得
+            int idx_Range = GetIndexOfFixedFormula("#K51_Range");
+            if (idx_Range < 0) { return; }
 
             //Range計算
             TVData tvData;
 
-            for (i = 0; i < ListChData[idx_Range].Count; i++)
+            for (int i = 0; i < ListChData[idx_Range].Count; i++)
             {
                 //燃費取得
                 double time = ListChData[idx_FuelConsumption].LogData[i].DataTime;
