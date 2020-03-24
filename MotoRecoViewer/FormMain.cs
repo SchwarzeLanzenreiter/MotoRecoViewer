@@ -313,13 +313,13 @@ namespace MotoRecoViewer
             //開始時間を計算しておく
             if (startTime == 0.0)
             {
-                startTime = aryCanData[0].timeSec + aryCanData[0].timeMSec / 1000;
+                startTime = aryCanData[0].timeSec + aryCanData[0].timeMSec / 1000d;
             }
             subPosTime = startTime;
             divTime = 1;
                        
             //終了時間を計算しておく
-            endTime = aryCanData[arySize - 1].timeSec + aryCanData[arySize - 1].timeMSec / 1000 + endTime;
+            endTime = aryCanData[arySize - 1].timeSec + aryCanData[arySize - 1].timeMSec / 1000d + endTime;
 
             //CANデータ読み取り終了
             IsReadingCanData = false;
