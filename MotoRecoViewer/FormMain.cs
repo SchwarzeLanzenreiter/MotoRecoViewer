@@ -454,12 +454,19 @@ namespace MotoRecoViewer
 
                 //ToDo File Append時、工夫が必要
 
-                // カウンタ1周すると負の値になるのでその場合は253*16足す
-                // 0で判定すると、EG STOP時もカウントアップしてしまうので、明らかに1周カウンタが回ったときだけ+3951する
-                if (dCounter < -3900)
+                // カウンタ1周またはリセット時、負の値になる。
+                if (dCounter < 0)
                 {
-                    // DistCountFrは、MAX3951
-                    dCounter += 3951;
+                    // 0で判定すると、EG STOP時もカウントアップしてしまうので、明らかに1周カウンタが回ったときだけ+3951する
+                    if (dCounter < -3900)
+                    {
+                        // DistCountFrは、MAX3951
+                        dCounter += 3951;
+                    }
+                    else
+                    {
+                        dCounter = 0;
+                    }
                 }
 
                 AccumulatedCounter += dCounter;
@@ -501,11 +508,16 @@ namespace MotoRecoViewer
 
                 //ToDo File Append時、工夫が必要
 
-                // カウンタ1周すると負の値になるのでその場合は256*256足す
-                // 0で判定すると、EG STOP時もカウントアップしてしまうので、明らかに1周カウンタが回ったときだけ+256*256する
-                if (dCounter < -65000)
+                // EGリセット時又はカウンタ1周すると負の値になる
+                if (dCounter < 0)
                 {
-                    dCounter += 256*256;
+                    // 0で判定すると、EG STOP時もカウントアップしてしまうので、明らかに1周カウンタが回ったときだけ+256*256する
+                    if (dCounter < -65000)
+                    {
+                        dCounter += 256 * 256;
+                    } else {
+                        dCounter = 0;
+                    }
                 }
 
                 AccumulatedCounter += dCounter;
