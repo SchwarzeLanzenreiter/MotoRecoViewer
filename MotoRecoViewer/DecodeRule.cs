@@ -168,6 +168,13 @@ namespace MotoRecoViewer
                     return data.data[7] / 255d * 100d;
 
                 // CANID 110
+                // K51 Ignition Timing
+                // LoData4*256+Data3
+                // ToDo need to confirm later
+                case "#K51_IgnitionTiming":
+                    return ((nibble & data.data[3])*256d + data.data[2]) / 5d;
+
+                // CANID 110
                 // K51 Throttel Grip Position
                 // Data6/255*100
                 case "#K51_ThrottelGripPosition":
