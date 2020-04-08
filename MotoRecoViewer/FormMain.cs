@@ -1645,7 +1645,7 @@ namespace MotoRecoViewer
             for (int i = 0; i < ListViewData.Items.Count; i++)
             {
                 if (!DicChName.ContainsKey(ListViewData.Items[i].Text)) {
-                    break; 
+                    continue; 
                 }
 
                 int idx = DicChName[ListViewData.Items[i].Text];
