@@ -90,7 +90,6 @@ namespace MotoRecoViewer
         private GMapOverlay GMapOverlayRoute;       // GMapに表示するルート
 
         private string currentDatFile = "";
-
         //==========================
         //
         //  Private関数
@@ -1011,9 +1010,10 @@ namespace MotoRecoViewer
                 // Subチャートに表示するのは、ChData.ChPreviewがTrueの物のみ
                 if (ListChData[i].ChPreview)
                 {
+                    // 座標格納用
+                    Point[] points = new Point[1];
+
                     double targetIdxPrev = 0d;
-                    double xPrev = chartMargin;
-                    double yPrev = PictureSub.Height - chartMargin;
 
                     // SubChart描画ピクセル幅に対してのみ描画処理実施する
                     for (int j = 0; j <= PictureSub.Width - 2 * chartMargin; j++)
@@ -1026,7 +1026,7 @@ namespace MotoRecoViewer
 
 
                         // 1つ前のインデックスと同じ場合、スキップする
-                        if (targetIdxPrev == targetIdx)
+                        if ((targetIdxPrev == targetIdx) || (targetIdx == 0))
                         {
                             continue;
                         }
@@ -1046,20 +1046,27 @@ namespace MotoRecoViewer
                         y = (PictureSub.Height - chartMargin * 2d) * (1d - y);
                         y += chartMargin;
 
-                        // 1つ前のインデックスと異なる場合のみ、ラインを描画する
+                        //座標格納
+                        points[points.Length - 1].X = (int)x;
+                        points[points.Length - 1].Y = (int)y;
 
-                        lock (lockobj)
-                        {
-                            // 描画色
-                            p.Color = Color.FromArgb(ListChData[i].ChColor);
-
-                            //　描画
-                            g.DrawLine(p, (float)xPrev, (float)yPrev, (float)x, (float)y);
-                        }
+                        //配列要素数拡張(データを先に格納してから拡張する) 最後必ず１余計に追加してしまうので、最後削除する
+                        Array.Resize(ref points, points.Length + 1);
 
                         targetIdxPrev = targetIdx;
-                        xPrev = x;
-                        yPrev = y;
+                    }
+
+                    //配列要素数が必ず１余計なので減らす
+                    Array.Resize(ref points, points.Length - 1);
+
+                    // DrawLinesで一気に描画する
+                    lock (lockobj)
+                    {
+                        p.Color = Color.FromArgb(ListChData[i].ChColor);
+                        if (points.Length > 1)
+                        {
+                            g.DrawLines(p, points);
+                        }
                     }
                 }
 
@@ -1718,7 +1725,6 @@ namespace MotoRecoViewer
                 ListChData[idx].ChShow = ListViewData.Items[i].Checked;
             }
 
-            //DrawChart();
             PictureMain.Refresh();
             PictureSub.Refresh();
         }
