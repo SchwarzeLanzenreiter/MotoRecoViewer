@@ -335,8 +335,8 @@ namespace MotoRecoViewer
                     return (nibble & data.data[4]) * 253d + data.data[3];
 
                 // CANID 2B0
-                // K51_DistanceCounterFr
-                // 
+                // K51_AccumulatedDistCountFr
+                // 積算計算が後処理で必要になるので、ダミーで0を返すだけとする。
                 case "#K51_AccumulatedDistCountFr":
                     return 0;
 
@@ -348,7 +348,7 @@ namespace MotoRecoViewer
 
                 // CANID 2B0
                 // K51_DistanceCounterRr
-                // 積分計算が後処理で必要になるので、ダミーで0を返すだけとする。
+                // 積算計算が後処理で必要になるので、ダミーで0を返すだけとする。
                 case "#K51_AccumulatedDistCountRr":
                     return 0;
 
@@ -360,7 +360,7 @@ namespace MotoRecoViewer
 
                 // CANID 2BC
                 // K51_FuelCounter
-                // 積分計算が後処理で必要になるので、ダミーで0を返すだけとする。
+                // 積算計算が後処理で必要になるので、ダミーで0を返すだけとする。
                 case "#K51_AccumulatedFuelCount":
                     return 0;
 

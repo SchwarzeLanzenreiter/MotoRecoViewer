@@ -47,7 +47,7 @@ namespace MotoRecoViewer
                     if (CBByte.Checked) { 
                         fm.decodeRule.AddData(LBAdd.Items[i] + "_Data" + j.ToString(),  //Ch Name
                                               LBAdd.Items[i].ToString(),                //CAN ID
-                                              "#Data" + j.ToString(),                    //Formula
+                                              "#Data" + j.ToString(),                   //Formula
                                               i_color.ToString(),                       //Ch Color
                                               "0",                                      //Min
                                               "255",                                    //Max
@@ -59,7 +59,7 @@ namespace MotoRecoViewer
                     {
                         fm.decodeRule.AddData(LBAdd.Items[i] + "_HiData" + j.ToString(),//Ch Name
                                               LBAdd.Items[i].ToString(),                //CAN ID
-                                              "#HiData" + j.ToString(),                  //Formula
+                                              "#HiData" + j.ToString(),                 //Formula
                                               i_color.ToString(),                       //Ch Color
                                               "0",                                      //Min
                                               "255",                                    //Max
@@ -71,7 +71,7 @@ namespace MotoRecoViewer
                     {
                         fm.decodeRule.AddData(LBAdd.Items[i] + "_LoData" + j.ToString(),//Ch Name
                                               LBAdd.Items[i].ToString(),                //CAN ID
-                                              "#LoData" + j.ToString(),                  //Formula
+                                              "#LoData" + j.ToString(),                 //Formula
                                               i_color.ToString(),                       //Ch Color
                                               "0",                                      //Min
                                               "255",                                    //Max

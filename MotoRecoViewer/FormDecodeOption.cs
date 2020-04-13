@@ -51,7 +51,7 @@ namespace MotoRecoViewer
         private string FixedFormula = "";
 
         /// <summary>
-        /// 定形計算式定義を受け取る
+        /// FixedFormulaのChName
         /// </summary>
         public string ReceiveFixedChName
         {
@@ -63,7 +63,7 @@ namespace MotoRecoViewer
         }
 
         /// <summary>
-        /// 定形計算式定義を受け取る
+        /// FixedFormulaのCAN ID
         /// </summary>
         public string ReceiveFixedCANID
         {
@@ -75,7 +75,7 @@ namespace MotoRecoViewer
         }
 
         /// <summary>
-        /// 定形計算式定義を受け取る
+        /// FixedFormulaの識別名
         /// </summary>
         public string ReceiveFixedFormula
         {
@@ -83,6 +83,42 @@ namespace MotoRecoViewer
             {
                 FixedFormula = value;
                 TextFormula.Text = FixedFormula;
+            }
+        }
+
+        /// <summary>
+        /// FixedFormulaのColor
+        /// </summary>
+        public string ReceiveFixedColor
+        {
+            set
+            {
+                FixedFormula = value;
+                TextColor.Text = FixedFormula;
+            }
+        }
+
+        /// <summary>
+        /// FixedFormulaのMax
+        /// </summary>
+        public string ReceiveFixedMax
+        {
+            set
+            {
+                FixedFormula = value;
+                TextMax.Text = FixedFormula;
+            }
+        }
+
+        /// <summary>
+        /// FixedFormulaのMin
+        /// </summary>
+        public string ReceiveFixedMin
+        {
+            set
+            {
+                FixedFormula = value;
+                TextMin.Text = FixedFormula;
             }
         }
 

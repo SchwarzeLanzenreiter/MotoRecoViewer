@@ -297,7 +297,8 @@ namespace MotoRecoViewer
             Parallel.Invoke(
                 () => CalcGPSDistance(),                    //GPS積算距離を計算
                 () => CalcFrSpeedDistance(),                //FrSpeed積算距離を計算
-                () => CalcAccumulatedDistCountFr(),         //距離カウンタから積算距離を計算
+                () => CalcAccumulatedDistCountFr(),         //Fr距離カウンタから積算距離を計算
+                () => CalcAccumulatedDistCountRr(),         //Rr距離カウンタから積算距離を計算
                 () => CalcAccumulatedFuelCount()            //燃料カウンタから消費燃料を計算
             );
 
@@ -363,7 +364,7 @@ namespace MotoRecoViewer
             if (idx_GPSSpeed < 0) { return; }
 
             //#GPS_Distanc のChName取得
-            int idx_GPSDistance = GetIndexOfFixedFormula("#GPS_Distanc");
+            int idx_GPSDistance = GetIndexOfFixedFormula("#GPS_Distance");
             if (idx_GPSDistance < 0) { return; }
 
 
@@ -427,7 +428,7 @@ namespace MotoRecoViewer
         }
 
         /// <summary>
-        /// ＃K51_DistCount から #K51_AccumulatedDistCountを計算する
+        /// ＃K51_DistCountFr から K51_AccumulatedDistCountFrを計算する
         /// </summary>
         private void CalcAccumulatedDistCountFr()
         {
@@ -476,6 +477,61 @@ namespace MotoRecoViewer
                 // 積算カウンタ
                 // カウンタ値に0.000255掛けると、ちょうどFr車速を積分した積算距離に等しくなっている
                 tvData.DataValue = AccumulatedCounter * 0.000255;
+                ListChData[idx_AccumulatedDistCount].LogData[i] = tvData;
+            }
+        }
+
+        /// <summary>
+        /// ＃K51_DistCountRr から K51_AccumulatedDistCountRr　を計算する
+        /// </summary>
+        private void CalcAccumulatedDistCountRr()
+        {
+            //#K51_DistCountRr のChName取得
+            int idx_DistCount = GetIndexOfFixedFormula("#K51_DistCountRr");
+            if (idx_DistCount < 0) { return; }
+
+            //#K51_AccumulatedDistCountRr のChName取得
+            int idx_AccumulatedDistCount = GetIndexOfFixedFormula("#K51_AccumulatedDistCountRr");
+            if (idx_AccumulatedDistCount < 0) { return; }
+
+            //#K51_DistCountの積分計算
+            TVData tvData;
+            double AccumulatedCounter = 0.0;
+
+            tvData = ListChData[idx_AccumulatedDistCount].LogData[0];
+            tvData.DataValue = AccumulatedCounter;
+            ListChData[idx_AccumulatedDistCount].LogData[0] = tvData;
+
+            for (int i = 1; i < ListChData[idx_DistCount].Count; i++)
+            {
+                // DistCount unit:?
+                double dCounter = ListChData[idx_DistCount].LogData[i].DataValue - ListChData[idx_DistCount].LogData[i - 1].DataValue;
+
+                //ToDo File Append時、工夫が必要
+
+                // カウンタ1周またはリセット時、負の値になる。
+                if (dCounter < 0)
+                {
+                    // 0で判定すると、EG STOP時もカウントアップしてしまうので、明らかに1周カウンタが回ったときだけ+255する
+                    if (dCounter < -250)
+                    {
+                        // DistCountFrは、MAX255
+                        dCounter += 255;
+                    }
+                    else
+                    {
+                        dCounter = 0;
+                    }
+                }
+
+                AccumulatedCounter += dCounter;
+
+                tvData = ListChData[idx_AccumulatedDistCount].LogData[i];
+
+                // 積算カウンタ
+                // カウンタ値に0.004掛けると、大体Fr車速を積分した積算距離に等しくなっている。
+                // Rrは加速中Fr車速よりSlipするため早くなるので、Fr車速の積分よりは多少距離が伸びる
+                tvData.DataValue = AccumulatedCounter * 0.004;
                 ListChData[idx_AccumulatedDistCount].LogData[i] = tvData;
             }
         }
