@@ -1275,22 +1275,12 @@ namespace MotoRecoViewer
                         y = (PictureMain.Height - chartMargin * 2) * (1 - y);
                         y += chartMargin;
 
-                        //配列に追加する
-                        //lock (lockobj)
-                        //{
-
                         //座標格納
                         points[points.Length - 1].X = (int)x;
                         points[points.Length - 1].Y = (int)y;
 
                         //配列要素数拡張(データを先に格納してから拡張する) 最後必ず１余計に追加してしまうので、最後削除する
                         Array.Resize(ref points, points.Length + 1);
-
-                        //p.Color = Color.FromArgb(ListChData[i].ChColor);
-
-                        // ToDo Ch毎、X軸ピクセルごとにlockobjしてるとパフォーマンス悪そう。DrawLinesに変更する。
-                        //g.DrawLine(p, (float)xPrev, (float)yPrev, (float)x, (float)y);
-                        //}
 
                         targetIdxPrev = targetIdx;
                     }
@@ -1305,10 +1295,6 @@ namespace MotoRecoViewer
                         if (points.Length > 1)
                         {
                             g.DrawLines(p, points);
-                        }
-                        else
-                        {
-                            string str = ListChData[i].ChName;
                         }
                     }
                 }
