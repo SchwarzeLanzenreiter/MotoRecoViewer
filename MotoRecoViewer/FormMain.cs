@@ -1239,11 +1239,12 @@ namespace MotoRecoViewer
             //for (int i = 0; i < ListChData.Count; i++)
             {
                 int targetIdxPrev = 0;
-                double xPrev = chartMargin;
-                double yPrev = PictureMain.Height - chartMargin;
 
                 if (ListChData[i].ChShow)
                 {
+                    // 座標格納用
+                    Point[] points = new Point[1];
+
                     // MainChart描画ピクセル幅に対してのみ描画処理実施する
                     for (int j = 0; j <= PictureMain.Width - 2 * chartMargin; j++)
                     {
@@ -1251,11 +1252,10 @@ namespace MotoRecoViewer
                         double targetTime = subPosTime + (divTime * 20d) / (PictureMain.Width - 2d * chartMargin) * j;
 
                         // targetTimeに対応したタイムスタンプに最も近いChDataのインデックスを取得
-                        //int targetIdx = ListChData[i].FindLeftIndex(targetTime, startidx, endidx);
-
                         int targetIdx = ListChData[i].FindLeftIndex(targetTime);
-                        // 1つ前のインデックスと同じ場合何もしない
-                        if (targetIdxPrev == targetIdx)
+
+                        // 1つ前のインデックスと同じ場合 または targetIdx が 0の場合何もしない
+                        if ((targetIdxPrev == targetIdx) || (targetIdx == 0)) 
                         {
                             continue;
                         }
@@ -1275,17 +1275,41 @@ namespace MotoRecoViewer
                         y = (PictureMain.Height - chartMargin * 2) * (1 - y);
                         y += chartMargin;
 
-                        // 1つ前のインデックスと異なる場合のみ、ラインを描画する
-                        lock (lockobj)
-                        {
-                            p.Color = Color.FromArgb(ListChData[i].ChColor);
+                        //配列に追加する
+                        //lock (lockobj)
+                        //{
 
-                            g.DrawLine(p, (float)xPrev, (float)yPrev, (float)x, (float)y);
-                        }
+                        //座標格納
+                        points[points.Length - 1].X = (int)x;
+                        points[points.Length - 1].Y = (int)y;
+
+                        //配列要素数拡張(データを先に格納してから拡張する) 最後必ず１余計に追加してしまうので、最後削除する
+                        Array.Resize(ref points, points.Length + 1);
+
+                        //p.Color = Color.FromArgb(ListChData[i].ChColor);
+
+                        // ToDo Ch毎、X軸ピクセルごとにlockobjしてるとパフォーマンス悪そう。DrawLinesに変更する。
+                        //g.DrawLine(p, (float)xPrev, (float)yPrev, (float)x, (float)y);
+                        //}
 
                         targetIdxPrev = targetIdx;
-                        xPrev = x;
-                        yPrev = y;
+                    }
+
+                    //配列要素数が必ず１余計なので減らす
+                    Array.Resize(ref points, points.Length - 1);
+
+                    // DrawLinesで一気に描画する
+                    lock (lockobj)
+                    {
+                        p.Color = Color.FromArgb(ListChData[i].ChColor);
+                        if (points.Length > 1)
+                        {
+                            g.DrawLines(p, points);
+                        }
+                        else
+                        {
+                            string str = ListChData[i].ChName;
+                        }
                     }
                 }
             });

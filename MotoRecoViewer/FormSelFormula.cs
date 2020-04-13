@@ -229,7 +229,7 @@ namespace MotoRecoViewer
                     string[] item228 = { "AccumulatedDistCountFr", "2B0", "#K51_AccumulatedDistCountFr" };
                     ListViewItem.Items.Add(new ListViewItem(item228));
 
-                    string[] item229 = { "DistanceCounterRr", "2B0", "#K51_DistCountRr" };
+                    string[] item229 = { "DistCountRr", "2B0", "#K51_DistCountRr" };
                     ListViewItem.Items.Add(new ListViewItem(item229));
 
                     string[] item230 = { "AccumulatedDistCountRr", "2B0", "#K51_AccumulatedDistCountRr" };
