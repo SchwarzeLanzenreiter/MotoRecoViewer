@@ -47,10 +47,10 @@
             "Throttel Grip Position",
             "Throttel Grip Position",
             "#K51_ThrottelGripPosition"}, -1);
-            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem(new string[] {
-            "FrBrake1",
-            "FrBrake1",
-            "#K51_FrBrake1"}, -1);
+            System.Windows.Forms.ListViewItem listViewItem5 = new System.Windows.Forms.ListViewItem(new System.Windows.Forms.ListViewItem.ListViewSubItem[] {
+            new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "FrBrake1"),
+            new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "FrBrake1"),
+            new System.Windows.Forms.ListViewItem.ListViewSubItem(null, "#K51_FrBrake1", System.Drawing.SystemColors.WindowText, System.Drawing.SystemColors.HotTrack, new System.Drawing.Font("MS UI Gothic", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(128))))}, -1);
             System.Windows.Forms.ListViewItem listViewItem6 = new System.Windows.Forms.ListViewItem(new string[] {
             "FrBrake2",
             "FrBrake2",

@@ -38,11 +38,25 @@ namespace MotoRecoViewer
             this.Close();
         }
 
+        private void ChangeColColor()
+        {
+            // ChColorのバックカラーをまとめて変更する
+            for (int i = 0; i < ListViewItem.Items.Count; i++)
+            {
+                int j;
+
+                ListViewItem.Items[i].UseItemStyleForSubItems = false;
+
+                j = int.Parse(ListViewItem.Items[i].SubItems[3].Text);
+                ListViewItem.Items[i].SubItems[3].BackColor = Color.FromArgb(j);
+            }
+        }
+
         private void TreeViewBike_AfterSelect(object sender, TreeViewEventArgs e)
         {
             // まずリストビューをクリアする
             ListViewItem.Items.Clear();
-         
+
             // TreeViewのノードを切り替える（車種を切り替える）毎に、その車種で利用可能な固定演算式候補をリストビューにロードする
             switch (TreeViewBike.SelectedNode.Text)
             {
@@ -51,7 +65,7 @@ namespace MotoRecoViewer
                     // itemMAX
                     string[] item1 = { "Data1", "", "#Data1", "-32640", "0", "255" };
                     ListViewItem.Items.Add(new ListViewItem(item1));
-
+                 
                     string[] item2 = { "HiData1", "", "#HiData1", "-32640", "0", "255" };
                     ListViewItem.Items.Add(new ListViewItem(item2));
 
@@ -120,6 +134,10 @@ namespace MotoRecoViewer
 
                     string[] item24 = { "LoData8", "", "#LoData8", "-32768", "0", "255" };
                     ListViewItem.Items.Add(new ListViewItem(item24));
+
+                    // ChColorのバックカラーをまとめて変更する
+                    ChangeColColor();
+
                     return;
 
                 case "GPS":
@@ -139,6 +157,9 @@ namespace MotoRecoViewer
 
                     string[] item105 = { "GPS Distance", "7FE", "#GPS_Distance", "-65536", "0", "300" };
                     ListViewItem.Items.Add(new ListViewItem(item105));
+
+                    // ChColorのバックカラーをまとめて変更する
+                    ChangeColColor();
 
                     return;
 
@@ -256,6 +277,8 @@ namespace MotoRecoViewer
                     string[] item236 = { "Range", "2BC", "#K51_Range", "-16711681", "0", "700" };
                     ListViewItem.Items.Add(new ListViewItem(item236));
 
+                    // ChColorのバックカラーをまとめて変更する
+                    ChangeColColor();
 
                     return;
 
