@@ -95,6 +95,11 @@ namespace MotoRecoViewer
             {
                 FixedFormula = value;
                 TextColor.Text = FixedFormula;
+
+                int i;
+                i = int.Parse(FixedFormula);
+                Color color = Color.FromArgb(i);
+                TextColor.BackColor = color;
             }
         }
 
