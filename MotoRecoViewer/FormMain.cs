@@ -748,8 +748,7 @@ namespace MotoRecoViewer
 
                 ListViewData.Items[i].SubItems[2].Text = ListChData[idx].LogData[targetIdx].DataValue.ToString();
             }
-            ListViewData.EndUpdate();
-            return;
+
             // MainChartのカーソル1とカーソル2の間のデータでのMAX-MINを計算する
 
             //diff格納用List
