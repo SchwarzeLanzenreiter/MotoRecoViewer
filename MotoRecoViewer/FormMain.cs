@@ -75,13 +75,17 @@ namespace MotoRecoViewer
         private double startTime;                   //CANデータ最初のタイムスタンプ
         private double endTime;                     //CANデータ最終データのタイムスタンプ
         private double subPosTime;                  //サブチャート選択位置、デフォルト0秒
+        private double subPosTimePrev;              //サブチャート選択位置、前回値
         private double mainCur1Pos;                 //メインチャートカーソル1X位置
+        private double mainCur1PosPrev;             //メインチャートカーソル1X位置前回値
         private double mainCur2Pos;                 //メインチャートカーソル2X位置
+        private double mainCur2PosPrev;             //メインチャートカーソル2X位置前回値
         private double divTime;                     //メインチャートの1divisionあたり時間、デフォルト1秒
         private double initTimeOffset;              //データ読み込み時の先頭データ時間オフセット
 
         private bool IsDragging;                    // 現在ドラッグ中かどうか
         private MouseButtons DraggingButton;        // どのボタンが押されているのか(右ボタンで別の処理をしたい時に、区別するため)
+
         private bool IsReadingCanData;              // 現在CANデータ読み込み中かどうか
 
         private float prev_lon;                     // longitude前回値
@@ -683,7 +687,25 @@ namespace MotoRecoViewer
         /// </summary>
         private void UpdateListViewData()
         {
-            if (IsDragging) { return; }
+            // subPosTimeとsubPosTimePrevの差がdivTime以下のときだけ更新する
+            if (Math.Abs(subPosTime - subPosTimePrev) > divTime)
+            {
+                return;
+            }
+
+            // mainCur1Pos1とmainCur1PosPrevの差がdivTime以下のときだけ更新する
+            // subPosTimeとsubPosTimePrevの差がdivTime以下のときだけ更新する
+            if (Math.Abs(mainCur1Pos - mainCur1PosPrev) > divTime)
+            {
+                return;
+            }
+
+            // mainCur1Pos1とmainCur1PosPrevの差がdivTime以下のときだけ更新する
+            // subPosTimeとsubPosTimePrevの差がdivTime以下のときだけ更新する
+            if (Math.Abs(mainCur2Pos - mainCur2PosPrev) > divTime)
+            {
+                return;
+            }
 
             // ListViewDataのValue1を更新
             // MainChartのカーソル位置1に対応するタイムスタンプを計算
@@ -728,7 +750,8 @@ namespace MotoRecoViewer
 
                 ListViewData.Items[i].SubItems[2].Text = ListChData[idx].LogData[targetIdx].DataValue.ToString();
             }
-
+            ListViewData.EndUpdate();
+            return;
             // MainChartのカーソル1とカーソル2の間のデータでのMAX-MINを計算する
 
             //diff格納用List
@@ -780,7 +803,7 @@ namespace MotoRecoViewer
                     continue;
                 }
 
-                ListViewData.Items[i].SubItems[3].Text = ListDiff[i].ToString();
+//                ListViewData.Items[i].SubItems[3].Text = ListDiff[i].ToString();
             }
 
             //ListViewData更新再開
@@ -1481,7 +1504,6 @@ namespace MotoRecoViewer
             if (startPos + rectWidth > PictureSub.Width - 2 * chartMargin) { startPos = PictureSub.Width - chartMargin - rectWidth; }
 
             //startPosをposTimeに変換する
-            //ToDo　末尾の+startTimeは、canloggerでKeyOn検出時にstartTimeは0で記録されているはずなので、不要のはずである
             subPosTime = (endTime - startTime) * ((startPos - chartMargin) / (PictureSub.Width - 2 * chartMargin)) + startTime;
 
             return subPosTime;
@@ -1661,6 +1683,9 @@ namespace MotoRecoViewer
 
             if (this.IsDragging && this.DraggingButton == MouseButtons.Left)
             {
+                //subPosTimeを前回値にコピーする
+                subPosTimePrev = subPosTime;
+
                 //PictureSub上のマウス位置から、subPosTimeを算出する
                 subPosTime = MousePointToSubPosTime(e);
 
@@ -1681,8 +1706,12 @@ namespace MotoRecoViewer
                     this.IsDragging = false; // ドラッグが終了していることを記録
                     this.Cursor = Cursors.Default; // マウスポインタを通常のものに戻す
 
+
                     //PictureSub上のマウス位置から、subPosTimeを算出する
                     subPosTime = MousePointToSubPosTime(e);
+
+                    //subPosTimeを前回値にコピーして一致させておく
+                    subPosTimePrev = subPosTime;
 
                     PictureMain.Refresh();
                     PictureSub.Refresh();
@@ -1707,12 +1736,16 @@ namespace MotoRecoViewer
 
                 if (this.DraggingButton == MouseButtons.Left)
                 {
+                    mainCur1PosPrev = mainCur1Pos;
+
                     //左クリックの場合、Cur1Posを更新
                     mainCur1Pos = getXY.X;
                 }
 
                 if (this.DraggingButton == MouseButtons.Right)
                 {
+                    mainCur2PosPrev = mainCur2Pos;
+
                     //右クリックの場合、Cur2Posを更新
                     mainCur2Pos = getXY.X;
                 }
@@ -1773,6 +1806,8 @@ namespace MotoRecoViewer
                 case MouseButtons.Left: // 左クリックの時
                     IsDragging = false; // ドラッグが終了していることを記録
                     this.Cursor = Cursors.Default; // マウスポインタを通常のものに戻す
+                    mainCur1PosPrev = mainCur1Pos;
+                    mainCur2PosPrev = mainCur2Pos;
 
                     //DrawChart();
                     PictureMain.Refresh();
@@ -1783,6 +1818,8 @@ namespace MotoRecoViewer
                 case MouseButtons.Right: // 右クリックの時
                     IsDragging = false; // ドラッグが終了していることを記録
                     this.Cursor = Cursors.Default; // マウスポインタを通常のものに戻す
+                    mainCur1PosPrev = mainCur1Pos;
+                    mainCur2PosPrev = mainCur2Pos;
 
                     //DrawChart();
                     PictureMain.Refresh();
@@ -1856,10 +1893,16 @@ namespace MotoRecoViewer
                 // ホイールを奥に回す過去に1divtime移動　手前に回す→未来に1divtime移動
                 if (delta > 0)
                 {
+                    //subPosTimeを前回値にコピーする
+                    subPosTimePrev = subPosTime;
+
                     subPosTime -= divTime;
                 }
                 else
                 {
+                    //subPosTimeを前回値にコピーする
+                    subPosTimePrev = subPosTime;
+
                     subPosTime += divTime;
                 }
             }
@@ -1900,10 +1943,16 @@ namespace MotoRecoViewer
                 // ホイールを奥に回す過去に1divtime移動　手前に回す→未来に1divtime移動
                 if (delta > 0)
                 {
+                    //subPosTimeを前回値にコピーする
+                    subPosTimePrev = subPosTime;
+
                     subPosTime -= divTime;
                 }
                 else
                 {
+                    //subPosTimeを前回値にコピーする
+                    subPosTimePrev = subPosTime;
+
                     subPosTime += divTime;
                 }
             }
