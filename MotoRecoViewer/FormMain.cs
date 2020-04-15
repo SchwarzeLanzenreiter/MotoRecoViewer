@@ -693,15 +693,13 @@ namespace MotoRecoViewer
                 return;
             }
 
-            // mainCur1Pos1とmainCur1PosPrevの差がdivTime以下のときだけ更新する
-            // subPosTimeとsubPosTimePrevの差がdivTime以下のときだけ更新する
+            // mainCur1PosとmainCur1PosPrevの差がdivTime以下のときだけ更新する
             if (Math.Abs(mainCur1Pos - mainCur1PosPrev) > divTime)
             {
                 return;
             }
 
-            // mainCur1Pos1とmainCur1PosPrevの差がdivTime以下のときだけ更新する
-            // subPosTimeとsubPosTimePrevの差がdivTime以下のときだけ更新する
+            // mainCur2PosとmainCur2PosPrevの差がdivTime以下のときだけ更新する
             if (Math.Abs(mainCur2Pos - mainCur2PosPrev) > divTime)
             {
                 return;
