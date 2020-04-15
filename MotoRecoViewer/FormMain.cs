@@ -80,7 +80,7 @@ namespace MotoRecoViewer
         private double divTime;                     //メインチャートの1divisionあたり時間、デフォルト1秒
         private double initTimeOffset;              //データ読み込み時の先頭データ時間オフセット
 
-        private bool IsDragging;                    // 現在ドラッグ中かどうか                                 
+        private bool IsDragging;                    // 現在ドラッグ中かどうか
         private MouseButtons DraggingButton;        // どのボタンが押されているのか(右ボタンで別の処理をしたい時に、区別するため)
         private bool IsReadingCanData;              // 現在CANデータ読み込み中かどうか
 
@@ -683,12 +683,17 @@ namespace MotoRecoViewer
         /// </summary>
         private void UpdateListViewData()
         {
+            if (IsDragging) { return; }
+
             // ListViewDataのValue1を更新
             // MainChartのカーソル位置1に対応するタイムスタンプを計算
             // mainCur1Posは、PictureMain上の絶対的なX座標の為、グラフ描画領域幅に対するポジションに変換する
             double ratioMainCurPos1 = (mainCur1Pos - chartMargin) / (PictureMain.Width - 2 * chartMargin) ;
             double targetTime1 = subPosTime + (divTime * 20) * ratioMainCurPos1;
-            
+
+            // ListViewData更新停止
+            ListViewData.BeginUpdate();
+
             for (int i = 0; i < ListViewData.Items.Count; i++)
             {
                 //　該当CAN IDが存在しないケースも有りうることに注意
@@ -777,6 +782,9 @@ namespace MotoRecoViewer
 
                 ListViewData.Items[i].SubItems[3].Text = ListDiff[i].ToString();
             }
+
+            //ListViewData更新再開
+            ListViewData.EndUpdate();
         }
 
         /// <summary>
@@ -1763,7 +1771,7 @@ namespace MotoRecoViewer
             switch (e.Button)
             {
                 case MouseButtons.Left: // 左クリックの時
-                    this.IsDragging = false; // ドラッグが終了していることを記録
+                    IsDragging = false; // ドラッグが終了していることを記録
                     this.Cursor = Cursors.Default; // マウスポインタを通常のものに戻す
 
                     //DrawChart();
@@ -1773,7 +1781,7 @@ namespace MotoRecoViewer
                     break;
 
                 case MouseButtons.Right: // 右クリックの時
-                    this.IsDragging = false; // ドラッグが終了していることを記録
+                    IsDragging = false; // ドラッグが終了していることを記録
                     this.Cursor = Cursors.Default; // マウスポインタを通常のものに戻す
 
                     //DrawChart();
