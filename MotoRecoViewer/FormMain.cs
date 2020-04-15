@@ -777,9 +777,6 @@ namespace MotoRecoViewer
 
                 ListViewData.Items[i].SubItems[3].Text = ListDiff[i].ToString();
             }
-
-            // ListView描画
-            ListViewData.Update();
         }
 
         /// <summary>
