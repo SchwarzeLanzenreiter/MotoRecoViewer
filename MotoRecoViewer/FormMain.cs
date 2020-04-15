@@ -1011,8 +1011,11 @@ namespace MotoRecoViewer
                 if (ListChData[i].ChPreview)
                 {
                     // 座標格納用
-                    Point[] points = new Point[1];
+                    // データ追加ごとにResizeするとCPUリソース食うので、想定される最大数確保し、最後に縮小する
+                    int arySize = PictureSub.Width - 2 * (int)chartMargin + 1;
+                    Point[] points = new Point[arySize];
 
+                    int drawCount = 0;
                     double targetIdxPrev = 0d;
 
                     // SubChart描画ピクセル幅に対してのみ描画処理実施する
@@ -1047,17 +1050,17 @@ namespace MotoRecoViewer
                         y += chartMargin;
 
                         //座標格納
-                        points[points.Length - 1].X = (int)x;
-                        points[points.Length - 1].Y = (int)y;
+                        points[drawCount].X = (int)x;
+                        points[drawCount].Y = (int)y;
 
-                        //配列要素数拡張(データを先に格納してから拡張する) 最後必ず１余計に追加してしまうので、最後削除する
-                        Array.Resize(ref points, points.Length + 1);
+                        //描画座標数インクリメント
+                        drawCount++;
 
                         targetIdxPrev = targetIdx;
                     }
 
                     //配列要素数が必ず１余計なので減らす
-                    Array.Resize(ref points, points.Length - 1);
+                    Array.Resize(ref points, drawCount);
 
                     // DrawLinesで一気に描画する
                     lock (lockobj)
@@ -1289,9 +1292,6 @@ namespace MotoRecoViewer
                         //座標格納
                         points[drawCount].X = (int)x;
                         points[drawCount].Y = (int)y;
-
-                        //配列要素数拡張(データを先に格納してから拡張する) 最後必ず１余計に追加してしまうので、最後削除する
-                        //Array.Resize(ref points, points.Length + 1);
 
                         //描画座標数インクリメント
                         drawCount++;
