@@ -800,7 +800,7 @@ namespace MotoRecoViewer
                     continue;
                 }
 
-//                ListViewData.Items[i].SubItems[3].Text = ListDiff[i].ToString();
+                ListViewData.Items[i].SubItems[3].Text = ListDiff[i].ToString();
             }
 
             //ListViewData更新再開
