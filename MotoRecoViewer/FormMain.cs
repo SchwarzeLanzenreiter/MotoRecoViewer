@@ -1479,6 +1479,12 @@ namespace MotoRecoViewer
         /// </summary>
         private void ConvertDecodeData(string DstFileName)
         {
+            //プログレスバー計算用
+            long div_num = (long)(endTime - startTime);
+            int counter = 0;
+            progressBar.Value = 0;
+            progressBar.Maximum = (int)((endTime - startTime)*100);
+
             //CSVファイルに書き込むときに使うEncoding
             System.Text.Encoding enc =
                 System.Text.Encoding.GetEncoding("Shift_JIS");
@@ -1514,6 +1520,15 @@ namespace MotoRecoViewer
 
             while (timeStamp < endTime)
             {
+                //毎ループメッセージ発行するとクソ遅いので、トータル100回送るようにする。
+                if ( (int)(timeStamp*100) % div_num == 0)
+                {
+                    progressBar.Value = (int)counter;
+                    this.statusLabel.Text = string.Format("{0}%", ((int)counter) * 100 / progressBar.Maximum);
+                    Application.DoEvents();
+                }
+                counter++;
+
                 field.Append(timeStamp.ToString() + ",");
                 for (int i=0; i< ListChData.Count-1; i++)
                 {
@@ -1535,12 +1550,14 @@ namespace MotoRecoViewer
 
                 // 次のタイムスタンプ
                 timeStamp += 0.01;   // とりあえず10ms固定
-
-
             }  
 
             //閉じる
             sr.Close();
+
+            //プログレスバー初期化
+            progressBar.Value = 0;
+            this.statusLabel.Text = "";
         }
 
         /// <summary>
