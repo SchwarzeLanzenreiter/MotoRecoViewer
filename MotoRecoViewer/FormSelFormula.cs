@@ -178,8 +178,8 @@ namespace MotoRecoViewer
                     string[] item204 = { "Throttel Grip Position", "110", "#K51_ThrottelGripPosition", "-16711681", "0", "100" };
                     ListViewItem.Items.Add(new ListViewItem(item204));
 
-                    string[] item205 = { "Ignition Timing", "110", "#K51_IgnitionTiming", "-65408", "0", "100" };
-                    ListViewItem.Items.Add(new ListViewItem(item205));
+                    //string[] item205 = { "Ignition Timing", "110", "#K51_IgnitionTiming", "-65408", "0", "100" };
+                    //ListViewItem.Items.Add(new ListViewItem(item205));
 
                     string[] item206 = { "FrBrake1", "120", "#K51_FrBrake1", "-65408", "0", "10" };
                     ListViewItem.Items.Add(new ListViewItem(item206));

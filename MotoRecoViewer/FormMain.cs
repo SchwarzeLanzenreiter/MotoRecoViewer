@@ -2235,16 +2235,20 @@ namespace MotoRecoViewer
             // ファイルがOpenされていない
             if (currentDatFile == "")
             {
-                //
+                return;
             }
 
             // ファイルがOpenされたがデコード条件が空
             if (decodeRule.Count == 0)
             {
-
+                return;
             }
 
             // ファイルがOpenされたがデコードされたデータがない
+            if (ListChData.Count == 0)
+            { 
+                return;
+            }
 
             // 現在保持している表示中のデコード済データをCSVエクスポートする
             // 名前をつけて保存
