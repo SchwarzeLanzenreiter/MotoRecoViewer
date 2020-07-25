@@ -150,107 +150,107 @@ namespace MotoRecoViewer
             switch (Formula)
             {
                 // CANID 10C
-                // K51 Engine RPM
+                // BMW Engine RPM
                 // (LoData4*255+Data3)*5
-                case "#K51_RPM":
+                case "#BMW_RPM":
                     return ((nibble & data.data[3]) * 256d + data.data[2]) * 5d;
      
                 // CANID 10C
-                // K51 Throttel Valve Position
+                // BMW Throttel Valve Position
                 // Data6/255*100
-                case "#K51_ThrottelValvePosition":
+                case "#BMW_ThrottelValvePosition":
                     return data.data[5] / 255d * 100d;
 
                 // CANID 10C
-                // K51 Throttel Position
+                // BMW Throttel Position
                 // Data8/255*100
-                case "#K51_ThrottelPosition":
+                case "#BMW_ThrottelPosition":
                     return data.data[7] / 255d * 100d;
 
                 // CANID 110
-                // K51 Ignition Timing
+                // BMW Ignition Timing
                 // LoData4*256+Data3
                 // ToDo need to confirm later
-                //case "#K51_IgnitionTiming":
+                //case "#BMW_IgnitionTiming":
                 //    return ((nibble & data.data[3])*256d + data.data[2]) / 5d;
 
                 // CANID 110
-                // K51 Throttel Grip Position
+                // BMW Throttel Grip Position
                 // Data6/255*100
-                case "#K51_ThrottelGripPosition":
+                case "#BMW_ThrottelGripPosition":
                     return data.data[5] / 255d * 100d;
 
                 // CANID 120
-                // K51 FrBrake1
+                // BMW FrBrake1
                 // Data3
-                case "#K51_FrBrake1":     
+                case "#BMW_FrBrake1":     
                     return data.data[2] / 4d;
 
                 // CANID 120
-                // K51 FrBrake2
+                // BMW FrBrake2
                 // Data5
-                case "#K51_FrBrake2":
+                case "#BMW_FrBrake2":
                     return data.data[4] / 4d;
 
                 // CANID 120
-                // K51 RrBrake1
+                // BMW RrBrake1
                 // Data4
-                case "#K51_RrBrake1":
+                case "#BMW_RrBrake1":
                     return data.data[3] / 2d;
 
                 // CANID 120
-                // K51 RrBrake2
+                // BMW RrBrake2
                 // Data6
-                case "#K51_RrBrake2":
+                case "#BMW_RrBrake2":
                     return data.data[5] / 2d;
 
                 // CANID 29C
-                // K51 FrStroke
+                // BMW FrStroke
                 // (LoData7*256+Data6)/5
-                case "#K51_FrStroke":
+                case "#BMW_FrStroke":
                     return ((nibble & data.data[6])*256d + data.data[5])/5d;
 
                 // CANID 29C
-                // K51 RrStroke
+                // BMW RrStroke
                 // (Data8*16+HiData7)/3
-                case "#K51_RrStroke":
+                case "#BMW_RrStroke":
                     return (data.data[7] * 16d + (data.data[6] >> 4)) / 3d;
 
                 // CANID 10C
-                // K51 LeanAngle
+                // BMW LeanAngle
                 // (Data5*90/128-90)
                 // -1を掛けるのは、画面上右側を進行方向と考えて、右コーナーなら画面下側に、左コーナーなら画面上側にリーンアングルを表記したいので
-                case "#K51_LeanAngle":
+                case "#BMW_LeanAngle":
                     return (((double)data.data[4] * 90d / 127d) - 90d);
 
                 // CANID 293
-                // K51 RrSpeed
+                // BMW RrSpeed
                 // (LoData2*256+Data1)/8
-                case "#K51_RrSpeed":
+                case "#BMW_RrSpeed":
                     return ((nibble & data.data[1])*256d + data.data[0]) / 8d;
 
                 // CANID 293
-                // K51 FrSpeed2
+                // BMW FrSpeed2
                 // (Data3*16+HiData2)/8
-                case "#K51_FrSpeed2":
+                case "#BMW_FrSpeed2":
                     return (data.data[2] * 16d + (data.data[1] >> 4)) / 8d;
 
                 // CANID 293
-                // K51 FrSpeed1
+                // BMW FrSpeed1
                 // (LoData5*256+Data4)/8
-                case "#K51_FrSpeed1":
+                case "#BMW_FrSpeed1":
                     return ((nibble & data.data[4]) * 256 + data.data[3]) / 8d;
 
                 // CANID 293
-                // K51_DistFrSpeed1
+                // BMW_DistFrSpeed1
                 // 積分計算が後処理で必要になるので、ダミーで0を返すだけとする。
-                case "#K51_DistFrSpeed1":
+                case "#BMW_DistFrSpeed1":
                     return 0;
 
                 // CANID 293
-                // K51 SlipRate
+                // BMW SlipRate
                 // rrSpeed/frSpeed*100-100
-                case "#K51_SlipRate":
+                case "#BMW_SlipRate":
                     rrSpeed = (((nibble & data.data[1]) * 256d) + data.data[0]) / 8d;
                     frSpeed = (((nibble & data.data[4]) * 256d) + data.data[3]) / 8d;
 
@@ -263,10 +263,10 @@ namespace MotoRecoViewer
                     return rrSpeed/frSpeed*100d-100d;
 
                 // CANID 2BC
-                // K51 K51_Gear
+                // BMW BMW_Gear
                 // HiData6
                 // 1 4 7 8 11 13 が 1-6速に該当
-                case "#K51_Gear":
+                case "#BMW_Gear":
                     switch(data.data[5] >> 4)
                     {
                         case 1:return 1;
@@ -279,113 +279,113 @@ namespace MotoRecoViewer
                     }
 
                 // CANID 174
-                // K51_YawRate
+                // BMW_YawRate
                 // Data2*125/128+Data1/256-125
-                case "#K51_YawRate":
+                case "#BMW_YawRate":
                     return data.data[1] * 125d / 127d + data.data[0] / 255d - 125d;
 
                 // CANID 174
-                // K51_YAxisG
+                // BMW_YAxisG
                 // (Data6+Data5/256-128)/32 
-                case "#K51_YAxisG":
+                case "#BMW_YAxisG":
                     return (data.data[5] + (data.data[4] / 255d) - 128d) / 32d;
 
                 // CANID 178
-                // K51_RollRate
+                // BMW_RollRate
                 // Data2*125/128+Data1/256-125
-                case "#K51_RollRate":
+                case "#BMW_RollRate":
                     return data.data[1] * 125d / 127d + data.data[0] / 255d - 125d;
 
                 // CANID 178
-                // K51_XAxisG
+                // BMW_XAxisG
                 // (Data6+Data5/256-128)/32
-                case "#K51_XAxisG":
+                case "#BMW_XAxisG":
                     return (data.data[5] + (data.data[4] / 255d) - 128d) / 32d;
 
                 // CANID 17C
-                // K51_ZAxisG
+                // BMW_ZAxisG
                 // (Data6+Data5/256-128)/32
-                case "#K51_ZAxisG":
+                case "#BMW_ZAxisG":
                     return (data.data[5] + (data.data[4] / 255d) - 128d) / 32d;
 
 
                 // CANID 3FA
-                // K51_AirTemp
+                // BMW_AirTemp
                 // Data1*0.75-50
-                case "#K51_AirTemp":
+                case "#BMW_AirTemp":
                     return data.data[0] * 0.75 - 48d;
 
                 // CANID 3FA
-                // K51_OilTemp
+                // BMW_OilTemp
                 // Data2-25
-                case "#K51_OilTemp":
+                case "#BMW_OilTemp":
                     return data.data[1] - 25d;
 
                 // CANID 2BC
-                // K51_WaterTemp
+                // BMW_WaterTemp
                 // Data3*0.76-25
-                case "#K51_WaterTemp":
+                case "#BMW_WaterTemp":
                     return data.data[2] * 0.76 - 25d;
 
 
                 // CANID 2B0
-                // K51_DistanceCounterFr
+                // BMW_DistanceCounterFr
                 // LoData5*253+Data4
-                case "#K51_DistCountFr":
+                case "#BMW_DistCountFr":
                     return (nibble & data.data[4]) * 253d + data.data[3];
 
                 // CANID 2B0
-                // K51_AccumulatedDistCountFr
+                // BMW_AccumulatedDistCountFr
                 // 積算計算が後処理で必要になるので、ダミーで0を返すだけとする。
-                case "#K51_AccumulatedDistCountFr":
+                case "#BMW_AccumulatedDistCountFr":
                     return 0;
 
                 // CANID 2B0
-                // K51_DistanceCounterRr
+                // BMW_DistanceCounterRr
                 // Data3
-                case "#K51_DistCountRr":
+                case "#BMW_DistCountRr":
                     return data.data[2];
 
                 // CANID 2B0
-                // K51_DistanceCounterRr
+                // BMW_DistanceCounterRr
                 // 積算計算が後処理で必要になるので、ダミーで0を返すだけとする。
-                case "#K51_AccumulatedDistCountRr":
+                case "#BMW_AccumulatedDistCountRr":
                     return 0;
 
                 // CANID 2BC
-                // K51_FuelCounter
+                // BMW_FuelCounter
                 // Data4+Data5*256
-                case "#K51_FuelCount":
+                case "#BMW_FuelCount":
                     return data.data[4] * 256 + data.data[3];
 
                 // CANID 2BC
-                // K51_FuelCounter
+                // BMW_FuelCounter
                 // 積算計算が後処理で必要になるので、ダミーで0を返すだけとする。
-                case "#K51_AccumulatedFuelCount":
+                case "#BMW_AccumulatedFuelCount":
                     return 0;
 
                 // CANID 2D0
-                // K51_FuelLevel
+                // BMW_FuelLevel
                 // Data2*256+Data1
-                case "#K51_FuelLevel":
+                case "#BMW_FuelLevel":
                     return (data.data[1] * 256d + data.data[0] ) / 562d * 100d;
 
                 // CANID 3F8
-                // K51_OdMeter
+                // BMW_OdMeter
                 // Data4*65536+Data3*256+Data2
-                case "#K51_OdMeter":
+                case "#BMW_OdMeter":
                     return data.data[3]*65536d + data.data[2]*256d + data.data[1];
 
                 // CANID 2BC
-                // K51_FuelConsumption
+                // BMW_FuelConsumption
                 // 後処理で必要になるので、ダミーで0を返すだけとする。
-                case "#K51_FuelConsumption":
+                case "#BMW_FuelConsumption":
                     return 0;
 
                 // CANID 2BC
-                // K51_Range
+                // BMW_Range
                 // 後処理で必要になるので、ダミーで0を返すだけとする。
-                case "#K51_Range":
+                case "#BMW_Range":
                     return 0;
 
 
