@@ -34,6 +34,7 @@ using System.Net;
 using Microsoft.Win32;
 using GMap.NET.WindowsForms;
 using GMap.NET.WindowsForms.Markers;
+using System.ComponentModel.DataAnnotations;
 
 namespace MotoRecoViewer
 {
@@ -1363,7 +1364,7 @@ namespace MotoRecoViewer
         /// DatファイルをAsciiのCSVに変換する
         /// CSVのフォーマットは、"秒","ミリ秒","CAN ID(HEX)","Data1のHEX","Data2のHEX","Data3のHEX","Data4のHEX","Data5のHEX","Data6のHEX","Data7のHEX","Data8のHEX"
         /// </summary>
-        private void ConvertToAsciiCSV(string SrcFileName, string DstFileName)
+        private void ConvertCANData(string SrcFileName, string DstFileName)
         {
             //CANデータ読み取り中フラグ
             IsReadingCanData = true;
@@ -1466,6 +1467,93 @@ namespace MotoRecoViewer
 
             //CANデータ読み取り終了
             IsReadingCanData = false;
+
+            //プログレスバー初期化
+            progressBar.Value = 0;
+            this.statusLabel.Text = "";
+        }
+
+        /// <summary>
+        /// 画面に表示中のデコード済データをCSVに変換する
+        /// CSVのフォーマットは、"秒","ミリ秒","ch1 物理値","ch2物理値"...とする
+        /// </summary>
+        private void ConvertDecodeData(string DstFileName)
+        {
+            //プログレスバー計算用
+            long div_num = (long)(endTime - startTime);
+            int counter = 0;
+            progressBar.Value = 0;
+            progressBar.Maximum = (int)((endTime - startTime)*100);
+
+            //CSVファイルに書き込むときに使うEncoding
+            System.Text.Encoding enc =
+                System.Text.Encoding.GetEncoding("Shift_JIS");
+
+            //書き込むファイルを開く
+            System.IO.StreamWriter sr =
+                new System.IO.StreamWriter(DstFileName, false, enc);
+
+            //レコードを書き込む
+            // ToDo fieldはStringBuilderに置き換えること
+            System.Text.StringBuilder field = new System.Text.StringBuilder("");
+
+            // CSVのヘッダー行を書き込む
+            field.Append("MotoReco Logger File\r\n");
+            field.Append("Time" + ",");
+            for (int i=0; i < ListChData.Count - 1 ; i++)
+            {
+                field.Append(ListChData[i].ChName + ",");
+            }
+            field.Append(ListChData[ListChData.Count - 1].ChName  + "\r\n");
+
+            //フィールドを書き込む
+            sr.Write(field);
+
+            //field初期化
+            field.Clear();
+
+            // CSVはタイムスタンプごとにデータを保管して出力したいのでタイムスタンプでループする
+            // とりあえず10msごとのタイムスタンプにする
+            double timeStamp;
+
+            timeStamp = startTime;
+
+            while (timeStamp < endTime)
+            {
+                //毎ループメッセージ発行するとクソ遅いので、トータル100回送るようにする。
+                if ( (int)(timeStamp*100) % div_num == 0)
+                {
+                    progressBar.Value = (int)counter;
+                    this.statusLabel.Text = string.Format("{0}%", ((int)counter) * 100 / progressBar.Maximum);
+                    Application.DoEvents();
+                }
+                counter++;
+
+                field.Append(timeStamp.ToString() + ",");
+                for (int i=0; i< ListChData.Count-1; i++)
+                {
+                    // タイムスタンプに最も近いChDataのインデックスを取得
+                    int targetIdx = ListChData[i].FindLeftIndex(timeStamp);
+                    double value = ListChData[i].LogData[targetIdx].DataValue;
+                    field.Append(value.ToString() + ",");
+                }
+
+                int targetIdx2 = ListChData[ListChData.Count-1].FindLeftIndex(timeStamp);
+                double value2 = ListChData[ListChData.Count-1].LogData[targetIdx2].DataValue;
+                field.Append(value2.ToString() + "\r\n");
+
+                //フィールドを書き込む
+                sr.Write(field);
+
+                //field初期化
+                field.Clear();
+
+                // 次のタイムスタンプ
+                timeStamp += 0.01;   // とりあえず10ms固定
+            }  
+
+            //閉じる
+            sr.Close();
 
             //プログレスバー初期化
             progressBar.Value = 0;
@@ -2020,7 +2108,7 @@ namespace MotoRecoViewer
             // 名前をつけて保存
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
-                ConvertToAsciiCSV(currentDatFile, saveFileDialog.FileName);
+                ConvertCANData(currentDatFile, saveFileDialog.FileName);
             }
         }
 
@@ -2138,6 +2226,31 @@ namespace MotoRecoViewer
                 UpdateMapMarker();
 
                 this.Text = openFileDialog.FileName;
+            }
+        }
+
+        private void MenuConvertDecodeData_Click(object sender, EventArgs e)
+        {
+            // ToDo エラー処理あとで考える
+            // ファイルがOpenされていない
+            if (currentDatFile == "")
+            {
+                //
+            }
+
+            // ファイルがOpenされたがデコード条件が空
+            if (decodeRule.Count == 0)
+            {
+
+            }
+
+            // ファイルがOpenされたがデコードされたデータがない
+
+            // 現在保持している表示中のデコード済データをCSVエクスポートする
+            // 名前をつけて保存
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                ConvertDecodeData(saveFileDialog.FileName);
             }
         }
     }
