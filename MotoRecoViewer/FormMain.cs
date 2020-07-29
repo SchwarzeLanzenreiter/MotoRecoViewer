@@ -396,16 +396,16 @@ namespace MotoRecoViewer
         }
 
         /// <summary>
-        /// ＃K51_FrSpeed1から#K51_DistFrSpeed1を計算する
+        /// ＃K51_FrSpeed1から#BMW_DistFrSpeed1を計算する
         /// </summary>
         private void CalcFrSpeedDistance()
         {
-            //#K51_FrSpeed1 のChName取得
-            int idx_FrSpeed = GetIndexOfFixedFormula("#K51_FrSpeed1");
+            //#BMW_FrSpeed1 のChName取得
+            int idx_FrSpeed = GetIndexOfFixedFormula("#BMW_FrSpeed1");
             if (idx_FrSpeed < 0) { return; }
 
-            //#K51_DistFrSpeed1 のChName取得
-            int idx_DistFrSpeed = GetIndexOfFixedFormula("#K51_DistFrSpeed1");
+            //#BMW_DistFrSpeed1 のChName取得
+            int idx_DistFrSpeed = GetIndexOfFixedFormula("#BMW_DistFrSpeed1");
             if (idx_DistFrSpeed < 0) { return; }
 
             //#GPS_Distanceの積分計算
@@ -436,15 +436,15 @@ namespace MotoRecoViewer
         /// </summary>
         private void CalcAccumulatedDistCountFr()
         {
-            //#K51_DistCountFr のChName取得
-            int idx_DistCount = GetIndexOfFixedFormula("#K51_DistCountFr");
+            //#BMW_DistCountFr のChName取得
+            int idx_DistCount = GetIndexOfFixedFormula("#BMW_DistCountFr");
             if (idx_DistCount < 0) { return; }
 
-            //#K51_AccumulatedDistCountFr のChName取得
-            int idx_AccumulatedDistCount = GetIndexOfFixedFormula("#K51_AccumulatedDistCountFr");
+            //#BMW_AccumulatedDistCountFr のChName取得
+            int idx_AccumulatedDistCount = GetIndexOfFixedFormula("#BMW_AccumulatedDistCountFr");
             if (idx_AccumulatedDistCount < 0) { return; }
 
-            //#K51_DistCountの積分計算
+            //#BMW_DistCountの積分計算
             TVData tvData;
             double AccumulatedCounter = 0.0;
 
@@ -490,15 +490,15 @@ namespace MotoRecoViewer
         /// </summary>
         private void CalcAccumulatedDistCountRr()
         {
-            //#K51_DistCountRr のChName取得
-            int idx_DistCount = GetIndexOfFixedFormula("#K51_DistCountRr");
+            //#BMW_DistCountRr のChName取得
+            int idx_DistCount = GetIndexOfFixedFormula("#BMW_DistCountRr");
             if (idx_DistCount < 0) { return; }
 
-            //#K51_AccumulatedDistCountRr のChName取得
-            int idx_AccumulatedDistCount = GetIndexOfFixedFormula("#K51_AccumulatedDistCountRr");
+            //#BMW_AccumulatedDistCountRr のChName取得
+            int idx_AccumulatedDistCount = GetIndexOfFixedFormula("#BMW_AccumulatedDistCountRr");
             if (idx_AccumulatedDistCount < 0) { return; }
 
-            //#K51_DistCountの積分計算
+            //#BMW_DistCountの積分計算
             TVData tvData;
             double AccumulatedCounter = 0.0;
 
@@ -541,19 +541,19 @@ namespace MotoRecoViewer
         }
 
         /// <summary>
-        /// ＃K51_FuelCount から #K51_AccumulatedFuelCount
+        /// #BMW_FuelCount から #BMW_AccumulatedFuelCount
         /// </summary>
         private void CalcAccumulatedFuelCount()
         {
-            //#K51_FuelCount のChName取得
-            int idx_FuelCount = GetIndexOfFixedFormula("#K51_FuelCount");
+            //#BMW_FuelCount のChName取得
+            int idx_FuelCount = GetIndexOfFixedFormula("#BMW_FuelCount");
             if (idx_FuelCount < 0) { return; }
 
-            //#K51_AccumulatedFuelCount のChName取得
-            int idx_AccumulatedFuelCount = GetIndexOfFixedFormula("#K51_AccumulatedFuelCount");
+            //#BMW_AccumulatedFuelCount のChName取得
+            int idx_AccumulatedFuelCount = GetIndexOfFixedFormula("#BMW_AccumulatedFuelCount");
             if (idx_AccumulatedFuelCount < 0) { return; }
 
-            //#K51_DistCountの積分計算
+            //#BMW_DistCountの積分計算
             TVData tvData;
             double AccumulatedCounter = 0.0;
 
@@ -597,16 +597,16 @@ namespace MotoRecoViewer
         /// </summary>
         private void CalcFuelConsumption()
         {
-            //#K51_AccumulatedFuelCount のChName取得
-            int idx_AccumulatedFuelCount = GetIndexOfFixedFormula("#K51_AccumulatedFuelCount");
+            //#BMW_AccumulatedFuelCount のChName取得
+            int idx_AccumulatedFuelCount = GetIndexOfFixedFormula("#BMW_AccumulatedFuelCount");
             if (idx_AccumulatedFuelCount < 0) { return; }
 
-            //#K51_AccumulatedDistCountFr のChName取得
-            int idx_AccumulatedDistCount = GetIndexOfFixedFormula("#K51_AccumulatedDistCountFr");
+            //#BMW_AccumulatedDistCountFr のChName取得
+            int idx_AccumulatedDistCount = GetIndexOfFixedFormula("#BMW_AccumulatedDistCountFr");
             if (idx_AccumulatedDistCount < 0) { return; }
 
-            //#K51_FuelConsumption のChName取得
-            int idx_FuelConsumption = GetIndexOfFixedFormula("#K51_FuelConsumption");
+            //#BMW_FuelConsumption のChName取得
+            int idx_FuelConsumption = GetIndexOfFixedFormula("#BMW_FuelConsumption");
             if (idx_FuelConsumption < 0) { return; }
 
             //燃費計算
@@ -643,16 +643,16 @@ namespace MotoRecoViewer
         {
             const double K51_TANK_CAPA = 30d;
 
-            //#K51_FuelLevel のChName取得
-            int idx_FuelLevel = GetIndexOfFixedFormula("#K51_FuelLevel");
+            //#BMW_FuelLevel のChName取得
+            int idx_FuelLevel = GetIndexOfFixedFormula("#BMW_FuelLevel");
             if (idx_FuelLevel < 0) { return; }
 
-            //#K51_FuelConsumption のChName取得
-            int idx_FuelConsumption = GetIndexOfFixedFormula("#K51_FuelConsumption");
+            //#BMW_FuelConsumption のChName取得
+            int idx_FuelConsumption = GetIndexOfFixedFormula("#BMW_FuelConsumption");
             if (idx_FuelConsumption < 0) { return; }
 
-            //#K51_Range のChName取得
-            int idx_Range = GetIndexOfFixedFormula("#K51_Range");
+            //#BMW_Range のChName取得
+            int idx_Range = GetIndexOfFixedFormula("#BMW_Range");
             if (idx_Range < 0) { return; }
 
             //Range計算
@@ -815,14 +815,15 @@ namespace MotoRecoViewer
         /// </summary>
         private void UpdateMap()
         {
-            // LatitudeもLongitudeも存在しない場合、何もしない
-            if (!DicChName.ContainsKey("Latitude") || (!DicChName.ContainsKey("Longitude")))
+            //経度緯度情報の存在チェック
+            int idx_lat = GetIndexOfFixedFormula("#GPS_Latitude");
+            int idx_lon = GetIndexOfFixedFormula("#GPS_Longitude");
+
+            //どちらかなければ何もしない
+            if ((idx_lat < 0) || (idx_lat < 0))
             {
                 return;
             }
-
-            int idx_lat = DicChName["Latitude"];
-            int idx_lon = DicChName["Longitude"];
 
             // MainChartの中央に対応するタイムスタンプを計算
             double mainChartCenterTime = subPosTime + (divTime * 20) / 2;
@@ -897,14 +898,15 @@ namespace MotoRecoViewer
         /// </summary>
         private void UpdateMapMarker()
         {
-            // LatitudeもLongitudeも存在しない場合、何もしない
-            if ( !DicChName.ContainsKey("Latitude") || ( !DicChName.ContainsKey("Longitude")))
+            //経度緯度情報の存在チェック
+            int idx_lat = GetIndexOfFixedFormula("#GPS_Latitude");
+            int idx_lon = GetIndexOfFixedFormula("#GPS_Longitude");
+
+            //どちらかなければ何もしない
+            if ((idx_lat < 0) || (idx_lat < 0))
             {
                 return;
             }
-
-            int idx_lat = DicChName["Latitude"];
-            int idx_lon = DicChName["Longitude"];
 
             // MainChartのカーソル位置1に対応するタイムスタンプを計算
             double cur1PosTime = subPosTime + (divTime * 20) / (PictureMain.Width - 2 * chartMargin) * mainCur1Pos;
@@ -2235,16 +2237,20 @@ namespace MotoRecoViewer
             // ファイルがOpenされていない
             if (currentDatFile == "")
             {
-                //
+                return;
             }
 
             // ファイルがOpenされたがデコード条件が空
             if (decodeRule.Count == 0)
             {
-
+                return;
             }
 
             // ファイルがOpenされたがデコードされたデータがない
+            if (ListChData.Count == 0)
+            { 
+                return;
+            }
 
             // 現在保持している表示中のデコード済データをCSVエクスポートする
             // 名前をつけて保存

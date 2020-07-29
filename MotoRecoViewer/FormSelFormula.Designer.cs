@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("K51");
+            System.Windows.Forms.TreeNode treeNode1 = new System.Windows.Forms.TreeNode("BMW");
             System.Windows.Forms.TreeNode treeNode2 = new System.Windows.Forms.TreeNode("GPS");
             System.Windows.Forms.TreeNode treeNode3 = new System.Windows.Forms.TreeNode("Data");
             System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new string[] {
@@ -145,7 +145,7 @@
             this.TreeViewBike.Location = new System.Drawing.Point(0, 0);
             this.TreeViewBike.Name = "TreeViewBike";
             treeNode1.Name = "TreeNodeK51";
-            treeNode1.Text = "K51";
+            treeNode1.Text = "BMW";
             treeNode2.Name = "TreeNodeGPS";
             treeNode2.Text = "GPS";
             treeNode3.Name = "TreeNodeData";
