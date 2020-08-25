@@ -940,7 +940,43 @@ namespace MotoRecoViewer
             //マーカー更新
             GMapOverlayMarker.Markers.Clear();
             GMarkerGoogle marker = new GMarkerGoogle(new PointLatLng(liLat, liLon), GMarkerGoogleType.green);
+            marker.ToolTipText = "Cursor1";
             GMapOverlayMarker.Markers.Add(marker);
+
+            //カーソル2位置マーカー更新
+            // MainChartのカーソル位置2に対応するタイムスタンプを計算
+            double cur2PosTime = subPosTime + (divTime * 20) / (PictureMain.Width - 2 * chartMargin) * mainCur2Pos;
+
+            // カーソル位置左側データidx取得
+            leftIdx = ListChData[idx_lat].FindLeftIndex(cur2PosTime);
+            leftTime = ListChData[idx_lat].LogData[leftIdx].DataTime;
+
+            // カーソル位置右側データidx取得
+            if (leftIdx == ListChData[idx_lat].LogData.Count - 1)
+            {
+                rightIdx = leftIdx;
+            }
+            else
+            {
+                rightIdx = leftIdx + 1;   // ToDo 経度緯度データが、重複してロギングされているため.CanLogger側を治す 
+            }
+            rightTime = ListChData[idx_lat].LogData[rightIdx].DataTime;
+
+            // 緯度経度取得
+            leftLon = ListChData[idx_lon].LogData[leftIdx].DataValue;
+            leftLat = ListChData[idx_lat].LogData[leftIdx].DataValue;
+
+            rightLon = ListChData[idx_lon].LogData[rightIdx].DataValue;
+            rightLat = ListChData[idx_lat].LogData[rightIdx].DataValue;
+
+            // 経度緯度を前後2点データから線形補間する
+            liLat = LinearInterpolation(leftTime, leftLat, rightTime, rightLat, cur2PosTime);
+            liLon = LinearInterpolation(leftTime, leftLon, rightTime, rightLon, cur2PosTime);
+
+            //マーカー更新
+            GMarkerGoogle marker2 = new GMarkerGoogle(new PointLatLng(liLat, liLon), GMarkerGoogleType.red);
+            marker2.ToolTipText = "Cursor2";
+            GMapOverlayMarker.Markers.Add(marker2);
         }
 
         /// <summary>
@@ -1478,14 +1514,40 @@ namespace MotoRecoViewer
         /// <summary>
         /// 画面に表示中のデコード済データをCSVに変換する
         /// CSVのフォーマットは、"秒","ミリ秒","ch1 物理値","ch2物理値"...とする
+        /// <param name="DstFileName">エクスポートファイル名</param>
+        /// <param name="Mode">0:ファイル全体 1:カーソル間</param>
         /// </summary>
-        private void ConvertDecodeData(string DstFileName)
+        private void ConvertDecodeData(string DstFileName, int Mode)
         {
+            const int MODE_ALL = 0;
+            const int MODE_CURSOR = 1;
+
+            //開始時間と終了時間を取得
+            double exportStartTime;
+            double exportEndTime;
+
+            if (Mode == MODE_CURSOR)
+            {
+                // MainChartのカーソル位置1に対応するタイムスタンプを計算
+                // mainCur1Posは、PictureMain上の絶対的なX座標の為、グラフ描画領域幅に対するポジションに変換する
+                double ratioMainCurPos1 = (mainCur1Pos - chartMargin) / (PictureMain.Width - 2 * chartMargin);
+                exportStartTime = subPosTime + (divTime * 20) * ratioMainCurPos1;
+
+                double ratioMainCurPos2 = (mainCur2Pos - chartMargin) / (PictureMain.Width - 2 * chartMargin);
+                exportEndTime = subPosTime + (divTime * 20) * ratioMainCurPos2;
+            }
+            else
+            {
+                //デフォルトファイル全体
+                exportStartTime = startTime;
+                exportEndTime = endTime;
+            }
+
             //プログレスバー計算用
-            long div_num = (long)(endTime - startTime);
+            long div_num = (long)(exportEndTime - exportStartTime);
             int counter = 0;
             progressBar.Value = 0;
-            progressBar.Maximum = (int)((endTime - startTime)*100);
+            progressBar.Maximum = (int)((exportEndTime - exportStartTime)*100);
 
             //CSVファイルに書き込むときに使うEncoding
             System.Text.Encoding enc =
@@ -1518,9 +1580,9 @@ namespace MotoRecoViewer
             // とりあえず10msごとのタイムスタンプにする
             double timeStamp;
 
-            timeStamp = startTime;
+            timeStamp = exportStartTime;
 
-            while (timeStamp < endTime)
+            while (timeStamp < exportEndTime)
             {
                 //毎ループメッセージ発行するとクソ遅いので、トータル100回送るようにする。
                 if ( (int)(timeStamp*100) % div_num == 0)
@@ -1531,7 +1593,7 @@ namespace MotoRecoViewer
                 }
                 counter++;
 
-                field.Append(timeStamp.ToString() + ",");
+                field.Append(timeStamp.ToString("F2") + ",");
                 for (int i=0; i< ListChData.Count-1; i++)
                 {
                     // タイムスタンプに最も近いChDataのインデックスを取得
@@ -2231,9 +2293,8 @@ namespace MotoRecoViewer
             }
         }
 
-        private void MenuConvertDecodeData_Click(object sender, EventArgs e)
+        private void MenuConvertDecodeDataWhole_Click(object sender, EventArgs e)
         {
-            // ToDo エラー処理あとで考える
             // ファイルがOpenされていない
             if (currentDatFile == "")
             {
@@ -2256,7 +2317,35 @@ namespace MotoRecoViewer
             // 名前をつけて保存
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
-                ConvertDecodeData(saveFileDialog.FileName);
+                ConvertDecodeData(saveFileDialog.FileName, 0);
+            }
+        }
+
+        private void MenuConvertDecodeDataCursor_Click(object sender, EventArgs e)
+        {
+            // ファイルがOpenされていない
+            if (currentDatFile == "")
+            {
+                return;
+            }
+
+            // ファイルがOpenされたがデコード条件が空
+            if (decodeRule.Count == 0)
+            {
+                return;
+            }
+
+            // ファイルがOpenされたがデコードされたデータがない
+            if (ListChData.Count == 0)
+            {
+                return;
+            }
+
+            // 現在保持している表示中のデコード済データをCSVエクスポートする
+            // 名前をつけて保存
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                ConvertDecodeData(saveFileDialog.FileName,1);
             }
         }
     }
