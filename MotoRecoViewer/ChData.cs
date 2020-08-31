@@ -28,7 +28,7 @@ using System.Threading.Tasks;
 
 namespace MotoRecoViewer
 {
-    public struct TVData   //tvは、time と　value
+    public struct TVData   //tv means Time and Value
     {
         public double DataTime { get; set; }
         public double DataValue { get; set; }
@@ -45,13 +45,14 @@ namespace MotoRecoViewer
         public List<TVData> LogData { get; set; }
 
         /// <summary>
-        /// コンストラクタ
+        /// constructor
         /// </summary>
-        /// <param name="chName">データ表示名</param>
-        /// <param name="chMin">チャート上最小値</param>
-        /// <param name="chMax">チャート上最大値</param>
-        /// <param name="chColor">チャートカラー</param>
-        /// <param name="chPreview">プレビュー表示するかどうか</param>
+        /// <param name="chName">channel name</param>
+        /// <param name="chMin">Minimum value on the chart</param>
+        /// <param name="chMax">Maximum value on the chart</param>
+        /// <param name="chColor">Chart color</param>
+        /// <param name="chPreview">Subchart display flag</param>
+        /// <param name="chShow">Mainchart display flag</param>
         public ChData(string chName, int chMin, int chMax, int chColor, bool chPreview, bool chShow)
         {
             this.ChName = chName;
@@ -64,10 +65,10 @@ namespace MotoRecoViewer
         }
 
         /// <summary>
-        /// データを追加する
+        /// Add new data
         /// </summary>
-        /// <param name="time">タイムスタンプ</param>
-        /// <param name="value">データ値</param>
+        /// <param name="time">Timestamp</param>
+        /// <param name="value">Data value</param>
         public void AddData(double time, double value)
         {
             TVData data = new TVData
@@ -80,7 +81,7 @@ namespace MotoRecoViewer
         }
 
         /// <summary>
-        /// データクリア
+        /// Clear data
         /// </summary>
         public void Clear()
         {
@@ -88,7 +89,7 @@ namespace MotoRecoViewer
         }
 
         /// <summary>
-        /// DecodeRuleの要素数を返す
+        /// Returns the number of elements in a Channel data.
         /// </summary>
         public int Count
         {
@@ -99,11 +100,10 @@ namespace MotoRecoViewer
         }
 
         /// <summary>
-        /// 引数のtimeに対応した左側インデックスを返す
-        /// 左側とは、時間が若い、という意味になる
+        /// Returns the left-hand index corresponding to the argument Time. The left side means "young time".
         /// </summary>
-        /// <param name="time">検索するtime</param>
-        /// <returns>要素の位置（見つからなかった場合は配列長）</returns>
+        /// <param name="time">Time to search</param>
+        /// <returns>The time index of the argument.</returns>
         public int FindLeftIndex(double time)
         {
             int first = 0;
@@ -146,11 +146,12 @@ namespace MotoRecoViewer
         }
 
         /// <summary>
-        /// LogDataのDateTimeをKeyにDataValueをソートする
+        /// Sorting DataValue by LogData's DateTime as a key
         /// </summary>
         public void Sort()
         {
-            this.LogData.Sort((a, b) => (int)(a.DataTime*1000 - b.DataTime*1000));   // msに変換してから引き算する。MotoRecoではもともとタイムスタンプは1msが分解能
+            this.LogData.Sort((a, b) => (int)(a.DataTime*1000 - b.DataTime*1000));   //Since we want to be able to compare them in int type, we need to convert them to ms and then subtract them.
+
         }
     }
 }
