@@ -146,6 +146,53 @@ namespace MotoRecoViewer
         }
 
         /// <summary>
+        /// Returns the left-hand index corresponding to the argument Time. The left side means "young time".
+        /// </summary>
+        /// <param name="time">Time to search</param>
+        /// <param name="start">Binary search start index</param>
+        /// <param name="end">Binary search end index</param>
+        /// <returns>The time index of the argument.</returns>
+        public int FindLeftIndex(double time, int start, int end)
+        {
+            if (this.LogData.Count < 3)
+            {
+                return 0;
+            }
+
+            int last = end;
+            int first = start;
+            int mid;
+
+            do
+            {
+                mid = first + (last - first) / 2;
+
+                if (mid == this.LogData.Count - 1)
+                {
+                    return mid;
+                }
+
+                if ((this.LogData[mid].DataTime <= time) && (time < this.LogData[mid + 1].DataTime))
+                {
+                    return mid;
+                }
+
+
+                if (time > this.LogData[mid].DataTime)
+                {
+                    first = mid + 1;
+                }
+                else
+                {
+                    last = mid - 1;
+                }
+
+            } while (first <= last);
+
+            return mid;
+        }
+
+        /// <summary>
         /// Sorting DataValue by LogData's DateTime as a key
         /// </summary>
         public void Sort()

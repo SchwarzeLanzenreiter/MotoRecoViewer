@@ -1308,6 +1308,18 @@ namespace MotoRecoViewer
 
             Pen p = new Pen(Brushes.White);
 
+            //描画Point用配列数確保
+            int arySize = PictureMain.Width - 2 * (int)chartMargin + 1;
+
+            //描画Point用配列に対応したタイムスタンプ保持用配列
+            double[] aryTimeStamp = new double[arySize];
+
+            //タイムスタンプ計算
+            for (int i = 0; i < arySize; i++)
+            {
+                aryTimeStamp[i] = subPosTime + (divTime * 20d) / (double)arySize * i;
+            }
+
             // ListChNameの項目数すべて描画する
             Parallel.For(0, ListChData.Count, i =>
             //for (int i = 0; i < ListChData.Count; i++)
@@ -1318,19 +1330,21 @@ namespace MotoRecoViewer
                 {
                     // 座標格納用
                     // データ追加ごとにResizeするとCPUリソース食うので、想定される最大数確保し、最後に縮小する
-                    int arySize = PictureMain.Width - 2 * (int)chartMargin + 1;
                     Point[] points = new Point[arySize];
 
                     int drawCount = 0;
 
-                    // MainChart描画ピクセル幅に対してのみ描画処理実施する
-                    for (int j = 0; j <= PictureMain.Width - 2 * chartMargin; j++)
-                    {
-                        // MainChartのグラフ描画領域のXstart～Xendに対応したタイムスタンプを計算
-                        double targetTime = subPosTime + (divTime * 20d) / (PictureMain.Width - 2d * chartMargin) * j;
+                    //タイムスタンプ最初に対応したChDataインデックス取得
+                    int startIdx = ListChData[i].FindLeftIndex(aryTimeStamp[0]);
 
+                    //タイムスタンプ最後に対応したChDataインデックス取得
+                    int endIdx = ListChData[i].FindLeftIndex(aryTimeStamp[arySize -1]);
+
+                    // MainChart描画ピクセル幅に対してのみ描画処理実施する
+                    for (int j = 0; j < arySize; j++)
+                    {
                         // targetTimeに対応したタイムスタンプに最も近いChDataのインデックスを取得
-                        int targetIdx = ListChData[i].FindLeftIndex(targetTime);
+                        int targetIdx = ListChData[i].FindLeftIndex(aryTimeStamp[j], startIdx, endIdx);
 
                         // 1つ前のインデックスと同じ場合 または targetIdx が 0の場合何もしない
                         if ((targetIdxPrev == targetIdx) || (targetIdx == 0)) 

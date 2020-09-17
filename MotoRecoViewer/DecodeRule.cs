@@ -219,7 +219,6 @@ namespace MotoRecoViewer
                 // CANID 10C
                 // BMW LeanAngle
                 // (Data5*90/128-90)
-                // -1を掛けるのは、画面上右側を進行方向と考えて、右コーナーなら画面下側に、左コーナーなら画面上側にリーンアングルを表記したいので
                 case "#BMW_LeanAngle":
                     return (((double)data.data[4] * 90d / 127d) - 90d);
 
