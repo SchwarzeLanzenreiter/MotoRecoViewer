@@ -59,6 +59,7 @@
             this.statusLabel = new System.Windows.Forms.ToolStripStatusLabel();
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
+            this.PanelMainChart = new System.Windows.Forms.Panel();
             this.PictureMain = new System.Windows.Forms.PictureBox();
             this.PictureSub = new System.Windows.Forms.PictureBox();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
@@ -111,7 +112,7 @@
             // 
             this.MenuOpen.Name = "MenuOpen";
             this.MenuOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.MenuOpen.Size = new System.Drawing.Size(224, 26);
+            this.MenuOpen.Size = new System.Drawing.Size(217, 26);
             this.MenuOpen.Text = "Open(&O)";
             this.MenuOpen.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
@@ -119,14 +120,14 @@
             // 
             this.MenuAppend.Name = "MenuAppend";
             this.MenuAppend.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
-            this.MenuAppend.Size = new System.Drawing.Size(224, 26);
+            this.MenuAppend.Size = new System.Drawing.Size(217, 26);
             this.MenuAppend.Text = "Append(&A)";
             this.MenuAppend.Click += new System.EventHandler(this.MenuAppend_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(221, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(214, 6);
             // 
             // MenuConvert
             // 
@@ -136,7 +137,7 @@
             this.MenuConvertDecodeDataWhole,
             this.MenuConvertDecodeDataCursor});
             this.MenuConvert.Name = "MenuConvert";
-            this.MenuConvert.Size = new System.Drawing.Size(224, 26);
+            this.MenuConvert.Size = new System.Drawing.Size(217, 26);
             this.MenuConvert.Text = "CSV Export";
             // 
             // MenuConvertCANData
@@ -168,7 +169,7 @@
             // MenuExit
             // 
             this.MenuExit.Name = "MenuExit";
-            this.MenuExit.Size = new System.Drawing.Size(224, 26);
+            this.MenuExit.Size = new System.Drawing.Size(217, 26);
             this.MenuExit.Text = "Exit(&X)";
             this.MenuExit.Click += new System.EventHandler(this.終了ToolStripMenuItem_Click);
             // 
@@ -329,6 +330,7 @@
             // 
             // splitContainer2.Panel1
             // 
+            this.splitContainer2.Panel1.Controls.Add(this.PanelMainChart);
             this.splitContainer2.Panel1.Controls.Add(this.PictureMain);
             // 
             // splitContainer2.Panel2
@@ -338,6 +340,19 @@
             this.splitContainer2.SplitterDistance = 337;
             this.splitContainer2.SplitterWidth = 5;
             this.splitContainer2.TabIndex = 0;
+            // 
+            // PanelMainChart
+            // 
+            this.PanelMainChart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PanelMainChart.Location = new System.Drawing.Point(0, 0);
+            this.PanelMainChart.Name = "PanelMainChart";
+            this.PanelMainChart.Size = new System.Drawing.Size(748, 335);
+            this.PanelMainChart.TabIndex = 1;
+            this.PanelMainChart.Paint += new System.Windows.Forms.PaintEventHandler(this.PanelMainChart_Paint);
+            this.PanelMainChart.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PanelMainChart_MouseDown);
+            this.PanelMainChart.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PanelMainChart_MouseMove);
+            this.PanelMainChart.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PanelMainChart_MouseUp);
+            this.PanelMainChart.Resize += new System.EventHandler(this.PanelMainChart_Resize);
             // 
             // PictureMain
             // 
@@ -486,5 +501,6 @@
         private System.Windows.Forms.ToolStripMenuItem MenuConvertDecodeDataWhole;
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem MenuConvertDecodeDataCursor;
+        private System.Windows.Forms.Panel PanelMainChart;
     }
 }
