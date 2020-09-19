@@ -60,7 +60,7 @@
             this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.splitContainer2 = new System.Windows.Forms.SplitContainer();
             this.PanelMainChart = new System.Windows.Forms.Panel();
-            this.PictureSub = new System.Windows.Forms.PictureBox();
+            this.PanelSubChart = new System.Windows.Forms.Panel();
             this.splitContainer3 = new System.Windows.Forms.SplitContainer();
             this.GMapControl = new GMap.NET.WindowsForms.GMapControl();
             this.menuStrip.SuspendLayout();
@@ -74,7 +74,6 @@
             this.splitContainer2.Panel1.SuspendLayout();
             this.splitContainer2.Panel2.SuspendLayout();
             this.splitContainer2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.PictureSub)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).BeginInit();
             this.splitContainer3.Panel2.SuspendLayout();
             this.splitContainer3.SuspendLayout();
@@ -89,7 +88,7 @@
             this.helpHToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(1619, 24);
+            this.menuStrip.Size = new System.Drawing.Size(824, 24);
             this.menuStrip.TabIndex = 0;
             this.menuStrip.Text = "menuStrip";
             // 
@@ -279,9 +278,9 @@
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.progressBar,
             this.statusLabel});
-            this.statusStrip.Location = new System.Drawing.Point(0, 705);
+            this.statusStrip.Location = new System.Drawing.Point(0, 447);
             this.statusStrip.Name = "statusStrip";
-            this.statusStrip.Size = new System.Drawing.Size(1619, 24);
+            this.statusStrip.Size = new System.Drawing.Size(824, 24);
             this.statusStrip.TabIndex = 8;
             this.statusStrip.Text = "statusStrip1";
             // 
@@ -309,8 +308,8 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer3);
-            this.splitContainer1.Size = new System.Drawing.Size(1619, 681);
-            this.splitContainer1.SplitterDistance = 1356;
+            this.splitContainer1.Size = new System.Drawing.Size(824, 423);
+            this.splitContainer1.SplitterDistance = 690;
             this.splitContainer1.TabIndex = 9;
             // 
             // splitContainer2
@@ -327,9 +326,9 @@
             // 
             // splitContainer2.Panel2
             // 
-            this.splitContainer2.Panel2.Controls.Add(this.PictureSub);
-            this.splitContainer2.Size = new System.Drawing.Size(1356, 681);
-            this.splitContainer2.SplitterDistance = 599;
+            this.splitContainer2.Panel2.Controls.Add(this.PanelSubChart);
+            this.splitContainer2.Size = new System.Drawing.Size(690, 423);
+            this.splitContainer2.SplitterDistance = 278;
             this.splitContainer2.TabIndex = 0;
             // 
             // PanelMainChart
@@ -338,7 +337,7 @@
             this.PanelMainChart.Location = new System.Drawing.Point(0, 0);
             this.PanelMainChart.Margin = new System.Windows.Forms.Padding(2);
             this.PanelMainChart.Name = "PanelMainChart";
-            this.PanelMainChart.Size = new System.Drawing.Size(1354, 597);
+            this.PanelMainChart.Size = new System.Drawing.Size(688, 276);
             this.PanelMainChart.TabIndex = 1;
             this.PanelMainChart.Paint += new System.Windows.Forms.PaintEventHandler(this.PanelMainChart_Paint);
             this.PanelMainChart.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PanelMainChart_MouseDown);
@@ -346,18 +345,18 @@
             this.PanelMainChart.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PanelMainChart_MouseUp);
             this.PanelMainChart.Resize += new System.EventHandler(this.PanelMainChart_Resize);
             // 
-            // PictureSub
+            // PanelSubChart
             // 
-            this.PictureSub.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.PictureSub.Location = new System.Drawing.Point(0, 0);
-            this.PictureSub.Name = "PictureSub";
-            this.PictureSub.Size = new System.Drawing.Size(1354, 76);
-            this.PictureSub.TabIndex = 0;
-            this.PictureSub.TabStop = false;
-            this.PictureSub.Paint += new System.Windows.Forms.PaintEventHandler(this.PictureSub_Paint);
-            this.PictureSub.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PictureSub_MouseDown);
-            this.PictureSub.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureSub_MouseMove);
-            this.PictureSub.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PictureSub_MouseUp);
+            this.PanelSubChart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.PanelSubChart.Location = new System.Drawing.Point(0, 0);
+            this.PanelSubChart.Name = "PanelSubChart";
+            this.PanelSubChart.Size = new System.Drawing.Size(688, 139);
+            this.PanelSubChart.TabIndex = 1;
+            this.PanelSubChart.Paint += new System.Windows.Forms.PaintEventHandler(this.PanelSubChart_Paint);
+            this.PanelSubChart.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PanelSubChart_MouseDown);
+            this.PanelSubChart.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PanelSubChart_MouseMove);
+            this.PanelSubChart.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PanelSubChart_MouseUp);
+            this.PanelSubChart.Resize += new System.EventHandler(this.PanelSubChart_Resize);
             // 
             // splitContainer3
             // 
@@ -370,8 +369,8 @@
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.GMapControl);
-            this.splitContainer3.Size = new System.Drawing.Size(259, 681);
-            this.splitContainer3.SplitterDistance = 594;
+            this.splitContainer3.Size = new System.Drawing.Size(130, 423);
+            this.splitContainer3.SplitterDistance = 368;
             this.splitContainer3.TabIndex = 2;
             // 
             // GMapControl
@@ -398,7 +397,7 @@
             this.GMapControl.ScaleMode = GMap.NET.WindowsForms.ScaleModes.Integer;
             this.GMapControl.SelectedAreaFillColor = System.Drawing.Color.FromArgb(((int)(((byte)(33)))), ((int)(((byte)(65)))), ((int)(((byte)(105)))), ((int)(((byte)(225)))));
             this.GMapControl.ShowTileGridLines = false;
-            this.GMapControl.Size = new System.Drawing.Size(257, 81);
+            this.GMapControl.Size = new System.Drawing.Size(128, 49);
             this.GMapControl.TabIndex = 4;
             this.GMapControl.Zoom = 3D;
             // 
@@ -406,7 +405,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1619, 729);
+            this.ClientSize = new System.Drawing.Size(824, 471);
             this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip);
@@ -428,7 +427,6 @@
             this.splitContainer2.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer2)).EndInit();
             this.splitContainer2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.PictureSub)).EndInit();
             this.splitContainer3.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.splitContainer3)).EndInit();
             this.splitContainer3.ResumeLayout(false);
@@ -462,7 +460,6 @@
         private System.Windows.Forms.ToolStripStatusLabel statusLabel;
         private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.SplitContainer splitContainer2;
-        private System.Windows.Forms.PictureBox PictureSub;
         private System.Windows.Forms.SplitContainer splitContainer3;
         private GMap.NET.WindowsForms.GMapControl GMapControl;
         private System.Windows.Forms.ToolStripMenuItem helpHToolStripMenuItem;
@@ -473,5 +470,6 @@
         private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
         private System.Windows.Forms.ToolStripMenuItem MenuConvertDecodeDataCursor;
         private System.Windows.Forms.Panel PanelMainChart;
+        private System.Windows.Forms.Panel PanelSubChart;
     }
 }

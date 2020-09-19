@@ -108,9 +108,18 @@ namespace MotoRecoViewer
         private SharpDX.Direct2D1.Factory       dxMainD2dFactory;
         private SharpDX.Direct2D1.RenderTarget  dxMainRenderTarget2D;
         private SharpDX.DirectWrite.Factory     dxMainFactoryDWrite;
-        private SolidColorBrush                 dxMainColorBrush;
         private TextFormat                      dxMainTextFont;
-        private SharpDX.DXGI.Surface            dxMainsurface;
+        private SharpDX.DXGI.Surface            dxMainSurface;
+
+        private SharpDX.Direct3D11.Device       dxSubDevice;
+        private SharpDX.DXGI.SwapChain          dxSubSwapChain;
+        private SharpDX.Direct3D11.Texture2D    dxSubBackBuffer;
+        private SharpDX.Direct2D1.Factory       dxSubD2dFactory;
+        private SharpDX.Direct2D1.RenderTarget  dxSubRenderTarget2D;
+        private SharpDX.DirectWrite.Factory     dxSubFactoryDWrite;
+        private TextFormat                      dxSubTextFont;
+        private SharpDX.DXGI.Surface            dxSubSurface;
+
 
         //==========================
         //
@@ -997,60 +1006,29 @@ namespace MotoRecoViewer
         }
 
         /// <summary>
-        /// Chartを描画する
-        /// </summary>
-        private void DrawChartMain(Graphics g)
-        {
-            // ListChNameがNULL→即抜ける
-            if (DicChName == null) { return; }
-
-            // ListChNameが0＝CANデータ未読み込み→即抜ける
-            if (DicChName.Count < 1) { return; }
-
-            //　アプリ上部のメインチャートを描画
-            DrawMainChart(g);
-
-            // ListViewData更新
-            UpdateListViewData();
-        }
-
-        /// <summary>
-        /// Chartを描画する
-        /// </summary>
-        private void DrawChartSub(Graphics g)
-        {
-            // ListChNameがNULL→即抜ける
-            if (DicChName == null) { return; }
-
-            // ListChNameが0＝CANデータ未読み込み→即抜ける
-            if (DicChName.Count < 1) { return; }
-
-            // アプリ下部のサブチャートを描画
-            DrawSubChart(g);
-        }
-
-        /// <summary>
         /// 画面下部のサブChartのグリッドを描画する
         /// </summary>
-        private void DrawSubChartGrid(Graphics g)
+        private void DrawSubChartGridD2D()
         {
-            //まずサブチャートエリアの枠を書く
+            SolidColorBrush brush = new SolidColorBrush(dxSubRenderTarget2D, SharpDX.Color.Green);
+
+            //サブチャートエリアの枠を書く
 
             //横線
             for (int i = 0; i < 21; i++)
             {
                 // 罫線間ピクセルを算出
-                double rule = (double)(PictureSub.Width - 2d * chartMargin) / 20d;
+                float rule = (float)(PanelSubChart.Width - 2f * chartMargin) / 20f;
 
                 // X座標
-                double x = chartMargin + i * rule;
+                float x = (float)chartMargin + i * rule;
 
                 // Y座標
-                double y1 = chartMargin;
-                double y2 = PictureSub.Height - chartMargin;
+                float y1 = (float)chartMargin;
+                float y2 = (float)PanelSubChart.Height - (float)chartMargin;
 
-                // ToDo グリッドカラーも設定できるようにする
-                g.DrawLine(Pens.DarkSeaGreen, (float)x, (float)y1, (float)x, (float)y2);
+                // グリッドカラーも設定できるようにする
+                dxSubRenderTarget2D.DrawLine(new Vector2(x, y1), new Vector2(x, y2), brush);
             }
 
             //縦線
@@ -1058,56 +1036,59 @@ namespace MotoRecoViewer
             for (int i = 0; i < 3; i++)
             {
                 // 罫線間ピクセルを算出
-                double rule = (PictureSub.Height - 2d * chartMargin) / 2d;
+                float rule = (float)(PanelSubChart.Height - 2f * chartMargin) / 2f;
 
                 // X座標
-                double y = chartMargin + i * rule;
+                float y = (float)chartMargin + i * rule;
 
                 // Y座標
-                double x1 = chartMargin;
-                double x2 = PictureSub.Width - chartMargin;
+                float x1 = (float)chartMargin;
+                float x2 = (float)PanelSubChart.Width - (float)chartMargin;
 
                 // ToDo グリッドカラーも設定できるようにする
-                g.DrawLine(Pens.DarkSeaGreen, (float)x1, (float)y, (float)x2, (float)y);
+                dxSubRenderTarget2D.DrawLine(new Vector2(x1, y), new Vector2(x2, y), brush);
             }
         }
 
         /// <summary>
         /// 画面下部のサブChartの描画する
         /// </summary>
-        private void DrawSubChartData(Graphics g)
+        private void DrawSubChartDataD2D()
         {
-            //スレッド調停用
-            object lockobj = new object();
-
             // ListChNameを調べてプレビュー表示TrueのものだけSubChartに表示する
             int idxPreview = 0;
 
-            Pen p = new Pen(Brushes.White);
+            //描画ピクセル数（幅）計算
+            int arySize = PanelSubChart.Width - 2 * (int)chartMargin + 1;
 
-            for (int i = 0; i < ListChData.Count; i++)
-            //Parallel.For(0, ListChData.Count, i =>
+            //描画Point用配列に対応したタイムスタンプ保持用配列
+            double[] aryTimeStamp = new double[arySize];
+
+            //タイムスタンプ計算
+            for (int i = 0; i < arySize; i++)
+            {
+                aryTimeStamp[i] = startTime + (endTime - startTime) / (PanelSubChart.Width - 2d * chartMargin) * i;
+            }
+
+            //for (int i = 0; i < ListChData.Count; i++)
+            Parallel.For(0, ListChData.Count, i =>
             {
                 // Subチャートに表示するのは、ChData.ChPreviewがTrueの物のみ
                 if (ListChData[i].ChPreview)
                 {
                     // 座標格納用
                     // データ追加ごとにResizeするとCPUリソース食うので、想定される最大数確保し、最後に縮小する
-                    int arySize = PictureSub.Width - 2 * (int)chartMargin + 1;
-                    System.Drawing.Point[] points = new System.Drawing.Point[arySize];
+                    
+                    Vector2[] points = new Vector2[arySize];
 
                     int drawCount = 0;
                     double targetIdxPrev = 0d;
 
                     // SubChart描画ピクセル幅に対してのみ描画処理実施する
-                    for (int j = 0; j <= PictureSub.Width - 2 * chartMargin; j++)
+                    for (int j = 0; j <= PanelSubChart.Width - 2 * chartMargin; j++)
                     {
-                        // SubChartのグラフ描画領域のXstart～Xendに対応したタイムスタンプを計算
-                        double targetTime = startTime + (endTime - startTime) / (PictureSub.Width - 2d * chartMargin) * j;
-
-                        // targetTimeに対応したタイムスタンプに最も近いChDataのインデックスを取得
-                        int targetIdx = ListChData[i].FindLeftIndex(targetTime);
-
+                        // タイムスタンプに最も近いChDataのインデックスを取得
+                        int targetIdx = ListChData[i].FindLeftIndex(aryTimeStamp[j]);
 
                         // 1つ前のインデックスと同じ場合、スキップする
                         if ((targetIdxPrev == targetIdx) || (targetIdx == 0))
@@ -1127,7 +1108,7 @@ namespace MotoRecoViewer
                         if (y < 0) { y = 0; }
 
                         // %をY軸ピクセルに変換する.その際、グラフ上方が原点になるので、1-yとして計算する。
-                        y = (PictureSub.Height - chartMargin * 2d) * (1d - y);
+                        y = (PanelSubChart.Height - chartMargin * 2d) * (1d - y);
                         y += chartMargin;
 
                         //座標格納
@@ -1140,29 +1121,39 @@ namespace MotoRecoViewer
                         targetIdxPrev = targetIdx;
                     }
 
-                    //配列要素数が必ず１余計なので減らす
-                    Array.Resize(ref points, drawCount);
+                    //Chごとの色をブラシにセット
+                    System.Drawing.Color c;
+                    c = System.Drawing.Color.FromArgb(ListChData[i].ChColor);
 
-                    // DrawLinesで一気に描画する
-                    lock (lockobj)
-                    {
-                        p.Color = System.Drawing.Color.FromArgb(ListChData[i].ChColor);
-                        if (points.Length > 1)
+                    SharpDX.Mathematics.Interop.RawColor4 rc4;
+                    rc4 = ColorToRaw4(c);
+
+                    //ブラシ生成
+                    SolidColorBrush brush = new SolidColorBrush(dxSubRenderTarget2D, SharpDX.Color.Red);
+                    brush.Color = rc4;
+
+                    //グラフ描画　Parallelの中から描画しているが、DirectDrawをMultithread設定にしているので大丈夫なはず
+                    if (points.Length > 1)
+                    {                            // 線描画：線のみ
+                        for (int k = 0; k < drawCount - 1; k++)
                         {
-                            g.DrawLines(p, points);
+                            dxSubRenderTarget2D.DrawLine(points[k], points[k + 1], brush);
                         }
                     }
+
+                    //ブラシ破棄
+                    brush.Dispose();
                 }
 
                 idxPreview++;
-             //});
-            }
+            });
+            //}
         }
 
         /// <summary>
         /// 画面下部のサブChartに選択位置を表示する
         /// </summary>
-        private void DrawSubChartPos(Graphics g)
+        private void DrawSubChartPosD2D()
         {
             //選択マーカー幅を計算する
             //データの時間幅に対する、divTime*20の割合から計算できる
@@ -1172,99 +1163,56 @@ namespace MotoRecoViewer
             //ratioSelected上限処理 , データが短くてメインチャート1画面に収まり切る場合に発生
             if (ratioSelected > 1) { ratioSelected = 1; }
 
-            double rectWidth = (PictureSub.Width - 2 * chartMargin) * ratioSelected;
+            double rectWidth = (PanelSubChart.Width - 2 * chartMargin) * ratioSelected;
 
             //rectWidth下限処理
-            if (rectWidth < 2){ rectWidth = 2; }
+            if (rectWidth < 2) { rectWidth = 2; }
 
             //XY座標計算
             double x1 = (subPosTime - startTime) / (endTime - startTime);       //ToDo startTimeはMotoRecoでロギング時0のはずなので本来は不要
-            x1 = x1 * (PictureSub.Width - 2 * chartMargin)+chartMargin;
+            x1 = x1 * (PanelSubChart.Width - 2 * chartMargin) + chartMargin;
             double x2 = x1 + rectWidth;
             double y1 = chartMargin;
-            double y2 = PictureSub.Height - chartMargin;
+            double y2 = PanelSubChart.Height - chartMargin;
 
-            //rectangleに変換
-            System.Drawing.Rectangle rect = System.Drawing.Rectangle.FromLTRB((int)x1, (int)y1, (int)x2, (int)y2);
+            //ブラシ生成
+            SolidColorBrush brush = new SolidColorBrush(dxSubRenderTarget2D, SharpDX.Color.White);
 
-            g.DrawRectangle(Pens.White, rect);
+            //rect生成
+            SharpDX.Mathematics.Interop.RawRectangleF rect = new SharpDX.Mathematics.Interop.RawRectangleF((float)x1, (float)y1, (float)x2, (float)y2);
+
+            //選択ポジション白枠描画
+            dxSubRenderTarget2D.DrawRectangle(rect, brush);
+
+            brush.Dispose();
         }
 
         /// <summary>
         /// 画面下部のサブChartを描画する
         /// </summary>
-        private void DrawSubChart(Graphics g)
+        private void DrawSubChartD2D()
         {
             //サブチャートエリアを黒く塗りつぶす
-            g.FillRectangle(Brushes.Black, 0, 0, PictureSub.Width, PictureSub.Height);
+            dxSubRenderTarget2D.Clear(SharpDX.Color.Black);
+
+            DrawSubChartGridD2D();
 
             //pictureSubのWidth分だけ、ListChDataからデータをピックアップして描画する
-            DrawSubChartData(g);
-
-            DrawSubChartGrid(g);
+            DrawSubChartDataD2D();
 
             //サブチャートに現在位置を反転表示で表示
-            DrawSubChartPos(g);
+            DrawSubChartPosD2D();
         }
 
-
-        /// <summary>
-        /// 画面上部のメインChartのグリッドを描画する
-        /// </summary>
-        private void DrawMainChartGrid(Graphics g)
-        {
-            //まずメインチャートエリアの枠を書く
-
-            //横線
-            for (int i = 0; i < 21; i++)
-            {
-                // 罫線間ピクセルを算出
-                double rule = (PanelMainChart.Width - 2d * chartMargin) / 20d;
-
-                // X座標
-                double x = chartMargin + i * rule;
-
-                // Y座標
-                double y1 = chartMargin;
-                double y2 = PanelMainChart.Height - chartMargin;
-
-                g.DrawLine(Pens.DarkSeaGreen, (float)x, (float)y1, (float)x, (float)y2);
-            }
-
-            //縦線
-            // X座標
-            for (int i = 0; i < 11; i++)
-            {
-                // 罫線間ピクセルを算出
-                double rule = (PanelMainChart.Height - 2d * chartMargin) / 10d;
-
-                // X座標
-                double y = chartMargin + i * rule;
-
-                // Y座標
-                double x1 = chartMargin;
-                double x2 = PanelMainChart.Width - chartMargin;
-
-                g.DrawLine(Pens.DarkSeaGreen, (float)x1, (float)y, (float)x2, (float)y);
-            }
-
-            Pen curPen = new Pen(Brushes.White,3);
-
-            //カーソル1
-            curPen.DashStyle = System.Drawing.Drawing2D.DashStyle.DashDot;
-            g.DrawLine(curPen, (float)mainCur1Pos, (float)chartMargin, (float)mainCur1Pos, PanelMainChart.Height - (float)chartMargin);
-
-            //カーソル2
-            curPen.DashStyle = System.Drawing.Drawing2D.DashStyle.DashDotDot;
-            g.DrawLine(curPen, (float)mainCur2Pos, (float)chartMargin, (float)mainCur2Pos, PanelMainChart.Height - (float)chartMargin);
-        }
 
         /// <summary>
         /// 画面上部のメインChartのグリッドを描画する
         /// </summary>
         private void DrawMainChartGridD2D()
         {
-            //まずメインチャートエリアの枠を書く
+            SolidColorBrush brush = new SolidColorBrush(dxMainRenderTarget2D, SharpDX.Color.Green);
+
+            //メインチャートエリアの枠を書く
 
             //横線
             for (int i = 0; i < 21; i++)
@@ -1279,8 +1227,7 @@ namespace MotoRecoViewer
                 float y1 = (float)chartMargin;
                 float y2 = (float)PanelMainChart.Height - (float)chartMargin;
 
-                dxMainColorBrush.Color = SharpDX.Color.Green;
-                dxMainRenderTarget2D.DrawLine(new Vector2(x,y1), new Vector2(x,y2), dxMainColorBrush);
+                dxMainRenderTarget2D.DrawLine(new Vector2(x,y1), new Vector2(x,y2),brush);
             }
 
             //縦線
@@ -1297,19 +1244,20 @@ namespace MotoRecoViewer
                 float x1 = (float)chartMargin;
                 float x2 = (float)PanelMainChart.Width - (float)chartMargin;
 
-                dxMainColorBrush.Color = SharpDX.Color.Green;
-                dxMainRenderTarget2D.DrawLine(new Vector2(x1, y), new Vector2(x2, y), dxMainColorBrush);
+                dxMainRenderTarget2D.DrawLine(new Vector2(x1, y), new Vector2(x2, y), brush);
             }
 
-            dxMainColorBrush.Color = SharpDX.Color.White;
+            brush.Color = SharpDX.Color.White;
 
             //カーソル1
             var strokeStyle_dashed1 = new StrokeStyle(dxMainD2dFactory, new StrokeStyleProperties() { DashOffset = 5, DashCap = CapStyle.Square, DashStyle = SharpDX.Direct2D1.DashStyle.DashDot });
-            dxMainRenderTarget2D.DrawLine(new Vector2((float)mainCur1Pos, (float)chartMargin), new Vector2((float)mainCur1Pos, PanelMainChart.Height - (float)chartMargin), dxMainColorBrush, 3, strokeStyle_dashed1);
+            dxMainRenderTarget2D.DrawLine(new Vector2((float)mainCur1Pos, (float)chartMargin), new Vector2((float)mainCur1Pos, PanelMainChart.Height - (float)chartMargin), brush, 3, strokeStyle_dashed1);
 
             //カーソル2
             var strokeStyle_dashed2 = new StrokeStyle(dxMainD2dFactory, new StrokeStyleProperties() { DashOffset = 5, DashCap = CapStyle.Square, DashStyle = SharpDX.Direct2D1.DashStyle.DashDotDot });
-            dxMainRenderTarget2D.DrawLine(new Vector2((float)mainCur2Pos, (float)chartMargin), new Vector2((float)mainCur2Pos, PanelMainChart.Height - (float)chartMargin), dxMainColorBrush, 3, strokeStyle_dashed2);
+            dxMainRenderTarget2D.DrawLine(new Vector2((float)mainCur2Pos, (float)chartMargin), new Vector2((float)mainCur2Pos, PanelMainChart.Height - (float)chartMargin), brush, 3, strokeStyle_dashed2);
+
+            brush.Dispose();
         }
         /// <summary>
         /// 小数点以下の桁数を取得
@@ -1323,48 +1271,6 @@ namespace MotoRecoViewer
                 return 0;
 
             return str.Substring(idx + 1).Length;
-        }
-
-        /// <summary>
-        /// 画面上部のメインChartにタイムスタンプ等の情報を描画する
-        /// </summary>
-        private void DrawMainChartInfo(Graphics g)
-        {
-            //フォントオブジェクトの作成
-            System.Drawing.Font fnt = new System.Drawing.Font("MS UI Gothic", 9);
-
-            //TimeDivを表示する
-            string str = "1Div:"+divTime.ToString()+"sec";
-            g.DrawString(str, fnt, Brushes.DarkSeaGreen, 1, 1);
-
-            // divTimeの小数点以下桁数を計算
-            int pres = GetPrecision(divTime);
-
-            // 元のCANDATAがせいぜい10ms周期なので、2桁までとする
-            if (pres > 2) { pres = 2; }
-
-            //時刻を下部に表示する
-            //右端の罫線はタイムスタンプ見切れるので表示しない
-            for (int i = 0; i < 20; i++)
-            {
-                // 罫線間ピクセルを算出
-                double rule = (PanelMainChart.Width - 2d * chartMargin) / 20d;
-
-                // X座標
-                double x = chartMargin + i * rule;
-
-                // Y座標
-                double y2 = PanelMainChart.Height - chartMargin;
-
-                // 各罫線に対応するタイムスタンプを計算
-                double targetTime = subPosTime + (divTime * i);
-
-      
-
-                str = targetTime.ToString("F" + pres.ToString());
-
-                g.DrawString(str, fnt, Brushes.DarkSeaGreen, (float)x-5, (float)y2+1);
-            }
         }
 
         /// <summary>
@@ -1399,108 +1305,10 @@ namespace MotoRecoViewer
                 // 各罫線に対応するタイムスタンプを計算
                 double targetTime = subPosTime + (divTime * i);
 
-
-
                 str = targetTime.ToString("F" + pres.ToString());
 
                 DrawText(str, new Vector2((float)x - 5, (float)y2 + 1));
             }
-        }
-
-        /// <summary>
-        /// 画面上部のメインChartの描画する
-        /// </summary>
-        private void DrawMainChartData(Graphics g)
-        {
-            //スレッド調停用
-            object lockobj = new object();
-
-            Pen p = new Pen(Brushes.White);
-
-            //描画Point用配列数確保
-            int arySize = PanelMainChart.Width - 2 * (int)chartMargin + 1;
-
-            //描画Point用配列に対応したタイムスタンプ保持用配列
-            double[] aryTimeStamp = new double[arySize];
-
-            //タイムスタンプ計算
-            for (int i = 0; i < arySize; i++)
-            {
-                aryTimeStamp[i] = subPosTime + (divTime * 20d) / (double)arySize * i;
-            }
-
-            // ListChNameの項目数すべて描画する
-            Parallel.For(0, ListChData.Count, i =>
-            //for (int i = 0; i < ListChData.Count; i++)
-            {
-                int targetIdxPrev = 0;
-
-                if (ListChData[i].ChShow)
-                {
-                    // 座標格納用
-                    // データ追加ごとにResizeするとCPUリソース食うので、想定される最大数確保し、最後に縮小する
-                    System.Drawing.Point[] points = new System.Drawing.Point[arySize];
-
-                    int drawCount = 0;
-
-                    //タイムスタンプ最初に対応したChDataインデックス取得
-                    int startIdx = ListChData[i].FindLeftIndex(aryTimeStamp[0]);
-
-                    //タイムスタンプ最後に対応したChDataインデックス取得
-                    int endIdx = ListChData[i].FindLeftIndex(aryTimeStamp[arySize -1]);
-
-                    // MainChart描画ピクセル幅に対してのみ描画処理実施する
-                    for (int j = 0; j < arySize; j++)
-                    {
-                        // targetTimeに対応したタイムスタンプに最も近いChDataのインデックスを取得
-                        int targetIdx = ListChData[i].FindLeftIndex(aryTimeStamp[j], startIdx, endIdx);
-
-                        // 1つ前のインデックスと同じ場合 または targetIdx が 0の場合何もしない
-                        if ((targetIdxPrev == targetIdx) || (targetIdx == 0)) 
-                        {
-                            continue;
-                        }
-
-                        // targetIdx相当分のXとYをラッチ
-                        double x = chartMargin + j;
-
-                        // targetIdxのDataValueが、Ch設定のMax-Min幅に対して何%位置か算出する
-                        double y = ListChData[i].LogData[targetIdx].DataValue;
-                        y = (y - ListChData[i].ChMin) / (ListChData[i].ChMax - ListChData[i].ChMin);
-
-                        // 0%以下もしくは100以上は0または100に丸める
-                        if (y > 100) { y = 1; }
-                        if (y < 0) { y = 0; }
-
-                        // %をY軸ピクセルに変換する.その際、グラフ上方が原点になるので、1-yとして計算する。
-                        y = (PanelMainChart.Height - chartMargin * 2) * (1 - y);
-                        y += chartMargin;
-
-                        //座標格納
-                        points[drawCount].X = (int)x;
-                        points[drawCount].Y = (int)y;
-
-                        //描画座標数インクリメント
-                        drawCount++;
-
-                        targetIdxPrev = targetIdx;
-                    }
-
-                    //配列要素数を実際のデータカウント数に調整する
-                    Array.Resize(ref points, drawCount);
-
-                    // DrawLinesで一気に描画する
-                    lock (lockobj)
-                    {
-                        p.Color = System.Drawing.Color.FromArgb(ListChData[i].ChColor);
-                        if (points.Length > 1)
-                        {
-                            g.DrawLines(p, points);
-                        }
-                    }
-                }
-            });
-            //}
         }
 
         /// <summary>
@@ -1517,11 +1325,6 @@ namespace MotoRecoViewer
         /// </summary>
         private void DrawMainChartDataD2D()
         {
-            //スレッド調停用
-            object lockobj = new object();
-
-            Pen p = new Pen(Brushes.White);
-
             //描画Point用配列数確保
             int arySize = PanelMainChart.Width - 2 * (int)chartMargin + 1;
 
@@ -1594,45 +1397,31 @@ namespace MotoRecoViewer
                     //配列要素数を実際のデータカウント数に調整する
                     Array.Resize(ref points, drawCount);
 
-                    lock (lockobj)
-                    {
-                        System.Drawing.Color c;
-                        c = System.Drawing.Color.FromArgb(ListChData[i].ChColor);
+                    //Chごとの色をブラシにセット
+                    System.Drawing.Color c;
+                    c = System.Drawing.Color.FromArgb(ListChData[i].ChColor);
 
-                        SharpDX.Mathematics.Interop.RawColor4 rc4;
-                        rc4 = ColorToRaw4(c);
-                      
-                        dxMainColorBrush.Color = rc4;
+                    SharpDX.Mathematics.Interop.RawColor4 rc4;
+                    rc4 = ColorToRaw4(c);
 
-                        if (points.Length > 1)
-                        {                            // 線描画：線のみ
-                            for (int k = 0; k < drawCount - 1; k++)
-                            {
-                                dxMainRenderTarget2D.DrawLine(points[k], points[k + 1], dxMainColorBrush);
-                            }
+                    //ブラシ生成
+                    SolidColorBrush brush = new SolidColorBrush(dxMainRenderTarget2D, SharpDX.Color.Red);
+                    brush.Color = rc4;
+                    
+                    //グラフ描画　Parallelの中から描画しているが、DirectDrawをMultithread設定にしているので大丈夫なはず
+                    if (points.Length > 1)
+                    {                            // 線描画：線のみ
+                        for (int k = 0; k < drawCount - 1; k++)
+                        {
+                            dxMainRenderTarget2D.DrawLine(points[k], points[k + 1], brush);
                         }
                     }
+                    
+                    //ブラシ破棄
+                    brush.Dispose();
                 }
             });
             //}
-        }
-
-        /// <summary>
-        /// 画面上部のメインChartを描画する
-        /// </summary>
-        private void DrawMainChart(Graphics g)
-        {
-            //サブチャートエリアを黒く塗りつぶす
-            g.FillRectangle(Brushes.Black, 0, 0, PanelMainChart.Width, PanelMainChart.Height);
-
-            //pictureSubのWidth分だけ、ListChDataからデータをピックアップして描画する
-            DrawMainChartData(g);
-
-            //Grid描画
-            DrawMainChartGrid(g);
-
-            //各種情報描画
-            DrawMainChartInfo(g);
         }
 
         /// <summary>
@@ -1643,11 +1432,11 @@ namespace MotoRecoViewer
             //メインチャートエリアを黒く塗りつぶす
             dxMainRenderTarget2D.Clear(SharpDX.Color.Black);
 
-            //pictureSubのWidth分だけ、ListChDataからデータをピックアップして描画する
-            DrawMainChartDataD2D();
-
             //Grid描画
             DrawMainChartGridD2D();
+
+            //pictureSubのWidth分だけ、ListChDataからデータをピックアップして描画する
+            DrawMainChartDataD2D();
 
             //各種情報描画
             DrawMainChartInfoD2D();
@@ -1895,7 +1684,7 @@ namespace MotoRecoViewer
             //ratioSelected上限処理 , データが短くてメインチャート1画面に収まり切る場合に発生
             if (ratioSelected > 1) { ratioSelected = 1; }
 
-            double rectWidth = (PictureSub.Width - 2 * chartMargin) * ratioSelected;
+            double rectWidth = (PanelSubChart.Width - 2 * chartMargin) * ratioSelected;
 
             //rectWidth下限処理
             if (rectWidth < 2) { rectWidth = 2; }
@@ -1905,10 +1694,10 @@ namespace MotoRecoViewer
 
             //startPos上下限処理
             if (startPos < chartMargin) { startPos = chartMargin; }
-            if (startPos + rectWidth > PictureSub.Width - 2 * chartMargin) { startPos = PictureSub.Width - chartMargin - rectWidth; }
+            if (startPos + rectWidth > PanelSubChart.Width - 2 * chartMargin) { startPos = PanelSubChart.Width - chartMargin - rectWidth; }
 
             //startPosをposTimeに変換する
-            subPosTime = (endTime - startTime) * ((startPos - chartMargin) / (PictureSub.Width - 2 * chartMargin)) + startTime;
+            subPosTime = (endTime - startTime) * ((startPos - chartMargin) / (PanelSubChart.Width - 2 * chartMargin)) + startTime;
 
             return subPosTime;
         }
@@ -1916,37 +1705,22 @@ namespace MotoRecoViewer
         /// <summary>
         /// DirectX初期化
         /// </summary>
-        private void InitializeDirextX()
+        private void InitializeMainDirextX()
         {
-            //SwapChain description
-            SharpDX.DXGI.SwapChainDescription desc = new SharpDX.DXGI.SwapChainDescription()
-            {
-                BufferCount = 2,                                                                 //ToDo これで良いのか？
-                //ModeDescription = new SharpDX.DXGI.ModeDescription(PanelMainChart.Width, PanelMainChart.Height, new SharpDX.DXGI.Rational(60, 1), SharpDX.DXGI.Format.R8G8B8A8_UNorm),
-                ModeDescription = new SharpDX.DXGI.ModeDescription(0, 0, new SharpDX.DXGI.Rational(60, 1), SharpDX.DXGI.Format.R8G8B8A8_UNorm),
-                IsWindowed = true,
-                OutputHandle = PanelMainChart.Handle,                                           //パネルに描画する
-                SampleDescription = new SharpDX.DXGI.SampleDescription(1, 0),
-                SwapEffect = SharpDX.DXGI.SwapEffect.FlipSequential,
-                Usage = SharpDX.DXGI.Usage.RenderTargetOutput
-            };
-
-            //D3Dデバイスとスワップチェーンの作成
-            SharpDX.Direct3D11.Device.CreateWithSwapChain(SharpDX.Direct3D.DriverType.Hardware
-                , DeviceCreationFlags.BgraSupport, desc
-                , out dxMainDevice, out dxMainSwapChain);
-
             //バックバッファの作成
             dxMainBackBuffer = Texture2D.FromSwapChain<Texture2D>(dxMainSwapChain, 0);
 
-            InitializeDirextX2D();
+            //D2Dレンダーターゲットの作成
+            dxMainD2dFactory = new SharpDX.Direct2D1.Factory(SharpDX.Direct2D1.FactoryType.MultiThreaded);　　　　　　　　　　　　//ToDo これで良いのか？
+            dxMainSurface = dxMainBackBuffer.QueryInterface<Surface>();
+            SharpDX.Direct2D1.PixelFormat pixelFormat = new PixelFormat(Format.Unknown, SharpDX.Direct2D1.AlphaMode.Premultiplied);
+            SharpDX.Direct2D1.RenderTargetProperties targetProp = new RenderTargetProperties(pixelFormat);
+            dxMainRenderTarget2D = new RenderTarget(dxMainD2dFactory, dxMainSurface, targetProp);
+            dxMainRenderTarget2D.AntialiasMode = AntialiasMode.Aliased;
+            dxMainRenderTarget2D.TextAntialiasMode = SharpDX.Direct2D1.TextAntialiasMode.Cleartype;
 
             //DirectWriteオブジェクトを生成するために必要なファクトリオブジェクトを生成
             dxMainFactoryDWrite = new SharpDX.DirectWrite.Factory();
-
-            //D2Dブラシ作成
-            dxMainColorBrush = new SolidColorBrush(dxMainRenderTarget2D, SharpDX.Color.Red);
-
 
             //D2Dフォント作成
             dxMainTextFont = new TextFormat(dxMainFactoryDWrite, "MS UI Gothic", 9.0f)
@@ -1963,16 +1737,65 @@ namespace MotoRecoViewer
         /// <summary>
         /// DirectX初期化
         /// </summary>
-        private void InitializeDirextX2D()
+        private void InitializeSubDirextX()
         {
+            //バックバッファの作成
+            dxSubBackBuffer = Texture2D.FromSwapChain<Texture2D>(dxSubSwapChain, 0);
+
             //D2Dレンダーターゲットの作成
-            dxMainD2dFactory = new SharpDX.Direct2D1.Factory(SharpDX.Direct2D1.FactoryType.MultiThreaded);　　　　　　　　　　　　//ToDo これで良いのか？
-            dxMainsurface = dxMainBackBuffer.QueryInterface<Surface>();
+            dxSubD2dFactory = new SharpDX.Direct2D1.Factory(SharpDX.Direct2D1.FactoryType.MultiThreaded);　　　　　　　　　　　　//ToDo これで良いのか？
+            dxSubSurface = dxSubBackBuffer.QueryInterface<Surface>();
             SharpDX.Direct2D1.PixelFormat pixelFormat = new PixelFormat(Format.Unknown, SharpDX.Direct2D1.AlphaMode.Premultiplied);
             SharpDX.Direct2D1.RenderTargetProperties targetProp = new RenderTargetProperties(pixelFormat);
-            dxMainRenderTarget2D = new RenderTarget(dxMainD2dFactory, dxMainsurface, targetProp);
-            dxMainRenderTarget2D.AntialiasMode = AntialiasMode.Aliased;
-            dxMainRenderTarget2D.TextAntialiasMode = SharpDX.Direct2D1.TextAntialiasMode.Cleartype;
+            dxSubRenderTarget2D = new RenderTarget(dxSubD2dFactory, dxSubSurface, targetProp);
+            dxSubRenderTarget2D.AntialiasMode = AntialiasMode.Aliased;
+            dxSubRenderTarget2D.TextAntialiasMode = SharpDX.Direct2D1.TextAntialiasMode.Cleartype;
+
+            //DirectWriteオブジェクトを生成するために必要なファクトリオブジェクトを生成
+            dxSubFactoryDWrite = new SharpDX.DirectWrite.Factory();
+
+            //D2Dフォント作成
+            dxSubTextFont = new TextFormat(dxSubFactoryDWrite, "MS UI Gothic", 9.0f)
+            {
+                // レイアウトに沿った文字の左右配置
+                // ※読み方向軸に沿った段落テキストの相対的な配置を指定します
+                TextAlignment = TextAlignment.Leading,
+                // レイアウトに沿った文字の上下配置
+                // ※相対フロー方向軸に沿った段落テキストの配置を指定します
+                ParagraphAlignment = ParagraphAlignment.Near,
+            };
+        }
+
+        /// <summary>
+        /// DirectXをリサイズする
+        /// </summary>
+        private void ResizeDirectX()
+        {
+            dxMainDevice.ImmediateContext.ClearState();
+            dxSubDevice.ImmediateContext.ClearState();
+
+            //ResizeBufferする前に、backBuffer含めすべての関係するリソースを開放する必要がある。
+            dxMainRenderTarget2D.Dispose();
+            dxMainBackBuffer.Dispose();
+            dxMainD2dFactory.Dispose();
+            dxMainFactoryDWrite.Dispose();
+            dxMainTextFont.Dispose();
+            dxMainSurface.Dispose();
+
+            dxSubRenderTarget2D.Dispose();
+            dxSubBackBuffer.Dispose();
+            dxSubD2dFactory.Dispose();
+            dxSubFactoryDWrite.Dispose();
+            dxSubTextFont.Dispose();
+            dxSubSurface.Dispose();
+
+            //SwapChainのりサイズ
+            dxMainSwapChain.ResizeBuffers(2, 0, 0, Format.R8G8B8A8_UNorm, SwapChainFlags.AllowModeSwitch);
+            dxSubSwapChain.ResizeBuffers(2, 0, 0, Format.R8G8B8A8_UNorm, SwapChainFlags.AllowModeSwitch);
+
+            //再度初期化
+            InitializeMainDirextX();
+            InitializeSubDirextX();
         }
 
         /// <summary>
@@ -1988,7 +1811,9 @@ namespace MotoRecoViewer
                 float maxHeight = 1000.0f;
 
                 // 文字描画
-                dxMainRenderTarget2D.DrawText(text, dxMainTextFont, new SharpDX.Mathematics.Interop.RawRectangleF(pos.X, pos.Y, pos.X + maxWidth, pos.Y + maxHeight), dxMainColorBrush);
+                dxMainRenderTarget2D.DrawText(text, dxMainTextFont, 
+                                              new SharpDX.Mathematics.Interop.RawRectangleF(pos.X, pos.Y, pos.X + maxWidth, pos.Y + maxHeight),
+                                              new SolidColorBrush(dxMainRenderTarget2D, SharpDX.Color.White));
             }
         }
 
@@ -2028,14 +1853,49 @@ namespace MotoRecoViewer
 
             // PanelMainChartとpictureSubにマウスホイールイベント登録
             //ホイールイベントの追加  
-            this.PictureSub.MouseWheel
-               += new System.Windows.Forms.MouseEventHandler(this.PictureSub_MouseWheel);
-
             this.PanelMainChart.MouseWheel
                 += new System.Windows.Forms.MouseEventHandler(this.PanelMainChart_MouseWheel);
 
+            this.PanelSubChart.MouseWheel
+                += new System.Windows.Forms.MouseEventHandler(this.PanelSubChart_MouseWheel);
+
             // DirectX初期化
-            InitializeDirextX();
+            //SwapChain description
+            SharpDX.DXGI.SwapChainDescription descMain = new SharpDX.DXGI.SwapChainDescription()
+            {
+                BufferCount = 2,                                                                 //ToDo これで良いのか？
+                ModeDescription = new SharpDX.DXGI.ModeDescription(0, 0, new SharpDX.DXGI.Rational(60, 1), SharpDX.DXGI.Format.R8G8B8A8_UNorm),
+                IsWindowed = true,
+                OutputHandle = PanelMainChart.Handle,                                           //パネルに描画する
+                SampleDescription = new SharpDX.DXGI.SampleDescription(1, 0),
+                SwapEffect = SharpDX.DXGI.SwapEffect.FlipSequential,
+                Usage = SharpDX.DXGI.Usage.RenderTargetOutput
+            };
+
+            //D3Dデバイスとスワップチェーンの作成
+            SharpDX.Direct3D11.Device.CreateWithSwapChain(SharpDX.Direct3D.DriverType.Hardware
+                , DeviceCreationFlags.BgraSupport, descMain
+                , out dxMainDevice, out dxMainSwapChain);
+
+            //SwapChain description
+            SharpDX.DXGI.SwapChainDescription descSub = new SharpDX.DXGI.SwapChainDescription()
+            {
+                BufferCount = 2,                                                                 //ToDo これで良いのか？
+                ModeDescription = new SharpDX.DXGI.ModeDescription(0, 0, new SharpDX.DXGI.Rational(60, 1), SharpDX.DXGI.Format.R8G8B8A8_UNorm),
+                IsWindowed = true,
+                OutputHandle = PanelSubChart.Handle,                                           //パネルに描画する
+                SampleDescription = new SharpDX.DXGI.SampleDescription(1, 0),
+                SwapEffect = SharpDX.DXGI.SwapEffect.FlipSequential,
+                Usage = SharpDX.DXGI.Usage.RenderTargetOutput
+            };
+
+            //D3Dデバイスとスワップチェーンの作成
+            SharpDX.Direct3D11.Device.CreateWithSwapChain(SharpDX.Direct3D.DriverType.Hardware
+                , DeviceCreationFlags.BgraSupport, descSub
+                , out dxSubDevice, out dxSubSwapChain);
+
+            InitializeMainDirextX();
+            InitializeSubDirextX();
 
             this.Disposed += (sender, e) => DisposeDevice();
 
@@ -2049,8 +1909,15 @@ namespace MotoRecoViewer
             dxMainSwapChain.Dispose();
             dxMainDevice.Dispose();
             dxMainFactoryDWrite.Dispose();
-            dxMainColorBrush.Dispose();
             dxMainTextFont.Dispose();
+
+            dxSubRenderTarget2D.Dispose();
+            dxSubD2dFactory.Dispose();
+            dxSubBackBuffer.Dispose();
+            dxSubSwapChain.Dispose();
+            dxSubDevice.Dispose();
+            dxSubFactoryDWrite.Dispose();
+            dxSubTextFont.Dispose();
         }
 
         private void 終了ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2156,74 +2023,7 @@ namespace MotoRecoViewer
 
             //　グラフ再描画
             PanelMainChart.Refresh();
-            PanelMainChart.Refresh();
-
-            PictureSub.Refresh();
-        }
-
-         private void PictureSub_MouseDown(object sender, MouseEventArgs e)
-        {
-            // CANデータ読み込み中→即抜ける
-            if (IsReadingCanData) { return; }
-
-            this.DraggingButton = e.Button;
-            switch (this.DraggingButton)
-            {
-                case MouseButtons.Left:
-                    this.IsDragging = true; // ドラッグ中であることを知らせる
-                                            // 通常の矢印の代わりをマウスポインタとして表示
-                    this.Cursor = Cursors.SizeWE;
-                    break;
-            }
-        }
-
-        private void PictureSub_MouseMove(object sender, MouseEventArgs e)
-        {
-            // CANデータ読み込み中→即抜ける
-            if (IsReadingCanData) { return; }
-
-            if (this.IsDragging && this.DraggingButton == MouseButtons.Left)
-            {
-                //subPosTimeを前回値にコピーする
-                subPosTimePrev = subPosTime;
-
-                //PictureSub上のマウス位置から、subPosTimeを算出する
-                subPosTime = MousePointToSubPosTime(e);
-
-                //DrawChart();
-                PanelMainChart.Refresh();
-                PanelMainChart.Refresh();
-                PictureSub.Refresh();
-            }
-        }
-
-        private void PictureSub_MouseUp(object sender, MouseEventArgs e)
-        {
-            // CANデータ読み込み中→即抜ける
-            if (IsReadingCanData) { return; }
-
-            switch (e.Button)
-            {
-                case MouseButtons.Left: // 左クリックの時
-                    this.IsDragging = false; // ドラッグが終了していることを記録
-                    this.Cursor = Cursors.Default; // マウスポインタを通常のものに戻す
-
-
-                    //PictureSub上のマウス位置から、subPosTimeを算出する
-                    subPosTime = MousePointToSubPosTime(e);
-
-                    //subPosTimeを前回値にコピーして一致させておく
-                    subPosTimePrev = subPosTime;
-
-                    PanelMainChart.Refresh();
-                    PanelMainChart.Refresh();
-                    PictureSub.Refresh();
-                    UpdateMapMarker();
-                    UpdateMap();
-
-                    break;
-            }
-            this.DraggingButton = 0;
+            PanelSubChart.Refresh();
         }
 
         private void ListViewData_ItemChecked(object sender, ItemCheckedEventArgs e)
@@ -2241,8 +2041,7 @@ namespace MotoRecoViewer
             }
 
             PanelMainChart.Refresh();
-            PanelMainChart.Refresh();
-            PictureSub.Refresh();
+            PanelSubChart.Refresh();
         }
 
         private void OpenToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2268,10 +2067,8 @@ namespace MotoRecoViewer
                 ReadCANData(openFileDialog.FileName);
 
                 // 初回描画する
-                //DrawChart();
                 PanelMainChart.Refresh();
-                PanelMainChart.Refresh();
-                PictureSub.Refresh();
+                PanelSubChart.Refresh();
                 UpdateMap();
                 UpdateMapMarker();
 
@@ -2324,20 +2121,21 @@ namespace MotoRecoViewer
             }
 
             PanelMainChart.Refresh();
-            PictureSub.Refresh();
+            PanelSubChart.Refresh();
             UpdateMap();
             UpdateMapMarker();
         }
 
         // マウスホイールイベント  
-        // PictureSubでホイール時は、データをdivTimeづつ左右に送る
-        private void PictureSub_MouseWheel(object sender, MouseEventArgs e)
+        // ホイール単独　→　divTimeづつ移動
+        // ctrl + ホイール　→　2倍づつ拡大縮小
+        private void PanelSubChart_MouseWheel(object sender, MouseEventArgs e)
         {
             // スクロール量
             int delta;
             delta = e.Delta;
 
-            // shift + wheelなら、拡大縮小
+            // ctrl + wheelなら、2倍づつ拡大縮小
             if ((Control.ModifierKeys & Keys.Control) == Keys.Control)
             {
                 // GMapの拡大縮小に合わせて変更。プラスならdivTimeを0.5倍にする。
@@ -2373,8 +2171,7 @@ namespace MotoRecoViewer
             }
 
             PanelMainChart.Refresh();
-            PanelMainChart.Refresh();
-            PictureSub.Refresh();
+            PanelSubChart.Refresh();
             UpdateMap();
             UpdateMapMarker();
         }
@@ -2477,21 +2274,6 @@ namespace MotoRecoViewer
             f.Dispose();
         }
 
-        private void PictureSub_Paint(object sender, PaintEventArgs e)
-        {
-            // CANデータ読み込み中→即抜ける
-            if (IsReadingCanData) { return; }
-
-            // ListChNameがNULL→即抜ける
-            if (DicChName == null) { return; }
-
-            // ListChNameが0＝CANデータ未読み込み→即抜ける
-            if (DicChName.Count < 1) { return; }
-
-            //　アプリ上部のメインチャートを描画
-            DrawChartSub(e.Graphics);
-        }
-
         private void AboutAToolStripMenuItem_Click(object sender, EventArgs e)
         {
             FormAbout f = new FormAbout();
@@ -2535,10 +2317,8 @@ namespace MotoRecoViewer
                 ReadCANData(openFileDialog.FileName);
 
                 // 初回描画する
-                //DrawChart();
                 PanelMainChart.Refresh();
-                PanelMainChart.Refresh();
-                PictureSub.Refresh();
+                PanelSubChart.Refresh();
                 UpdateMap();
                 UpdateMapMarker();
 
@@ -2678,10 +2458,8 @@ namespace MotoRecoViewer
                     mainCur2Pos = getXY.X;
                 }
 
-                //DrawChart();
                 PanelMainChart.Refresh();
-                PanelMainChart.Refresh();
-                PictureSub.Refresh();
+                PanelSubChart.Refresh();
                 UpdateMapMarker();
             }
         }
@@ -2699,10 +2477,8 @@ namespace MotoRecoViewer
                     mainCur1PosPrev = mainCur1Pos;
                     mainCur2PosPrev = mainCur2Pos;
 
-                    //DrawChart();
                     PanelMainChart.Refresh();
-                    PanelMainChart.Refresh();
-                    PictureSub.Refresh();
+                    PanelSubChart.Refresh();
                     UpdateMapMarker();
                     break;
 
@@ -2712,10 +2488,8 @@ namespace MotoRecoViewer
                     mainCur1PosPrev = mainCur1Pos;
                     mainCur2PosPrev = mainCur2Pos;
 
-                    //DrawChart();
                     PanelMainChart.Refresh();
-                    PanelMainChart.Refresh();
-                    PictureSub.Refresh();
+                    PanelSubChart.Refresh();
                     UpdateMapMarker();
                     break;
             }
@@ -2728,42 +2502,107 @@ namespace MotoRecoViewer
             {
                 return;
             }
-            dxMainDevice.ImmediateContext.ClearState();
+            
+            ResizeDirectX();
+        }
 
+        private void PanelSubChart_Paint(object sender, PaintEventArgs e)
+        {
+            // CANデータ読み込み中→即抜ける
+            if (IsReadingCanData) { return; }
 
-            //ResizeBufferする前に、backBuffer含めすべての関係するリソースを開放する必要がある。
-            dxMainRenderTarget2D.Dispose();
-            dxMainBackBuffer.Dispose();
-            dxMainD2dFactory.Dispose();
-            dxMainFactoryDWrite.Dispose();
-            dxMainColorBrush.Dispose();
-            dxMainTextFont.Dispose();
-            dxMainsurface.Dispose();
+            // ListChNameがNULL→即抜ける
+            if (DicChName == null) { return; }
 
-            dxMainSwapChain.ResizeBuffers(2, 0, 0, Format.R8G8B8A8_UNorm, SwapChainFlags.AllowModeSwitch);
+            // ListChNameが0＝CANデータ未読み込み→即抜ける
+            if (DicChName.Count < 1) { return; }
+            
+            dxSubRenderTarget2D.BeginDraw();
+            //=======================================================================================================================
+            // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓　　　　BeginDrawとEndDrawの間で描画すること　↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
+            // ======================================================================================================================
 
-            //バックバッファの作成
-            dxMainBackBuffer = Texture2D.FromSwapChain<Texture2D>(dxMainSwapChain, 0);
+            DrawSubChartD2D();
 
-            InitializeDirextX2D();
+            //=======================================================================================================================
+            // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑　　　　BeginDrawとEndDrawの間で描画すること　↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
+            // ======================================================================================================================
+            dxSubRenderTarget2D.EndDraw();
+            dxSubSwapChain.Present(0, PresentFlags.None);
 
-            //DirectWriteオブジェクトを生成するために必要なファクトリオブジェクトを生成
-            dxMainFactoryDWrite = new SharpDX.DirectWrite.Factory();
+        }
 
-            //D2Dブラシ作成
-            dxMainColorBrush = new SolidColorBrush(dxMainRenderTarget2D, SharpDX.Color.Red);
-
-
-            //D2Dフォント作成
-            dxMainTextFont = new TextFormat(dxMainFactoryDWrite, "MS UI Gothic", 9.0f)
+        private void PanelSubChart_Resize(object sender, EventArgs e)
+        {
+            if (dxMainDevice == null)
             {
-                // レイアウトに沿った文字の左右配置
-                // ※読み方向軸に沿った段落テキストの相対的な配置を指定します
-                TextAlignment = TextAlignment.Leading,
-                // レイアウトに沿った文字の上下配置
-                // ※相対フロー方向軸に沿った段落テキストの配置を指定します
-                ParagraphAlignment = ParagraphAlignment.Near,
-            };
+                return;
+            }
+
+            ResizeDirectX();
+        }
+
+        private void PanelSubChart_MouseDown(object sender, MouseEventArgs e)
+        {
+            // CANデータ読み込み中→即抜ける
+            if (IsReadingCanData) { return; }
+
+            this.DraggingButton = e.Button;
+            switch (this.DraggingButton)
+            {
+                case MouseButtons.Left:
+                    this.IsDragging = true; // ドラッグ中であることを知らせる
+                                            // 通常の矢印の代わりをマウスポインタとして表示
+                    this.Cursor = Cursors.SizeWE;
+                    break;
+            }
+        }
+
+        private void PanelSubChart_MouseMove(object sender, MouseEventArgs e)
+        {
+            // CANデータ読み込み中→即抜ける
+            if (IsReadingCanData) { return; }
+
+            if (this.IsDragging && this.DraggingButton == MouseButtons.Left)
+            {
+                //subPosTimeを前回値にコピーする
+                subPosTimePrev = subPosTime;
+
+                //PictureSub上のマウス位置から、subPosTimeを算出する
+                subPosTime = MousePointToSubPosTime(e);
+
+                //DrawChart();
+                PanelMainChart.Refresh();
+                PanelSubChart.Refresh();
+            }
+        }
+
+        private void PanelSubChart_MouseUp(object sender, MouseEventArgs e)
+        {
+            // CANデータ読み込み中→即抜ける
+            if (IsReadingCanData) { return; }
+
+            switch (e.Button)
+            {
+                case MouseButtons.Left: // 左クリックの時
+                    this.IsDragging = false; // ドラッグが終了していることを記録
+                    this.Cursor = Cursors.Default; // マウスポインタを通常のものに戻す
+
+
+                    //PictureSub上のマウス位置から、subPosTimeを算出する
+                    subPosTime = MousePointToSubPosTime(e);
+
+                    //subPosTimeを前回値にコピーして一致させておく
+                    subPosTimePrev = subPosTime;
+
+                    PanelMainChart.Refresh();
+                    PanelSubChart.Refresh();
+                    UpdateMapMarker();
+                    UpdateMap();
+
+                    break;
+            }
+            this.DraggingButton = 0;
         }
     }
 }
