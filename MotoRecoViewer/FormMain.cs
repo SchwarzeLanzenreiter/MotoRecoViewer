@@ -1338,8 +1338,8 @@ namespace MotoRecoViewer
             }
 
             // ListChNameの項目数すべて描画する
-            Parallel.For(0, ListChData.Count, i =>
-            //for (int i = 0; i < ListChData.Count; i++)
+            //Parallel.For(0, ListChData.Count, i =>
+            for (int i = 0; i < ListChData.Count; i++)
             {
                 int targetIdxPrev = 0;
 
@@ -1357,11 +1357,32 @@ namespace MotoRecoViewer
                     //タイムスタンプ最後に対応したChDataインデックス取得
                     int endIdx = ListChData[i].FindLeftIndex(aryTimeStamp[arySize - 1]);
 
+                    //前回インデックス
+                    int idxPrev = 0;
+            
+                    //インデックス差分
+                    int diffIdx;
+
                     // MainChart描画ピクセル幅に対してのみ描画処理実施する
                     for (int j = 0; j < arySize; j++)
                     {
                         // targetTimeに対応したタイムスタンプに最も近いChDataのインデックスを取得
                         int targetIdx = ListChData[i].FindLeftIndex(aryTimeStamp[j], startIdx, endIdx);
+
+                        if (targetIdx != 0) {
+                            // 次のサーチ時は、今回データより後ろなのでスタート位置を変更する
+                            startIdx = targetIdx;
+
+                            //　前回indexからの差分
+                            diffIdx = targetIdx - idxPrev;
+
+                            // 次のサーチ時のendIdxは、diffIdx+4とする。diffIdxは非常に安定しているため、+4以内で十分な精度がある
+                            // 仮に+4で収まらない場合は、データの末尾までのサーチとなるので（時間はかかるが）問題ない。
+                            endIdx = startIdx + (int)(diffIdx+4);
+                        }
+
+                        //　前回インデックスに保存
+                        idxPrev = targetIdx;
 
                         // 1つ前のインデックスと同じ場合 または targetIdx が 0の場合何もしない
                         if ((targetIdxPrev == targetIdx) || (targetIdx == 0))
@@ -1420,8 +1441,8 @@ namespace MotoRecoViewer
                     //ブラシ破棄
                     brush.Dispose();
                 }
-            });
-            //}
+            //});
+            }
         }
 
         /// <summary>
