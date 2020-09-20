@@ -1060,7 +1060,7 @@ namespace MotoRecoViewer
             int idxPreview = 0;
 
             //描画ピクセル数（幅）計算
-            int arySize = PanelSubChart.Width - 2 * (int)chartMargin + 1;
+            int arySize = PanelSubChart.Width - 2 * (int)chartMargin +1;
 
             //描画Point用配列に対応したタイムスタンプ保持用配列
             double[] aryTimeStamp = new double[arySize];
@@ -1079,8 +1079,8 @@ namespace MotoRecoViewer
                 {
                     // 座標格納用
                     // データ追加ごとにResizeするとCPUリソース食うので、想定される最大数確保し、最後に縮小する
-                    
-                    Vector2[] points = new Vector2[arySize];
+
+                    RawVector2[] points = new RawVector2[arySize];
 
                     int drawCount = 0;
                     double targetIdxPrev = 0d;
@@ -1122,6 +1122,17 @@ namespace MotoRecoViewer
                         targetIdxPrev = targetIdx;
                     }
 
+                    //配列要素数を実際のデータカウント数に調整する
+                    Array.Resize(ref points, drawCount);
+
+                    //描画ポイントを多角形として扱うため、ジオメトリーにセットする
+                    PathGeometry geo1 = new PathGeometry(dxSubD2dFactory);
+                    GeometrySink sink1 = geo1.Open();
+                    sink1.BeginFigure(points[0], new FigureBegin());
+                    sink1.AddLines(points);
+                    sink1.EndFigure(new FigureEnd());
+                    sink1.Close();
+
                     //Chごとの色をブラシにセット
                     System.Drawing.Color c;
                     c = System.Drawing.Color.FromArgb(ListChData[i].ChColor);
@@ -1133,17 +1144,13 @@ namespace MotoRecoViewer
                     SolidColorBrush brush = new SolidColorBrush(dxSubRenderTarget2D, SharpDX.Color.Red);
                     brush.Color = rc4;
 
-                    //グラフ描画　Parallelの中から描画しているが、DirectDrawをMultithread設定にしているので大丈夫なはず
-                    if (points.Length > 1)
-                    {                            // 線描画：線のみ
-                        for (int k = 0; k < drawCount - 1; k++)
-                        {
-                            dxSubRenderTarget2D.DrawLine(points[k], points[k + 1], brush);
-                        }
-                    }
+                    //グラフ描画
+                    dxSubRenderTarget2D.DrawGeometry(geo1, brush);
 
                     //ブラシ破棄
                     brush.Dispose();
+                    geo1.Dispose();
+                    sink1.Dispose();
                 }
 
                 idxPreview++;
@@ -1480,6 +1487,8 @@ namespace MotoRecoViewer
 
                     //ブラシ破棄
                     brush.Dispose();
+                    geo1.Dispose();
+                    sink1.Dispose();
                 }
             });
             //}
