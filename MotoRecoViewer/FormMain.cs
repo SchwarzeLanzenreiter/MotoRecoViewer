@@ -40,6 +40,7 @@ using SharpDX.DXGI;
 using SharpDX.Direct2D1;
 using SharpDX.Direct3D11;
 using SharpDX.DirectWrite;
+using SharpDX.Mathematics.Interop;
 
 namespace MotoRecoViewer
 {
@@ -1338,8 +1339,8 @@ namespace MotoRecoViewer
             }
 
             // ListChNameの項目数すべて描画する
-            //Parallel.For(0, ListChData.Count, i =>
-            for (int i = 0; i < ListChData.Count; i++)
+            Parallel.For(0, ListChData.Count, i =>
+            //for (int i = 0; i < ListChData.Count; i++)
             {
                 int targetIdxPrev = 0;
 
@@ -1347,19 +1348,22 @@ namespace MotoRecoViewer
                 {
                     // 座標格納用
                     // データ追加ごとにResizeするとCPUリソース食うので、想定される最大数確保し、最後に縮小する
-                    Vector2[] points = new Vector2[arySize];
-
+                    RawVector2[] points = new RawVector2[arySize];
+                    
                     int drawCount = 0;
 
                     //タイムスタンプ最初に対応したChDataインデックス取得
-                    int startIdx = ListChData[i].FindLeftIndex(aryTimeStamp[0]);
-
+                    int minIdx = ListChData[i].FindLeftIndex(aryTimeStamp[0]);
+                    targetIdxPrev = minIdx - 1;                                          // 1引くのは、初回は描画を絶対したいから
+  
                     //タイムスタンプ最後に対応したChDataインデックス取得
-                    int endIdx = ListChData[i].FindLeftIndex(aryTimeStamp[arySize - 1]);
+                    int maxIdx = ListChData[i].FindLeftIndex(aryTimeStamp[arySize - 1]);
 
-                    //前回インデックス
-                    int idxPrev = 0;
-            
+                    int startIdx, endIdx;
+
+                    startIdx = minIdx;
+                    endIdx = maxIdx;
+
                     //インデックス差分
                     int diffIdx;
 
@@ -1369,24 +1373,58 @@ namespace MotoRecoViewer
                         // targetTimeに対応したタイムスタンプに最も近いChDataのインデックスを取得
                         int targetIdx = ListChData[i].FindLeftIndex(aryTimeStamp[j], startIdx, endIdx);
 
-                        if (targetIdx != 0) {
-                            // 次のサーチ時は、今回データより後ろなのでスタート位置を変更する
-                            startIdx = targetIdx;
-
-                            //　前回indexからの差分
-                            diffIdx = targetIdx - idxPrev;
-
-                            // 次のサーチ時のendIdxは、diffIdx+4とする。diffIdxは非常に安定しているため、+4以内で十分な精度がある
-                            // 仮に+4で収まらない場合は、データの末尾までのサーチとなるので（時間はかかるが）問題ない。
-                            endIdx = startIdx + (int)(diffIdx+4);
-                        }
-
-                        //　前回インデックスに保存
-                        idxPrev = targetIdx;
-
-                        // 1つ前のインデックスと同じ場合 または targetIdx が 0の場合何もしない
-                        if ((targetIdxPrev == targetIdx) || (targetIdx == 0))
+                        if (targetIdx != 0)
                         {
+                            //　前回indexからの差分
+                            diffIdx = targetIdx - targetIdxPrev;
+
+                            if (diffIdx < 0)
+                            {
+                                continue;
+                            }
+
+                            // 1つ前のインデックスと同じ場合 または targetIdx が 0の場合何もしない
+                            // ただし右端については前回Indexと同じでも描画させる
+                            if ((targetIdxPrev == targetIdx) && (j != arySize - 1))
+                            {
+                                continue;
+                            }
+
+                            // 次のサーチ時は、今回データより後ろなのでスタート位置を変更する
+                            startIdx = targetIdx + diffIdx - 4;
+
+                            // startIdx MAXガード
+                            if (startIdx > maxIdx)
+                            {
+                                startIdx = maxIdx;
+                            }
+
+                            // startIdx MINガード
+                            if (startIdx < 0)
+                            {
+                                startIdx = 0;
+                            }
+
+                            // 次のタイムスタンプの時刻が次の検索スタートの時刻より小さい場合は調整する
+                            if (j != arySize - 1)
+                            {
+                                if (aryTimeStamp[j + 1] < ListChData[i].LogData[startIdx].DataTime)
+                                {
+                                    startIdx = targetIdx + 1;
+                                }
+                            }
+
+                            // 次のサーチ時のendIdxは、diffIdx+4とする。diffIdxは安定しているため、+4以内で十分な精度がある
+                            // 仮に+4で収まらない場合は、データの末尾までのサーチとなるので（時間はかかるが）問題ない。
+                            endIdx = targetIdx + (int)(diffIdx + 4);
+
+                            // endIdx MAXガード
+                            if (endIdx > maxIdx) { endIdx = maxIdx; }
+
+                        }
+                        else
+                        {
+                            //targetIdx = 0ならcontinue
                             continue;
                         }
 
@@ -1418,6 +1456,14 @@ namespace MotoRecoViewer
                     //配列要素数を実際のデータカウント数に調整する
                     Array.Resize(ref points, drawCount);
 
+                    //描画ポイントを多角形として扱うため、ジオメトリーにセットする
+                    PathGeometry geo1 = new PathGeometry(dxMainD2dFactory);
+                    GeometrySink sink1 = geo1.Open();
+                    sink1.BeginFigure(points[0], new FigureBegin());
+                    sink1.AddLines(points);
+                    sink1.EndFigure(new FigureEnd());
+                    sink1.Close();
+
                     //Chごとの色をブラシにセット
                     System.Drawing.Color c;
                     c = System.Drawing.Color.FromArgb(ListChData[i].ChColor);
@@ -1428,21 +1474,15 @@ namespace MotoRecoViewer
                     //ブラシ生成
                     SolidColorBrush brush = new SolidColorBrush(dxMainRenderTarget2D, SharpDX.Color.Red);
                     brush.Color = rc4;
-                    
-                    //グラフ描画　Parallelの中から描画しているが、DirectDrawをMultithread設定にしているので大丈夫なはず
-                    if (points.Length > 1)
-                    {                            // 線描画：線のみ
-                        for (int k = 0; k < drawCount - 1; k++)
-                        {
-                            dxMainRenderTarget2D.DrawLine(points[k], points[k + 1], brush);
-                        }
-                    }
-                    
+
+                    //グラフ描画
+                    dxMainRenderTarget2D.DrawGeometry(geo1, brush);
+
                     //ブラシ破棄
                     brush.Dispose();
                 }
-            //});
-            }
+            });
+            //}
         }
 
         /// <summary>

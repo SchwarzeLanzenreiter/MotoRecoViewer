@@ -159,29 +159,10 @@ namespace MotoRecoViewer
                 return 0;
             }
 
-            int last, first;
+           int first,last,mid;
 
-            //最初にstartとendの妥当性チェック
-            if (time < this.LogData[start].DataTime)
-            {
-                first = 0;
-            } else {
-                first = start;
-            }
-
-            if (end < this.LogData.Count)
-            {
-                if (time > this.LogData[end].DataTime)
-                {
-                    last = this.LogData.Count - 1;
-                } else {
-                    last = end;
-                }
-            } else {
-                last = this.LogData.Count - 1;
-            }
-            
-            int mid;
+            first = start;
+            last = end;
 
             do
             {
