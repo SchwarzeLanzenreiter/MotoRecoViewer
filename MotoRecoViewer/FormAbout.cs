@@ -46,5 +46,14 @@ namespace MotoRecoViewer
             //ブラウザで開く
             System.Diagnostics.Process.Start("https://github.com/judero01col/GMap.NET");
         }
+
+        private void LinkLabelSharpDX_Click(object sender, EventArgs e)
+        {
+            //リンク先に移動したことにする
+            LinkLabelSharpDX.LinkVisited = true;
+
+            //ブラウザで開く
+            System.Diagnostics.Process.Start("https://github.com/sharpdx/SharpDX");
+        }
     }
 }
