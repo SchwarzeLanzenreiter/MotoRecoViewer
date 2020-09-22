@@ -1422,12 +1422,19 @@ namespace MotoRecoViewer
                             }
 
                             // 次のサーチ時のendIdxは、diffIdx+4とする。diffIdxは安定しているため、+4以内で十分な精度がある
-                            // 仮に+4で収まらない場合は、データの末尾までのサーチとなるので（時間はかかるが）問題ない。
                             endIdx = targetIdx + (int)(diffIdx + 4);
 
                             // endIdx MAXガード
                             if (endIdx > maxIdx) { endIdx = maxIdx; }
 
+                            // 次のタイムスタンプの時刻が次の検索終了の時刻より大きい場合は調整する
+                            if (j != arySize - 1)
+                            {
+                                if (aryTimeStamp[j + 1] > ListChData[i].LogData[endIdx].DataTime)
+                                {
+                                    endIdx = maxIdx;
+                                }
+                            }
                         }
                         else
                         {
@@ -1462,6 +1469,9 @@ namespace MotoRecoViewer
 
                     //配列要素数を実際のデータカウント数に調整する
                     Array.Resize(ref points, drawCount);
+
+                    //drawCountが0の場合は何もしない
+                    if (drawCount == 0) { return; }
 
                     //描画ポイントを多角形として扱うため、ジオメトリーにセットする
                     PathGeometry geo1 = new PathGeometry(dxMainD2dFactory);
