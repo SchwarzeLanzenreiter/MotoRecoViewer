@@ -2293,8 +2293,17 @@ namespace MotoRecoViewer
             GMapControl.Overlays.Add(GMapOverlayRoute);
 
             // Form位置ロード
+            System.Drawing.Point backLocation = this.Location;
+
             this.Location = Properties.Settings.Default.FormMainLocation;
             this.Size = Properties.Settings.Default.FormMainSize;
+
+            //デスクトップのワークエリアとウィンドウの矩形が重なっていなかったら位置を戻す
+            if (System.Windows.Forms.Screen.GetWorkingArea(this).IntersectsWith(this.Bounds) == false)
+            {
+                this.Location = backLocation;
+            }
+
             this.splitContainer1.SplitterDistance = Properties.Settings.Default.FormMainSplit1;
             this.splitContainer2.SplitterDistance = Properties.Settings.Default.FormMainSplit2;
             this.splitContainer3.SplitterDistance = Properties.Settings.Default.FormMainSplit3;
