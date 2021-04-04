@@ -69,6 +69,8 @@
             this.column6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.column7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.column8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.CheckUseFilter = new System.Windows.Forms.CheckBox();
+            this.column9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             this.SuspendLayout();
@@ -89,6 +91,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.CheckUseFilter);
             this.panel1.Controls.Add(this.BtnPreAna);
             this.panel1.Controls.Add(this.BtnClear);
             this.panel1.Controls.Add(this.TextMax);
@@ -118,7 +121,7 @@
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel1.Location = new System.Drawing.Point(0, 367);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(629, 153);
+            this.panel1.Size = new System.Drawing.Size(687, 153);
             this.panel1.TabIndex = 27;
             // 
             // BtnPreAna
@@ -199,7 +202,6 @@
             this.BtnCancel.TabIndex = 44;
             this.BtnCancel.Text = "Cancel";
             this.BtnCancel.UseVisualStyleBackColor = true;
-
             // 
             // BtnLoad
             // 
@@ -366,7 +368,7 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(629, 367);
+            this.panel2.Size = new System.Drawing.Size(687, 367);
             this.panel2.TabIndex = 28;
             // 
             // ListViewDecode
@@ -380,7 +382,8 @@
             this.column5,
             this.column6,
             this.column7,
-            this.column8});
+            this.column8,
+            this.column9});
             this.ListViewDecode.Dock = System.Windows.Forms.DockStyle.Fill;
             this.ListViewDecode.FullRowSelect = true;
             this.ListViewDecode.GridLines = true;
@@ -389,7 +392,7 @@
             this.ListViewDecode.Location = new System.Drawing.Point(0, 0);
             this.ListViewDecode.MultiSelect = false;
             this.ListViewDecode.Name = "ListViewDecode";
-            this.ListViewDecode.Size = new System.Drawing.Size(629, 367);
+            this.ListViewDecode.Size = new System.Drawing.Size(687, 367);
             this.ListViewDecode.TabIndex = 1;
             this.ListViewDecode.UseCompatibleStateImageBehavior = false;
             this.ListViewDecode.View = System.Windows.Forms.View.Details;
@@ -429,11 +432,25 @@
             // 
             this.column8.Text = "Show";
             // 
+            // CheckUseFilter
+            // 
+            this.CheckUseFilter.AutoSize = true;
+            this.CheckUseFilter.Location = new System.Drawing.Point(182, 88);
+            this.CheckUseFilter.Name = "CheckUseFilter";
+            this.CheckUseFilter.Size = new System.Drawing.Size(51, 16);
+            this.CheckUseFilter.TabIndex = 53;
+            this.CheckUseFilter.Text = "Filter";
+            this.CheckUseFilter.UseVisualStyleBackColor = true;
+            // 
+            // column9
+            // 
+            this.column9.Text = "Filter";
+            // 
             // FormDecodeOption
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(629, 520);
+            this.ClientSize = new System.Drawing.Size(687, 520);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Name = "FormDecodeOption";
@@ -488,5 +505,7 @@
         private System.Windows.Forms.ColumnHeader column6;
         private System.Windows.Forms.ColumnHeader column7;
         private System.Windows.Forms.ColumnHeader column8;
+        private System.Windows.Forms.CheckBox CheckUseFilter;
+        private System.Windows.Forms.ColumnHeader column9;
     }
 }

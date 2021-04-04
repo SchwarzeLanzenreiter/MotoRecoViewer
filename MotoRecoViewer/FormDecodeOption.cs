@@ -172,6 +172,8 @@ namespace MotoRecoViewer
                 newItem.SubItems.Add(this.decodeRule.GetChartPreview(i).ToString());
                 //Show
                 newItem.SubItems.Add(this.decodeRule.GetChartShow(i).ToString());
+                //Filter
+                newItem.SubItems.Add(this.decodeRule.GetChartUseFilter(i).ToString());
 
                 ListViewDecode.Items.Add(newItem);
             }
@@ -201,7 +203,8 @@ namespace MotoRecoViewer
                                       row.SubItems[4].Text,         //Min
                                       row.SubItems[5].Text,         //Max
                                       row.SubItems[6].Text,         //flg Preview
-                                      row.SubItems[7].Text          //flg Show
+                                      row.SubItems[7].Text,         //flg Show
+                                      row.SubItems[8].Text          //flg Use Filter
                                       );
             }
         }
@@ -232,7 +235,8 @@ namespace MotoRecoViewer
                                         fm.decodeRule.GetChartMin(i).ToString(),           //Min
                                         fm.decodeRule.GetChartMax(i).ToString(),           //Max
                                         fm.decodeRule.GetChartPreview(i).ToString(),       //flg Preview
-                                        fm.decodeRule.GetChartShow(i).ToString()　         //flg Show
+                                        fm.decodeRule.GetChartShow(i).ToString(),          //flg Show
+                                        fm.decodeRule.GetChartUseFilter(i).ToString()      //flg UseFilter
                                         );
             }
         }
@@ -257,7 +261,8 @@ namespace MotoRecoViewer
                                       this.decodeRule.GetChartMin(i).ToString(),           //Min
                                       this.decodeRule.GetChartMax(i).ToString(),           //Max
                                       this.decodeRule.GetChartPreview(i).ToString(),       //flg Preview
-                                      this.decodeRule.GetChartShow(i).ToString()　　       //flg Show
+                                        fm.decodeRule.GetChartShow(i).ToString(),          //flg Show
+                                        fm.decodeRule.GetChartUseFilter(i).ToString()      //flg UseFilter
                                       );
             }
         }
@@ -288,7 +293,8 @@ namespace MotoRecoViewer
                                        TextMin.Text,                                                 //Min
                                        TextMax.Text,                                                 //Max
                                        CheckPreview.Checked.ToString(),                              //flg Preview
-                                       CheckShow.Checked.ToString()　                                //flg Show
+                                       CheckShow.Checked.ToString(),                                 //flg Show
+                                       CheckUseFilter.Checked.ToString()                             //flg UseFilter
                                        );
                 } else
                 {
@@ -301,7 +307,8 @@ namespace MotoRecoViewer
                                        TextMin.Text,                                                 //Min
                                        TextMax.Text,                                                 //Max
                                        CheckPreview.Checked.ToString(),                              //flg Preview
-                                       CheckShow.Checked.ToString()　　                              //flg Show
+                                       CheckShow.Checked.ToString(), 　                              //flg Show
+                                       CheckUseFilter.Checked.ToString()                             //flg UseFilter
                                        );
                 }
             }
@@ -348,7 +355,8 @@ namespace MotoRecoViewer
                                        cols[4],   //Min
                                        cols[5],   //Max
                                        cols[6],   //flg Preview
-                                       cols[7]　  //flg Show
+                                       cols[7],　 //flg Show
+                                       cols[8]    //flg UseFilter
                                        );
                 }
                 reader.Close();
@@ -373,6 +381,7 @@ namespace MotoRecoViewer
                 TextMax.Text = ListViewDecode.SelectedItems[0].SubItems[5].Text;
                 CheckPreview.Checked = System.Convert.ToBoolean(ListViewDecode.SelectedItems[0].SubItems[6].Text);
                 CheckShow.Checked = System.Convert.ToBoolean(ListViewDecode.SelectedItems[0].SubItems[7].Text);
+                CheckUseFilter.Checked = System.Convert.ToBoolean(ListViewDecode.SelectedItems[0].SubItems[8].Text);
             }
         }
 
@@ -393,7 +402,8 @@ namespace MotoRecoViewer
                                       row.SubItems[4].Text,  //Min
                                       row.SubItems[5].Text,  //Max
                                       row.SubItems[6].Text,  //flg Preview
-                                      row.SubItems[7].Text   //flg Show
+                                      row.SubItems[7].Text,  //flg Show
+                                      row.SubItems[8].Text   //flg UseFilter
                                       );
             }
 
@@ -425,7 +435,8 @@ namespace MotoRecoViewer
                                 TextMin.Text,                     //Min
                                 TextMax.Text,                     //Max
                                 CheckPreview.Checked.ToString(),  //flg Preview
-                                CheckShow.Checked.ToString()　　  //flg Show                                                     
+                                CheckShow.Checked.ToString(), 　  //flg Show                                                     
+                                CheckUseFilter.Checked.ToString() //flg UseFilter
                                 );
 
             //ListViewをリロード

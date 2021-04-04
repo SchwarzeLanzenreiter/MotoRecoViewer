@@ -44,7 +44,7 @@ namespace MotoRecoViewer
                         default:i_color = 0;break;
                     }
 
-                    if (CBByte.Checked) { 
+                    if (CBByte.Checked) {
                         fm.decodeRule.AddData(LBAdd.Items[i] + "_Data" + j.ToString(),  //Ch Name
                                               LBAdd.Items[i].ToString(),                //CAN ID
                                               "#Data" + j.ToString(),                   //Formula
@@ -52,7 +52,8 @@ namespace MotoRecoViewer
                                               "0",                                      //Min
                                               "255",                                    //Max
                                               "false",                                  //flg Preview
-                                              "false");                                 //flg Show
+                                              "false",                                  //flg Show
+                                              "false");                                 //flg UseFilter
                     }
 
                     if (CBHigh.Checked)
@@ -64,7 +65,8 @@ namespace MotoRecoViewer
                                               "0",                                      //Min
                                               "255",                                    //Max
                                               "false",                                  //flg Preview
-                                              "false");                                 //flg Show
+                                              "false",                                  //flg Show
+                                              "false");                                 //flg UseFilter
                     }
 
                     if (CBLow.Checked)
@@ -76,7 +78,8 @@ namespace MotoRecoViewer
                                               "0",                                      //Min
                                               "255",                                    //Max
                                               "false",                                  //flg Preview
-                                              "false");                                 //flg Show
+                                              "false",                                  //flg Show
+                                              "false");                                 //flg UseFilter
                     }
                 }
             }

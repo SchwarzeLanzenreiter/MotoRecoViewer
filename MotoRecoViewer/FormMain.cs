@@ -265,11 +265,11 @@ namespace MotoRecoViewer
                                 bool chPrev = decodeRule.GetChartPreview(decodeRuleIdx);
                                 int chColor = decodeRule.GetChartColor(decodeRuleIdx);
                                 bool chShow = decodeRule.GetChartShow(decodeRuleIdx);
-
+                                bool chUseFilter = decodeRule.GetChartUseFilter(decodeRuleIdx);
                                 //DicChNameには、key:chName value:ListChDataのインデックスを登録
                                 DicChName.Add(chName, ListChData.Count);
 
-                                ChData newData = new ChData(chName, chMin, chMax, chColor, chPrev, chShow);
+                                ChData newData = new ChData(chName, chMin, chMax, chColor, chPrev, chShow, chUseFilter);
 
                                 ListChData.Add(newData);
                             }
@@ -322,6 +322,12 @@ namespace MotoRecoViewer
             Parallel.For(0, ListChData.Count, i =>
             {
                 ListChData[i].Sort();
+            });
+
+            //フィルタ処理は各ch毎なので並列化可能
+            Parallel.For(0, ListChData.Count, i =>
+            {
+                ListChData[i].FilterData();
             });
 
             // この4関数は依存関係なし→並列処理可
@@ -1446,7 +1452,18 @@ namespace MotoRecoViewer
                         double x = chartMargin + j;
 
                         // targetIdxのDataValueが、Ch設定のMax-Min幅に対して何%位置か算出する
-                        double y = ListChData[i].LogData[targetIdx].DataValue;
+
+                        double y;
+
+                        // Filterなしの場合は生データ参照
+                        if (ListChData[i].UseFilter==false)
+                        {
+                            y = ListChData[i].LogData[targetIdx].DataValue;
+                        // Filterありの場合Filteredデータ参照
+                        } else {
+                            y = ListChData[i].LogData[targetIdx].DataValueFiltered;
+                        }
+
                         y = (y - ListChData[i].ChMin) / (ListChData[i].ChMax - ListChData[i].ChMin);
 
                         // 0%以下もしくは100以上は0または100に丸める

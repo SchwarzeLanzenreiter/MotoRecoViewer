@@ -38,6 +38,7 @@ namespace MotoRecoViewer
         public int ChColor { get; set; }
         public bool ChPreview { get; set; }
         public bool ChShow { get; set; }
+        public bool UseFilter { get; set; }
     }
 
     class DecodeRule
@@ -81,7 +82,8 @@ namespace MotoRecoViewer
                 sr.Write(Data[i].ChMin.ToString() + ",");
                 sr.Write(Data[i].ChMax.ToString() + ",");
                 sr.Write(Data[i].ChPreview.ToString() + ",");
-                sr.Write(Data[i].ChShow.ToString());
+                sr.Write(Data[i].ChShow.ToString() + ",");
+                sr.Write(Data[i].UseFilter.ToString());
 
                 //改行する
                 sr.Write("\r\n");
@@ -515,7 +517,7 @@ namespace MotoRecoViewer
         /// <param name="chMax">チャンネル上限値</param>
         /// <param name="chPreview">SubChartに表示する/しない</param>
         /// <param name="chShow">MainChartに表示する/しない</param>
-        public void AddData(string chName, string id, string formula, string chColor, string chMin, string chMax, string chPreview, string chShow)
+        public void AddData(string chName, string id, string formula, string chColor, string chMin, string chMax, string chPreview, string chShow, string chUseFilter)
         {
             DecodeData newData = new DecodeData
             {
@@ -526,7 +528,8 @@ namespace MotoRecoViewer
                 ChMax = int.Parse(chMax),
                 ChColor = int.Parse(chColor),
                 ChPreview = bool.Parse(chPreview),
-                ChShow = bool.Parse(chShow)
+                ChShow = bool.Parse(chShow),
+                UseFilter = bool.Parse(chUseFilter)
             };
 
             Data.Add(newData);
@@ -544,7 +547,7 @@ namespace MotoRecoViewer
         /// <param name="chMax">チャンネル上限値</param>
         /// <param name="chPreview">SubChartに表示する/しない</param>
         /// <param name="chShow">MainChartに表示する/しない</param>
-        public void InsData(int idx, string chName, string id, string formula, string chColor, string chMin, string chMax, string chPreview, string chShow)
+        public void InsData(int idx, string chName, string id, string formula, string chColor, string chMin, string chMax, string chPreview, string chShow, string chUseFilter)
         {
             DecodeData newData = new DecodeData
             {
@@ -555,7 +558,8 @@ namespace MotoRecoViewer
                 ChMax = int.Parse(chMax),
                 ChColor = int.Parse(chColor),
                 ChPreview = bool.Parse(chPreview),
-                ChShow = bool.Parse(chShow)
+                ChShow = bool.Parse(chShow),
+                UseFilter = bool.Parse(chUseFilter)
             };
 
             Data.Insert(idx, newData);
@@ -573,7 +577,7 @@ namespace MotoRecoViewer
         /// <param name="chMax">チャンネル上限値</param>
         /// <param name="chPreview">SubChartに表示する/しない</param>
         /// <param name="chShow">MainChartに表示する/しない</param>
-        public void EditData(int idx,string chName, string id, string formula, string chColor, string chMin, string chMax, string chPreview, string chShow)
+        public void EditData(int idx,string chName, string id, string formula, string chColor, string chMin, string chMax, string chPreview, string chShow, string chUseFilter)
         {
             if (idx < 0)
             {
@@ -595,6 +599,7 @@ namespace MotoRecoViewer
             tempData.ChColor = int.Parse(chColor);
             tempData.ChPreview = bool.Parse(chPreview);
             tempData.ChShow = bool.Parse(chShow);
+            tempData.UseFilter = bool.Parse(chUseFilter);
 
             Data[idx] = tempData;
         }
@@ -747,6 +752,15 @@ namespace MotoRecoViewer
         public bool GetChartShow(int index)
         {
             return Data[index].ChShow;
+        }
+
+        /// <summary>
+        /// 引数のインデックスのChartShowを返す
+        /// </summary>
+        /// <param name="index">データ取得するインデックス</param>
+        public bool GetChartUseFilter(int index)
+        {
+            return Data[index].UseFilter;
         }
     }
 }
