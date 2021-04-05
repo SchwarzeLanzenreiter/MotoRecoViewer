@@ -760,7 +760,13 @@ namespace MotoRecoViewer
                 int idx = DicChName[ListViewData.Items[i].Text];
                 int targetIdx = ListChData[idx].FindLeftIndex(targetTime1);
 
-                ListViewData.Items[i].SubItems[1].Text = ListChData[idx].LogData[targetIdx].DataValue.ToString();
+                if (ListChData[idx].UseFilter == false)
+                {
+                    ListViewData.Items[i].SubItems[1].Text = ListChData[idx].LogData[targetIdx].DataValue.ToString();
+                } else
+                {
+                    ListViewData.Items[i].SubItems[1].Text = ListChData[idx].LogData[targetIdx].DataValueFiltered.ToString();
+                }
             }
 
             // MainChartのカーソル位置2に対応するタイムスタンプを計算
@@ -780,7 +786,14 @@ namespace MotoRecoViewer
                 int idx = DicChName[ListViewData.Items[i].Text];
                 int targetIdx = ListChData[idx].FindLeftIndex(targetTime2);
 
-                ListViewData.Items[i].SubItems[2].Text = ListChData[idx].LogData[targetIdx].DataValue.ToString();
+                if (ListChData[idx].UseFilter == false)
+                {
+                    ListViewData.Items[i].SubItems[2].Text = ListChData[idx].LogData[targetIdx].DataValue.ToString();
+                }
+                else
+                {
+                    ListViewData.Items[i].SubItems[2].Text = ListChData[idx].LogData[targetIdx].DataValueFiltered.ToString();
+                }
             }
 
             // MainChartのカーソル1とカーソル2の間のデータでのMAX-MINを計算する
@@ -816,8 +829,15 @@ namespace MotoRecoViewer
 
                for (int j = targetIdxStart; j <= targetIdxEnd; j++)
                {
-                   if (ListChData[idx].LogData[j].DataValue > dataMax) { dataMax = ListChData[idx].LogData[j].DataValue; }
-                   if (ListChData[idx].LogData[j].DataValue < dataMin) { dataMin = ListChData[idx].LogData[j].DataValue; }
+                    if (ListChData[idx].UseFilter == false)
+                    {
+                        if (ListChData[idx].LogData[j].DataValue > dataMax) { dataMax = ListChData[idx].LogData[j].DataValue; }
+                        if (ListChData[idx].LogData[j].DataValue < dataMin) { dataMin = ListChData[idx].LogData[j].DataValue; }
+                    } else
+                    {
+                        if (ListChData[idx].LogData[j].DataValue > dataMax) { dataMax = ListChData[idx].LogData[j].DataValueFiltered; }
+                        if (ListChData[idx].LogData[j].DataValue < dataMin) { dataMin = ListChData[idx].LogData[j].DataValueFiltered; }
+                    }
                }
 
                double diff = dataMax - dataMin;
@@ -2091,6 +2111,7 @@ namespace MotoRecoViewer
                 ListChData[idx].ChMin = decodeRule.GetChartMin(i);
                 ListChData[idx].ChPreview = decodeRule.GetChartPreview(i);
                 ListChData[idx].ChShow = decodeRule.GetChartShow(i);
+                ListChData[idx].UseFilter = decodeRule.GetChartUseFilter(i);
             }
 
             // もしListChDataには存在するが、decodeRuleに存在しない場合(一度データをロードした後、あるChを削除した場合)、

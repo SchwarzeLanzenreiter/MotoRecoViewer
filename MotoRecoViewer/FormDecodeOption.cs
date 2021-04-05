@@ -347,17 +347,30 @@ namespace MotoRecoViewer
                 while (reader.Peek() >= 0)
                 {
                     string[] cols = reader.ReadLine().Split(',');
-                     
-                    decodeRule.AddData(cols[0],   //Ch Name
-                                       cols[1],   //CAN ID
-                                       cols[2],   //Formula
-                                       cols[3],   //Ch Color
-                                       cols[4],   //Min
-                                       cols[5],   //Max
-                                       cols[6],   //flg Preview
-                                       cols[7],　 //flg Show
-                                       cols[8]    //flg UseFilter
-                                       );
+                    if (cols.Length == 9) {
+                        decodeRule.AddData(cols[0],   //Ch Name
+                                           cols[1],   //CAN ID
+                                           cols[2],   //Formula
+                                           cols[3],   //Ch Color
+                                           cols[4],   //Min
+                                           cols[5],   //Max
+                                           cols[6],   //flg Preview
+                                           cols[7],   //flg Show
+                                           cols[8]    //flg UseFilter
+                                           );
+                    } else
+                    {
+                        decodeRule.AddData(cols[0],   //Ch Name
+                                           cols[1],   //CAN ID
+                                           cols[2],   //Formula
+                                           cols[3],   //Ch Color
+                                           cols[4],   //Min
+                                           cols[5],   //Max
+                                           cols[6],   //flg Preview
+                                           cols[7],　 //flg Show
+                                           "false"    //flg UseFilter
+                                           );
+                    }
                 }
                 reader.Close();
             }
