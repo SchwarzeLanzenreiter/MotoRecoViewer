@@ -760,7 +760,7 @@ namespace MotoRecoViewer
                 int idx = DicChName[ListViewData.Items[i].Text];
                 int targetIdx = ListChData[idx].FindLeftIndex(targetTime1);
 
-                if (ListChData[idx].UseFilter == false)
+                if (ListChData[idx].ChFilter == false)
                 {
                     ListViewData.Items[i].SubItems[1].Text = ListChData[idx].LogData[targetIdx].DataValue.ToString();
                 } else
@@ -786,7 +786,7 @@ namespace MotoRecoViewer
                 int idx = DicChName[ListViewData.Items[i].Text];
                 int targetIdx = ListChData[idx].FindLeftIndex(targetTime2);
 
-                if (ListChData[idx].UseFilter == false)
+                if (ListChData[idx].ChFilter == false)
                 {
                     ListViewData.Items[i].SubItems[2].Text = ListChData[idx].LogData[targetIdx].DataValue.ToString();
                 }
@@ -829,7 +829,7 @@ namespace MotoRecoViewer
 
                for (int j = targetIdxStart; j <= targetIdxEnd; j++)
                {
-                    if (ListChData[idx].UseFilter == false)
+                    if (ListChData[idx].ChFilter == false)
                     {
                         if (ListChData[idx].LogData[j].DataValue > dataMax) { dataMax = ListChData[idx].LogData[j].DataValue; }
                         if (ListChData[idx].LogData[j].DataValue < dataMin) { dataMin = ListChData[idx].LogData[j].DataValue; }
@@ -1476,7 +1476,7 @@ namespace MotoRecoViewer
                         double y;
 
                         // Filterなしの場合は生データ参照
-                        if (ListChData[i].UseFilter==false)
+                        if (ListChData[i].ChFilter==false)
                         {
                             y = ListChData[i].LogData[targetIdx].DataValue;
                         // Filterありの場合Filteredデータ参照
@@ -2111,7 +2111,7 @@ namespace MotoRecoViewer
                 ListChData[idx].ChMin = decodeRule.GetChartMin(i);
                 ListChData[idx].ChPreview = decodeRule.GetChartPreview(i);
                 ListChData[idx].ChShow = decodeRule.GetChartShow(i);
-                ListChData[idx].UseFilter = decodeRule.GetChartUseFilter(i);
+                ListChData[idx].ChFilter = decodeRule.GetChartUseFilter(i);
             }
 
             // もしListChDataには存在するが、decodeRuleに存在しない場合(一度データをロードした後、あるChを削除した場合)、

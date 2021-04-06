@@ -33,6 +33,8 @@
             this.colorDialog = new System.Windows.Forms.ColorDialog();
             this.OpenFileDAT = new System.Windows.Forms.OpenFileDialog();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.comboBox1 = new System.Windows.Forms.ComboBox();
+            this.CheckUseFilter = new System.Windows.Forms.CheckBox();
             this.BtnPreAna = new System.Windows.Forms.Button();
             this.BtnClear = new System.Windows.Forms.Button();
             this.TextMax = new System.Windows.Forms.TextBox();
@@ -60,19 +62,16 @@
             this.BtnDel = new System.Windows.Forms.Button();
             this.BtnNew = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.ListViewDecode = new System.Windows.Forms.ListView();
-            this.column1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.column2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.column3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.column4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.column5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.column6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.column7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.column8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.CheckUseFilter = new System.Windows.Forms.CheckBox();
-            this.column9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader6 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.panel1.SuspendLayout();
-            this.panel2.SuspendLayout();
             this.SuspendLayout();
             // 
             // saveFileDialog
@@ -91,6 +90,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.comboBox1);
             this.panel1.Controls.Add(this.CheckUseFilter);
             this.panel1.Controls.Add(this.BtnPreAna);
             this.panel1.Controls.Add(this.BtnClear);
@@ -119,16 +119,37 @@
             this.panel1.Controls.Add(this.BtnDel);
             this.panel1.Controls.Add(this.BtnNew);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panel1.Location = new System.Drawing.Point(0, 367);
+            this.panel1.Location = new System.Drawing.Point(0, 459);
+            this.panel1.Margin = new System.Windows.Forms.Padding(4);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(687, 153);
+            this.panel1.Size = new System.Drawing.Size(916, 191);
             this.panel1.TabIndex = 27;
+            // 
+            // comboBox1
+            // 
+            this.comboBox1.FormattingEnabled = true;
+            this.comboBox1.Location = new System.Drawing.Point(490, 100);
+            this.comboBox1.Name = "comboBox1";
+            this.comboBox1.Size = new System.Drawing.Size(121, 23);
+            this.comboBox1.TabIndex = 54;
+            // 
+            // CheckUseFilter
+            // 
+            this.CheckUseFilter.AutoSize = true;
+            this.CheckUseFilter.Location = new System.Drawing.Point(243, 110);
+            this.CheckUseFilter.Margin = new System.Windows.Forms.Padding(4);
+            this.CheckUseFilter.Name = "CheckUseFilter";
+            this.CheckUseFilter.Size = new System.Drawing.Size(61, 19);
+            this.CheckUseFilter.TabIndex = 53;
+            this.CheckUseFilter.Text = "Filter";
+            this.CheckUseFilter.UseVisualStyleBackColor = true;
             // 
             // BtnPreAna
             // 
-            this.BtnPreAna.Location = new System.Drawing.Point(572, 7);
+            this.BtnPreAna.Location = new System.Drawing.Point(763, 9);
+            this.BtnPreAna.Margin = new System.Windows.Forms.Padding(4);
             this.BtnPreAna.Name = "BtnPreAna";
-            this.BtnPreAna.Size = new System.Drawing.Size(50, 31);
+            this.BtnPreAna.Size = new System.Drawing.Size(67, 39);
             this.BtnPreAna.TabIndex = 52;
             this.BtnPreAna.Text = "Ana";
             this.BtnPreAna.UseVisualStyleBackColor = true;
@@ -136,9 +157,10 @@
             // 
             // BtnClear
             // 
-            this.BtnClear.Location = new System.Drawing.Point(435, 115);
+            this.BtnClear.Location = new System.Drawing.Point(580, 144);
+            this.BtnClear.Margin = new System.Windows.Forms.Padding(4);
             this.BtnClear.Name = "BtnClear";
-            this.BtnClear.Size = new System.Drawing.Size(41, 31);
+            this.BtnClear.Size = new System.Drawing.Size(55, 39);
             this.BtnClear.TabIndex = 51;
             this.BtnClear.Text = "Clear";
             this.BtnClear.UseVisualStyleBackColor = true;
@@ -146,68 +168,76 @@
             // 
             // TextMax
             // 
-            this.TextMax.Location = new System.Drawing.Point(387, 58);
+            this.TextMax.Location = new System.Drawing.Point(516, 72);
+            this.TextMax.Margin = new System.Windows.Forms.Padding(4);
             this.TextMax.Name = "TextMax";
-            this.TextMax.Size = new System.Drawing.Size(73, 19);
+            this.TextMax.Size = new System.Drawing.Size(96, 22);
             this.TextMax.TabIndex = 50;
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(355, 61);
+            this.label3.Location = new System.Drawing.Point(473, 76);
+            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(26, 12);
+            this.label3.Size = new System.Drawing.Size(32, 15);
             this.label3.TabIndex = 49;
             this.label3.Text = "Max";
             // 
             // TextMin
             // 
-            this.TextMin.Location = new System.Drawing.Point(387, 33);
+            this.TextMin.Location = new System.Drawing.Point(516, 41);
+            this.TextMin.Margin = new System.Windows.Forms.Padding(4);
             this.TextMin.Name = "TextMin";
-            this.TextMin.Size = new System.Drawing.Size(73, 19);
+            this.TextMin.Size = new System.Drawing.Size(96, 22);
             this.TextMin.TabIndex = 48;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(358, 36);
+            this.label2.Location = new System.Drawing.Point(477, 45);
+            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(23, 12);
+            this.label2.Size = new System.Drawing.Size(29, 15);
             this.label2.TabIndex = 47;
             this.label2.Text = "Min";
             // 
             // TextColor
             // 
-            this.TextColor.Location = new System.Drawing.Point(387, 7);
+            this.TextColor.Location = new System.Drawing.Point(516, 9);
+            this.TextColor.Margin = new System.Windows.Forms.Padding(4);
             this.TextColor.Name = "TextColor";
-            this.TextColor.Size = new System.Drawing.Size(73, 19);
+            this.TextColor.Size = new System.Drawing.Size(96, 22);
             this.TextColor.TabIndex = 46;
             this.TextColor.DoubleClick += new System.EventHandler(this.TextColor_DoubleClick);
             // 
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(331, 10);
+            this.label1.Location = new System.Drawing.Point(441, 12);
+            this.label1.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(50, 12);
+            this.label1.Size = new System.Drawing.Size(64, 15);
             this.label1.TabIndex = 45;
             this.label1.Text = "Ch Color";
             // 
             // BtnCancel
             // 
             this.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.BtnCancel.Location = new System.Drawing.Point(572, 115);
+            this.BtnCancel.Location = new System.Drawing.Point(763, 144);
+            this.BtnCancel.Margin = new System.Windows.Forms.Padding(4);
             this.BtnCancel.Name = "BtnCancel";
-            this.BtnCancel.Size = new System.Drawing.Size(50, 31);
+            this.BtnCancel.Size = new System.Drawing.Size(67, 39);
             this.BtnCancel.TabIndex = 44;
             this.BtnCancel.Text = "Cancel";
             this.BtnCancel.UseVisualStyleBackColor = true;
             // 
             // BtnLoad
             // 
-            this.BtnLoad.Location = new System.Drawing.Point(340, 115);
+            this.BtnLoad.Location = new System.Drawing.Point(453, 144);
+            this.BtnLoad.Margin = new System.Windows.Forms.Padding(4);
             this.BtnLoad.Name = "BtnLoad";
-            this.BtnLoad.Size = new System.Drawing.Size(41, 31);
+            this.BtnLoad.Size = new System.Drawing.Size(55, 39);
             this.BtnLoad.TabIndex = 43;
             this.BtnLoad.Text = "Load";
             this.BtnLoad.UseVisualStyleBackColor = true;
@@ -215,9 +245,10 @@
             // 
             // BtnSave
             // 
-            this.BtnSave.Location = new System.Drawing.Point(388, 115);
+            this.BtnSave.Location = new System.Drawing.Point(517, 144);
+            this.BtnSave.Margin = new System.Windows.Forms.Padding(4);
             this.BtnSave.Name = "BtnSave";
-            this.BtnSave.Size = new System.Drawing.Size(41, 31);
+            this.BtnSave.Size = new System.Drawing.Size(55, 39);
             this.BtnSave.TabIndex = 42;
             this.BtnSave.Text = "Save";
             this.BtnSave.UseVisualStyleBackColor = true;
@@ -226,9 +257,10 @@
             // BtnOK
             // 
             this.BtnOK.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.BtnOK.Location = new System.Drawing.Point(572, 80);
+            this.BtnOK.Location = new System.Drawing.Point(763, 100);
+            this.BtnOK.Margin = new System.Windows.Forms.Padding(4);
             this.BtnOK.Name = "BtnOK";
-            this.BtnOK.Size = new System.Drawing.Size(50, 31);
+            this.BtnOK.Size = new System.Drawing.Size(67, 39);
             this.BtnOK.TabIndex = 41;
             this.BtnOK.Text = "OK";
             this.BtnOK.UseVisualStyleBackColor = true;
@@ -236,9 +268,10 @@
             // 
             // BtnDown
             // 
-            this.BtnDown.Location = new System.Drawing.Point(203, 115);
+            this.BtnDown.Location = new System.Drawing.Point(271, 144);
+            this.BtnDown.Margin = new System.Windows.Forms.Padding(4);
             this.BtnDown.Name = "BtnDown";
-            this.BtnDown.Size = new System.Drawing.Size(41, 31);
+            this.BtnDown.Size = new System.Drawing.Size(55, 39);
             this.BtnDown.TabIndex = 40;
             this.BtnDown.Text = "Down";
             this.BtnDown.UseVisualStyleBackColor = true;
@@ -246,9 +279,10 @@
             // 
             // BtnUp
             // 
-            this.BtnUp.Location = new System.Drawing.Point(156, 115);
+            this.BtnUp.Location = new System.Drawing.Point(208, 144);
+            this.BtnUp.Margin = new System.Windows.Forms.Padding(4);
             this.BtnUp.Name = "BtnUp";
-            this.BtnUp.Size = new System.Drawing.Size(41, 31);
+            this.BtnUp.Size = new System.Drawing.Size(55, 39);
             this.BtnUp.TabIndex = 39;
             this.BtnUp.Text = "Up";
             this.BtnUp.UseVisualStyleBackColor = true;
@@ -256,9 +290,10 @@
             // 
             // BtnBrowsRule
             // 
-            this.BtnBrowsRule.Location = new System.Drawing.Point(290, 58);
+            this.BtnBrowsRule.Location = new System.Drawing.Point(387, 72);
+            this.BtnBrowsRule.Margin = new System.Windows.Forms.Padding(4);
             this.BtnBrowsRule.Name = "BtnBrowsRule";
-            this.BtnBrowsRule.Size = new System.Drawing.Size(25, 19);
+            this.BtnBrowsRule.Size = new System.Drawing.Size(33, 24);
             this.BtnBrowsRule.TabIndex = 38;
             this.BtnBrowsRule.Text = "…";
             this.BtnBrowsRule.UseVisualStyleBackColor = true;
@@ -267,9 +302,10 @@
             // CheckShow
             // 
             this.CheckShow.AutoSize = true;
-            this.CheckShow.Location = new System.Drawing.Point(125, 88);
+            this.CheckShow.Location = new System.Drawing.Point(167, 110);
+            this.CheckShow.Margin = new System.Windows.Forms.Padding(4);
             this.CheckShow.Name = "CheckShow";
-            this.CheckShow.Size = new System.Drawing.Size(51, 16);
+            this.CheckShow.Size = new System.Drawing.Size(64, 19);
             this.CheckShow.TabIndex = 37;
             this.CheckShow.Text = "Show";
             this.CheckShow.UseVisualStyleBackColor = true;
@@ -277,18 +313,20 @@
             // CheckPreview
             // 
             this.CheckPreview.AutoSize = true;
-            this.CheckPreview.Location = new System.Drawing.Point(61, 88);
+            this.CheckPreview.Location = new System.Drawing.Point(81, 110);
+            this.CheckPreview.Margin = new System.Windows.Forms.Padding(4);
             this.CheckPreview.Name = "CheckPreview";
-            this.CheckPreview.Size = new System.Drawing.Size(64, 16);
+            this.CheckPreview.Size = new System.Drawing.Size(79, 19);
             this.CheckPreview.TabIndex = 36;
             this.CheckPreview.Text = "Preview";
             this.CheckPreview.UseVisualStyleBackColor = true;
             // 
             // BtnEdit
             // 
-            this.BtnEdit.Location = new System.Drawing.Point(61, 115);
+            this.BtnEdit.Location = new System.Drawing.Point(81, 144);
+            this.BtnEdit.Margin = new System.Windows.Forms.Padding(4);
             this.BtnEdit.Name = "BtnEdit";
-            this.BtnEdit.Size = new System.Drawing.Size(41, 31);
+            this.BtnEdit.Size = new System.Drawing.Size(55, 39);
             this.BtnEdit.TabIndex = 35;
             this.BtnEdit.Text = "Edit";
             this.BtnEdit.UseVisualStyleBackColor = true;
@@ -296,57 +334,64 @@
             // 
             // TextFormula
             // 
-            this.TextFormula.Location = new System.Drawing.Point(61, 58);
+            this.TextFormula.Location = new System.Drawing.Point(81, 72);
+            this.TextFormula.Margin = new System.Windows.Forms.Padding(4);
             this.TextFormula.Name = "TextFormula";
-            this.TextFormula.Size = new System.Drawing.Size(223, 19);
+            this.TextFormula.Size = new System.Drawing.Size(296, 22);
             this.TextFormula.TabIndex = 34;
             // 
             // TextCanId
             // 
-            this.TextCanId.Location = new System.Drawing.Point(61, 33);
+            this.TextCanId.Location = new System.Drawing.Point(81, 41);
+            this.TextCanId.Margin = new System.Windows.Forms.Padding(4);
             this.TextCanId.Name = "TextCanId";
-            this.TextCanId.Size = new System.Drawing.Size(42, 19);
+            this.TextCanId.Size = new System.Drawing.Size(55, 22);
             this.TextCanId.TabIndex = 33;
             // 
             // TextChName
             // 
-            this.TextChName.Location = new System.Drawing.Point(61, 7);
+            this.TextChName.Location = new System.Drawing.Point(81, 9);
+            this.TextChName.Margin = new System.Windows.Forms.Padding(4);
             this.TextChName.Name = "TextChName";
-            this.TextChName.Size = new System.Drawing.Size(223, 19);
+            this.TextChName.Size = new System.Drawing.Size(296, 22);
             this.TextChName.TabIndex = 32;
             // 
             // lblFormula
             // 
             this.lblFormula.AutoSize = true;
-            this.lblFormula.Location = new System.Drawing.Point(9, 61);
+            this.lblFormula.Location = new System.Drawing.Point(12, 76);
+            this.lblFormula.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblFormula.Name = "lblFormula";
-            this.lblFormula.Size = new System.Drawing.Size(46, 12);
+            this.lblFormula.Size = new System.Drawing.Size(57, 15);
             this.lblFormula.TabIndex = 31;
             this.lblFormula.Text = "Formula";
             // 
             // lblChName
             // 
             this.lblChName.AutoSize = true;
-            this.lblChName.Location = new System.Drawing.Point(3, 10);
+            this.lblChName.Location = new System.Drawing.Point(4, 12);
+            this.lblChName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblChName.Name = "lblChName";
-            this.lblChName.Size = new System.Drawing.Size(52, 12);
+            this.lblChName.Size = new System.Drawing.Size(66, 15);
             this.lblChName.TabIndex = 30;
             this.lblChName.Text = "Ch Name";
             // 
             // lablCanId
             // 
             this.lablCanId.AutoSize = true;
-            this.lablCanId.Location = new System.Drawing.Point(11, 36);
+            this.lablCanId.Location = new System.Drawing.Point(15, 45);
+            this.lablCanId.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lablCanId.Name = "lablCanId";
-            this.lablCanId.Size = new System.Drawing.Size(44, 12);
+            this.lablCanId.Size = new System.Drawing.Size(55, 15);
             this.lablCanId.TabIndex = 29;
             this.lablCanId.Text = "CAN ID";
             // 
             // BtnDel
             // 
-            this.BtnDel.Location = new System.Drawing.Point(108, 115);
+            this.BtnDel.Location = new System.Drawing.Point(144, 144);
+            this.BtnDel.Margin = new System.Windows.Forms.Padding(4);
             this.BtnDel.Name = "BtnDel";
-            this.BtnDel.Size = new System.Drawing.Size(41, 31);
+            this.BtnDel.Size = new System.Drawing.Size(55, 39);
             this.BtnDel.TabIndex = 28;
             this.BtnDel.Text = "Del";
             this.BtnDel.UseVisualStyleBackColor = true;
@@ -354,9 +399,10 @@
             // 
             // BtnNew
             // 
-            this.BtnNew.Location = new System.Drawing.Point(14, 115);
+            this.BtnNew.Location = new System.Drawing.Point(19, 144);
+            this.BtnNew.Margin = new System.Windows.Forms.Padding(4);
             this.BtnNew.Name = "BtnNew";
-            this.BtnNew.Size = new System.Drawing.Size(41, 31);
+            this.BtnNew.Size = new System.Drawing.Size(55, 39);
             this.BtnNew.TabIndex = 27;
             this.BtnNew.Text = "Add";
             this.BtnNew.UseVisualStyleBackColor = true;
@@ -364,101 +410,26 @@
             // 
             // panel2
             // 
-            this.panel2.Controls.Add(this.ListViewDecode);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 0);
+            this.panel2.Margin = new System.Windows.Forms.Padding(4);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(687, 367);
+            this.panel2.Size = new System.Drawing.Size(916, 459);
             this.panel2.TabIndex = 28;
-            // 
-            // ListViewDecode
-            // 
-            this.ListViewDecode.Activation = System.Windows.Forms.ItemActivation.OneClick;
-            this.ListViewDecode.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-            this.column1,
-            this.column2,
-            this.column3,
-            this.column4,
-            this.column5,
-            this.column6,
-            this.column7,
-            this.column8,
-            this.column9});
-            this.ListViewDecode.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ListViewDecode.FullRowSelect = true;
-            this.ListViewDecode.GridLines = true;
-            this.ListViewDecode.HeaderStyle = System.Windows.Forms.ColumnHeaderStyle.Nonclickable;
-            this.ListViewDecode.HideSelection = false;
-            this.ListViewDecode.Location = new System.Drawing.Point(0, 0);
-            this.ListViewDecode.MultiSelect = false;
-            this.ListViewDecode.Name = "ListViewDecode";
-            this.ListViewDecode.Size = new System.Drawing.Size(687, 367);
-            this.ListViewDecode.TabIndex = 1;
-            this.ListViewDecode.UseCompatibleStateImageBehavior = false;
-            this.ListViewDecode.View = System.Windows.Forms.View.Details;
-            // 
-            // column1
-            // 
-            this.column1.Text = "Ch Name";
-            this.column1.Width = 100;
-            // 
-            // column2
-            // 
-            this.column2.Text = "CANID";
-            this.column2.Width = 71;
-            // 
-            // column3
-            // 
-            this.column3.Text = "Formula";
-            this.column3.Width = 150;
-            // 
-            // column4
-            // 
-            this.column4.Text = "Ch Color";
-            // 
-            // column5
-            // 
-            this.column5.Text = "Min";
-            // 
-            // column6
-            // 
-            this.column6.Text = "Max";
-            // 
-            // column7
-            // 
-            this.column7.Text = "Preview";
-            // 
-            // column8
-            // 
-            this.column8.Text = "Show";
-            // 
-            // CheckUseFilter
-            // 
-            this.CheckUseFilter.AutoSize = true;
-            this.CheckUseFilter.Location = new System.Drawing.Point(182, 88);
-            this.CheckUseFilter.Name = "CheckUseFilter";
-            this.CheckUseFilter.Size = new System.Drawing.Size(51, 16);
-            this.CheckUseFilter.TabIndex = 53;
-            this.CheckUseFilter.Text = "Filter";
-            this.CheckUseFilter.UseVisualStyleBackColor = true;
-            // 
-            // column9
-            // 
-            this.column9.Text = "Filter";
             // 
             // FormDecodeOption
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(687, 520);
+            this.ClientSize = new System.Drawing.Size(916, 650);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "FormDecodeOption";
             this.Text = "Decode Option";
             this.Load += new System.EventHandler(this.FormDecodeOption_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
-            this.panel2.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -496,16 +467,16 @@
         private System.Windows.Forms.Button BtnDel;
         private System.Windows.Forms.Button BtnNew;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.ListView ListViewDecode;
-        private System.Windows.Forms.ColumnHeader column1;
-        private System.Windows.Forms.ColumnHeader column2;
-        private System.Windows.Forms.ColumnHeader column3;
-        private System.Windows.Forms.ColumnHeader column4;
-        private System.Windows.Forms.ColumnHeader column5;
-        private System.Windows.Forms.ColumnHeader column6;
-        private System.Windows.Forms.ColumnHeader column7;
-        private System.Windows.Forms.ColumnHeader column8;
         private System.Windows.Forms.CheckBox CheckUseFilter;
-        private System.Windows.Forms.ColumnHeader column9;
+        public System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.ColumnHeader columnHeader2;
+        private System.Windows.Forms.ColumnHeader columnHeader3;
+        private System.Windows.Forms.ColumnHeader columnHeader4;
+        private System.Windows.Forms.ColumnHeader columnHeader5;
+        private System.Windows.Forms.ColumnHeader columnHeader6;
+        private System.Windows.Forms.ColumnHeader columnHeader7;
+        private System.Windows.Forms.ColumnHeader columnHeader8;
+        private System.Windows.Forms.ColumnHeader columnHeader9;
+        private System.Windows.Forms.ComboBox comboBox1;
     }
 }

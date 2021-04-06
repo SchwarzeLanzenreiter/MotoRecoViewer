@@ -88,7 +88,7 @@
             this.helpHToolStripMenuItem});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
-            this.menuStrip.Size = new System.Drawing.Size(1099, 28);
+            this.menuStrip.Size = new System.Drawing.Size(1099, 30);
             this.menuStrip.TabIndex = 0;
             this.menuStrip.Text = "menuStrip";
             // 
@@ -101,14 +101,14 @@
             this.MenuConvert,
             this.MenuExit});
             this.MenuFile.Name = "MenuFile";
-            this.MenuFile.Size = new System.Drawing.Size(63, 24);
+            this.MenuFile.Size = new System.Drawing.Size(63, 26);
             this.MenuFile.Text = "File(&F)";
             // 
             // MenuOpen
             // 
             this.MenuOpen.Name = "MenuOpen";
             this.MenuOpen.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
-            this.MenuOpen.Size = new System.Drawing.Size(224, 26);
+            this.MenuOpen.Size = new System.Drawing.Size(217, 26);
             this.MenuOpen.Text = "Open(&O)";
             this.MenuOpen.Click += new System.EventHandler(this.OpenToolStripMenuItem_Click);
             // 
@@ -116,14 +116,14 @@
             // 
             this.MenuAppend.Name = "MenuAppend";
             this.MenuAppend.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.A)));
-            this.MenuAppend.Size = new System.Drawing.Size(224, 26);
+            this.MenuAppend.Size = new System.Drawing.Size(217, 26);
             this.MenuAppend.Text = "Append(&A)";
             this.MenuAppend.Click += new System.EventHandler(this.MenuAppend_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(221, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(214, 6);
             // 
             // MenuConvert
             // 
@@ -133,7 +133,7 @@
             this.MenuConvertDecodeDataWhole,
             this.MenuConvertDecodeDataCursor});
             this.MenuConvert.Name = "MenuConvert";
-            this.MenuConvert.Size = new System.Drawing.Size(224, 26);
+            this.MenuConvert.Size = new System.Drawing.Size(217, 26);
             this.MenuConvert.Text = "CSV Export";
             // 
             // MenuConvertCANData
@@ -165,7 +165,7 @@
             // MenuExit
             // 
             this.MenuExit.Name = "MenuExit";
-            this.MenuExit.Size = new System.Drawing.Size(224, 26);
+            this.MenuExit.Size = new System.Drawing.Size(217, 26);
             this.MenuExit.Text = "Exit(&X)";
             this.MenuExit.Click += new System.EventHandler(this.終了ToolStripMenuItem_Click);
             // 
@@ -175,7 +175,7 @@
             this.cANDecodeSettingToolStripMenuItem,
             this.mapSettingToolStripMenuItem});
             this.ToolStripMenuItemView.Name = "ToolStripMenuItemView";
-            this.ToolStripMenuItemView.Size = new System.Drawing.Size(90, 24);
+            this.ToolStripMenuItemView.Size = new System.Drawing.Size(90, 26);
             this.ToolStripMenuItemView.Text = "Option(&O)";
             // 
             // cANDecodeSettingToolStripMenuItem
@@ -198,7 +198,7 @@
             this.toolStripMenuItem2,
             this.aboutAToolStripMenuItem});
             this.helpHToolStripMenuItem.Name = "helpHToolStripMenuItem";
-            this.helpHToolStripMenuItem.Size = new System.Drawing.Size(76, 24);
+            this.helpHToolStripMenuItem.Size = new System.Drawing.Size(76, 26);
             this.helpHToolStripMenuItem.Text = "Help(&H)";
             // 
             // toolStripMenuItem2
@@ -299,8 +299,8 @@
             // 
             this.splitContainer1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.splitContainer1.Location = new System.Drawing.Point(0, 28);
-            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.splitContainer1.Location = new System.Drawing.Point(0, 30);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4);
             this.splitContainer1.Name = "splitContainer1";
             // 
             // splitContainer1.Panel1
@@ -310,7 +310,7 @@
             // splitContainer1.Panel2
             // 
             this.splitContainer1.Panel2.Controls.Add(this.splitContainer3);
-            this.splitContainer1.Size = new System.Drawing.Size(1099, 533);
+            this.splitContainer1.Size = new System.Drawing.Size(1099, 531);
             this.splitContainer1.SplitterDistance = 920;
             this.splitContainer1.SplitterWidth = 5;
             this.splitContainer1.TabIndex = 9;
@@ -320,7 +320,7 @@
             this.splitContainer2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.splitContainer2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer2.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.splitContainer2.Margin = new System.Windows.Forms.Padding(4);
             this.splitContainer2.Name = "splitContainer2";
             this.splitContainer2.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
@@ -331,8 +331,8 @@
             // splitContainer2.Panel2
             // 
             this.splitContainer2.Panel2.Controls.Add(this.PanelSubChart);
-            this.splitContainer2.Size = new System.Drawing.Size(920, 533);
-            this.splitContainer2.SplitterDistance = 350;
+            this.splitContainer2.Size = new System.Drawing.Size(920, 531);
+            this.splitContainer2.SplitterDistance = 348;
             this.splitContainer2.SplitterWidth = 5;
             this.splitContainer2.TabIndex = 0;
             // 
@@ -342,7 +342,7 @@
             this.PanelMainChart.Location = new System.Drawing.Point(0, 0);
             this.PanelMainChart.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.PanelMainChart.Name = "PanelMainChart";
-            this.PanelMainChart.Size = new System.Drawing.Size(918, 348);
+            this.PanelMainChart.Size = new System.Drawing.Size(918, 346);
             this.PanelMainChart.TabIndex = 1;
             this.PanelMainChart.Paint += new System.Windows.Forms.PaintEventHandler(this.PanelMainChart_Paint);
             this.PanelMainChart.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PanelMainChart_MouseDown);
@@ -354,7 +354,7 @@
             // 
             this.PanelSubChart.Dock = System.Windows.Forms.DockStyle.Fill;
             this.PanelSubChart.Location = new System.Drawing.Point(0, 0);
-            this.PanelSubChart.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.PanelSubChart.Margin = new System.Windows.Forms.Padding(4);
             this.PanelSubChart.Name = "PanelSubChart";
             this.PanelSubChart.Size = new System.Drawing.Size(918, 176);
             this.PanelSubChart.TabIndex = 1;
@@ -369,15 +369,15 @@
             this.splitContainer3.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.splitContainer3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.splitContainer3.Location = new System.Drawing.Point(0, 0);
-            this.splitContainer3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.splitContainer3.Margin = new System.Windows.Forms.Padding(4);
             this.splitContainer3.Name = "splitContainer3";
             this.splitContainer3.Orientation = System.Windows.Forms.Orientation.Horizontal;
             // 
             // splitContainer3.Panel2
             // 
             this.splitContainer3.Panel2.Controls.Add(this.GMapControl);
-            this.splitContainer3.Size = new System.Drawing.Size(174, 533);
-            this.splitContainer3.SplitterDistance = 463;
+            this.splitContainer3.Size = new System.Drawing.Size(174, 531);
+            this.splitContainer3.SplitterDistance = 461;
             this.splitContainer3.SplitterWidth = 5;
             this.splitContainer3.TabIndex = 2;
             // 
@@ -392,7 +392,7 @@
             this.GMapControl.HelperLineOption = GMap.NET.WindowsForms.HelperLineOptions.DontShow;
             this.GMapControl.LevelsKeepInMemory = 5;
             this.GMapControl.Location = new System.Drawing.Point(0, 0);
-            this.GMapControl.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.GMapControl.Margin = new System.Windows.Forms.Padding(4);
             this.GMapControl.MarkersEnabled = true;
             this.GMapControl.MaxZoom = 18;
             this.GMapControl.MinZoom = 3;
@@ -419,7 +419,7 @@
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.menuStrip);
             this.MainMenuStrip = this.menuStrip;
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "FormMain";
             this.Text = "Moto Reco Viewer";
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.FormMain_FormClosed);

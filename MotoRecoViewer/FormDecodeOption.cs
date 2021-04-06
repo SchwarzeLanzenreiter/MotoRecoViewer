@@ -631,5 +631,15 @@ namespace MotoRecoViewer
             //List Viewクリア
             ListViewDecode.Items.Clear();
         }
+
+        private void ListViewDecode_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            ListViewDecode.EditColumn();
+        }
+
+        private void ListViewDecode_DoubleClick(object sender, EventArgs e)
+        {
+
+        }
     }
 }

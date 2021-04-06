@@ -43,7 +43,7 @@ namespace MotoRecoViewer
         public int ChColor { get; set; }
         public bool ChPreview { get; set; }
         public bool ChShow { get; set; }
-        public bool UseFilter { get; set; }
+        public bool ChFilter { get; set; }
         public List<TVData> LogData { get; set; }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace MotoRecoViewer
             this.ChColor = chColor;
             this.ChPreview = chPreview;
             this.ChShow = chShow;
-            this.UseFilter = chUseFilter;
+            this.ChFilter = chUseFilter;
             this.LogData = new List<TVData>();
         }
 

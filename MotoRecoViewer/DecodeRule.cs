@@ -38,7 +38,7 @@ namespace MotoRecoViewer
         public int ChColor { get; set; }
         public bool ChPreview { get; set; }
         public bool ChShow { get; set; }
-        public bool UseFilter { get; set; }
+        public bool ChFilter { get; set; }
     }
 
     class DecodeRule
@@ -83,7 +83,7 @@ namespace MotoRecoViewer
                 sr.Write(Data[i].ChMax.ToString() + ",");
                 sr.Write(Data[i].ChPreview.ToString() + ",");
                 sr.Write(Data[i].ChShow.ToString() + ",");
-                sr.Write(Data[i].UseFilter.ToString());
+                sr.Write(Data[i].ChFilter.ToString());
 
                 //改行する
                 sr.Write("\r\n");
@@ -529,7 +529,7 @@ namespace MotoRecoViewer
                 ChColor = int.Parse(chColor),
                 ChPreview = bool.Parse(chPreview),
                 ChShow = bool.Parse(chShow),
-                UseFilter = bool.Parse(chUseFilter)
+                ChFilter = bool.Parse(chUseFilter)
             };
 
             Data.Add(newData);
@@ -559,7 +559,7 @@ namespace MotoRecoViewer
                 ChColor = int.Parse(chColor),
                 ChPreview = bool.Parse(chPreview),
                 ChShow = bool.Parse(chShow),
-                UseFilter = bool.Parse(chUseFilter)
+                ChFilter = bool.Parse(chUseFilter)
             };
 
             Data.Insert(idx, newData);
@@ -599,7 +599,7 @@ namespace MotoRecoViewer
             tempData.ChColor = int.Parse(chColor);
             tempData.ChPreview = bool.Parse(chPreview);
             tempData.ChShow = bool.Parse(chShow);
-            tempData.UseFilter = bool.Parse(chUseFilter);
+            tempData.ChFilter = bool.Parse(chUseFilter);
 
             Data[idx] = tempData;
         }
@@ -760,7 +760,7 @@ namespace MotoRecoViewer
         /// <param name="index">データ取得するインデックス</param>
         public bool GetChartUseFilter(int index)
         {
-            return Data[index].UseFilter;
+            return Data[index].ChFilter;
         }
     }
 }
