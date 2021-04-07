@@ -139,50 +139,32 @@ namespace MotoRecoViewer
             }
 
             //ListViewのSelectedChangeイベント削除
-            ListViewDecode.SelectedIndexChanged -= ListViewDecode_SelectedIndexChanged;
+            dGVDecodeRule.SelectionChanged -= LdGVDecdeRule_SelectedIndexChanged;
 
             //ListView描画停止
-            ListViewDecode.BeginUpdate();
+            //ListViewDecode.BeginUpdate();
 
             //ListViewDecodeクリア
-            ListViewDecode.Items.Clear();
+            dGVDecodeRule.Rows.Clear();
 
             //DecodeRuleの内容をListViewDecodeに反映する
             for (int i = 0; i < this.decodeRule.Count; i++)
             {
-                ListViewItem newItem = new ListViewItem
-                {
-                    UseItemStyleForSubItems = false
-                };
+                dGVDecodeRule.Rows.Add(new string[] { this.decodeRule.GetChName(i),
+                                                           this.decodeRule.GetCANID(i).ToString("X3"),
+                                                           this.decodeRule.GetDecodeRule(i),
+                                                           this.decodeRule.GetChartColor(i).ToString(),
+                                                           this.decodeRule.GetChartMin(i).ToString(),
+                                                           this.decodeRule.GetChartMax(i).ToString(),
+                                                           this.decodeRule.GetChartPreview(i).ToString(),
+                                                           this.decodeRule.GetChartShow(i).ToString(),
+                                                           this.decodeRule.GetChartUseFilter(i).ToString()
+                                                            });
 
-                //ChName
-                newItem.Text = this.decodeRule.GetChName(i);
-                //CANID
-                newItem.SubItems.Add(this.decodeRule.GetCANID(i).ToString("X3"));
-                //Formula
-                newItem.SubItems.Add(this.decodeRule.GetDecodeRule(i));
-                //Pen Color
-                newItem.SubItems.Add(this.decodeRule.GetChartColor(i).ToString());
-                newItem.SubItems[3].BackColor = Color.FromArgb(this.decodeRule.GetChartColor(i));
-                //Min
-                newItem.SubItems.Add(this.decodeRule.GetChartMin(i).ToString());
-                //MAX
-                newItem.SubItems.Add(this.decodeRule.GetChartMax(i).ToString());
-                //Preview
-                newItem.SubItems.Add(this.decodeRule.GetChartPreview(i).ToString());
-                //Show
-                newItem.SubItems.Add(this.decodeRule.GetChartShow(i).ToString());
-                //Filter
-                newItem.SubItems.Add(this.decodeRule.GetChartUseFilter(i).ToString());
-
-                ListViewDecode.Items.Add(newItem);
             }
 
-            //ListView描画再開
-            ListViewDecode.EndUpdate();
-
             //ListViewのSelectedChangeイベント復活
-            ListViewDecode.SelectedIndexChanged += ListViewDecode_SelectedIndexChanged;
+            dGVDecodeRule.SelectionChanged += LdGVDecdeRule_SelectedIndexChanged;
         }
 
         /// <summary>
@@ -193,19 +175,19 @@ namespace MotoRecoViewer
             //DecodeRuleをクリア
             this.decodeRule.Clear();
 
-            foreach (ListViewItem row in ListViewDecode.Items)
+            for (int i = 0; i < this.dGVDecodeRule.Rows.Count; i++)
             {
                 //ListViewの内容をFormMainのListDecodeRuleに反映する
-                this.decodeRule.AddData(row.SubItems[0].Text,       //Ch Name
-                                      row.SubItems[1].Text,         //CAN ID
-                                      row.SubItems[2].Text,         //Formula
-                                      row.SubItems[3].Text,         //Ch Color
-                                      row.SubItems[4].Text,         //Min
-                                      row.SubItems[5].Text,         //Max
-                                      row.SubItems[6].Text,         //flg Preview
-                                      row.SubItems[7].Text,         //flg Show
-                                      row.SubItems[8].Text          //flg Use Filter
-                                      );
+                this.decodeRule.AddData(dGVDecodeRule.Rows[i].Cells[0].Value.ToString(),         //Ch Name
+                                        dGVDecodeRule.Rows[i].Cells[1].Value.ToString(),         //CAN ID
+                                        dGVDecodeRule.Rows[i].Cells[2].Value.ToString(),         //Formula
+                                        dGVDecodeRule.Rows[i].Cells[3].Value.ToString(),         //Ch Color
+                                        dGVDecodeRule.Rows[i].Cells[4].Value.ToString(),         //Min
+                                        dGVDecodeRule.Rows[i].Cells[5].Value.ToString(),         //Max
+                                        dGVDecodeRule.Rows[i].Cells[6].Value.ToString(),         //flg Preview
+                                        dGVDecodeRule.Rows[i].Cells[7].Value.ToString(),         //flg Show
+                                        dGVDecodeRule.Rows[i].Cells[8].Value.ToString()          //flg Use Filter
+                                        );
             }
         }
 
@@ -285,31 +267,31 @@ namespace MotoRecoViewer
             try
             {
                 // もしListViewで最後尾が選択されているか、何も選択されていない場合、最後尾に追加
-                if ((ListViewDecode.SelectedItems.Count == 0) || (ListViewDecode.SelectedItems[0].Index == ListViewDecode.Items.Count - 1)) {
-                    decodeRule.AddData(TextChName.Text,                                              //ChName
-                                       TextCanId.Text,                                               //ID
-                                       TextFormula.Text,                                             //Formula
-                                       i_color.ToString(),                                           //Ch Color
-                                       TextMin.Text,                                                 //Min
-                                       TextMax.Text,                                                 //Max
-                                       CheckPreview.Checked.ToString(),                              //flg Preview
-                                       CheckShow.Checked.ToString(),                                 //flg Show
-                                       CheckUseFilter.Checked.ToString()                             //flg UseFilter
-                                       );
+                if ((dGVDecodeRule.SelectedRows.Count == 0) || (dGVDecodeRule.SelectedRows[0].Index == dGVDecodeRule.SelectedRows.Count - 1)) {
+                    dGVDecodeRule.Rows.Add(new string[] {   TextChName.Text,                                              //ChName
+                                                            TextCanId.Text,                                               //ID
+                                                            TextFormula.Text,                                             //Formula
+                                                            i_color.ToString(),                                           //Ch Color
+                                                            TextMin.Text,                                                 //Min
+                                                            TextMax.Text,                                                 //Max
+                                                            CheckPreview.Checked.ToString(),                              //flg Preview
+                                                            CheckShow.Checked.ToString(),                                 //flg Show
+                                                            CheckUseFilter.Checked.ToString()                             //flg UseFilter
+                                                         });
                 } else
                 {
                     // それ以外の場合、選択されている位置に挿入
-                    decodeRule.InsData(ListViewDecode.SelectedItems[0].Index,                        //index
-                                       TextChName.Text,                                              //ChName
-                                       TextCanId.Text,                                               //ID
-                                       TextFormula.Text,                                             //Formula
-                                       i_color.ToString(),                                           //Ch Color
-                                       TextMin.Text,                                                 //Min
-                                       TextMax.Text,                                                 //Max
-                                       CheckPreview.Checked.ToString(),                              //flg Preview
-                                       CheckShow.Checked.ToString(), 　                              //flg Show
-                                       CheckUseFilter.Checked.ToString()                             //flg UseFilter
-                                       );
+                    dGVDecodeRule.Rows.Insert(dGVDecodeRule.SelectedRows[0].Index
+                                            , new string[] {TextChName.Text,                                              //ChName
+                                                            TextCanId.Text,                                               //ID
+                                                            TextFormula.Text,                                             //Formula
+                                                            i_color.ToString(),                                           //Ch Color
+                                                            TextMin.Text,                                                 //Min
+                                                            TextMax.Text,                                                 //Max
+                                                            CheckPreview.Checked.ToString(),                              //flg Preview
+                                                            CheckShow.Checked.ToString(),                                 //flg Show
+                                                            CheckUseFilter.Checked.ToString()                             //flg UseFilter
+                                                         });
                 }
             }
             catch (Exception)
@@ -377,24 +359,24 @@ namespace MotoRecoViewer
             LoadDecodeRuleToListView();
         }
 
-        private void ListViewDecode_SelectedIndexChanged(object sender, EventArgs e)
+        private void LdGVDecdeRule_SelectedIndexChanged(object sender, EventArgs e)
         {
             // 一旦ListViewで選択したあとに他のItemを選択する際に、SelectedItems.Countが-1になっていることがあるので
             // その場合実際にSelectedItemsがないのにアクセスするとエラーになるので、処理を飛ばす
-            if (ListViewDecode.SelectedItems.Count > 0)
+            if (dGVDecodeRule.SelectedRows.Count > 0)
             {
-                TextChName.Text = ListViewDecode.SelectedItems[0].Text;
-                TextCanId.Text = ListViewDecode.SelectedItems[0].SubItems[1].Text;
-                TextFormula.Text = ListViewDecode.SelectedItems[0].SubItems[2].Text;
+                TextChName.Text = dGVDecodeRule.SelectedRows[0].Cells[0].Value.ToString();
+                TextCanId.Text = dGVDecodeRule.SelectedRows[0].Cells[1].Value.ToString();
+                TextFormula.Text = dGVDecodeRule.SelectedRows[0].Cells[2].Value.ToString();
                 int i;
-                i = int.Parse(ListViewDecode.SelectedItems[0].SubItems[3].Text);
+                i = int.Parse(dGVDecodeRule.SelectedRows[0].Cells[3].Value.ToString());
                 Color color = Color.FromArgb(i);
                 TextColor.BackColor = color;
-                TextMin.Text = ListViewDecode.SelectedItems[0].SubItems[4].Text;
-                TextMax.Text = ListViewDecode.SelectedItems[0].SubItems[5].Text;
-                CheckPreview.Checked = System.Convert.ToBoolean(ListViewDecode.SelectedItems[0].SubItems[6].Text);
-                CheckShow.Checked = System.Convert.ToBoolean(ListViewDecode.SelectedItems[0].SubItems[7].Text);
-                CheckUseFilter.Checked = System.Convert.ToBoolean(ListViewDecode.SelectedItems[0].SubItems[8].Text);
+                TextMin.Text = dGVDecodeRule.SelectedRows[0].Cells[4].Value.ToString();
+                TextMax.Text = dGVDecodeRule.SelectedRows[0].Cells[5].Value.ToString();
+                CheckPreview.Checked = System.Convert.ToBoolean(dGVDecodeRule.SelectedRows[0].Cells[6].Value.ToString());
+                CheckShow.Checked = System.Convert.ToBoolean(dGVDecodeRule.SelectedRows[0].Cells[7].Value.ToString());
+                CheckUseFilter.Checked = System.Convert.ToBoolean(dGVDecodeRule.SelectedRows[0].Cells[8].Value.ToString());
             }
         }
 
@@ -405,20 +387,21 @@ namespace MotoRecoViewer
             //FormMainのDecodeRuleをクリア
             fm.decodeRule.Clear();
 
-            foreach (ListViewItem row in ListViewDecode.Items)
+            for (int i = 0; i < this.dGVDecodeRule.Rows.Count; i++)
             {
                 //ListViewの内容をFormMainのListDecodeRuleに反映する
-                fm.decodeRule.AddData(row.SubItems[0].Text,  //Ch Name
-                                      row.SubItems[1].Text,  //CAN ID
-                                      row.SubItems[2].Text,  //Formula
-                                      row.SubItems[3].Text,  //Ch Color
-                                      row.SubItems[4].Text,  //Min
-                                      row.SubItems[5].Text,  //Max
-                                      row.SubItems[6].Text,  //flg Preview
-                                      row.SubItems[7].Text,  //flg Show
-                                      row.SubItems[8].Text   //flg UseFilter
-                                      );
+                fm.decodeRule.AddData(dGVDecodeRule.Rows[i].Cells[0].Value.ToString(),           //Ch Name
+                                        dGVDecodeRule.Rows[i].Cells[1].Value.ToString(),         //CAN ID
+                                        dGVDecodeRule.Rows[i].Cells[2].Value.ToString(),         //Formula
+                                        dGVDecodeRule.Rows[i].Cells[3].Value.ToString(),         //Ch Color
+                                        dGVDecodeRule.Rows[i].Cells[4].Value.ToString(),         //Min
+                                        dGVDecodeRule.Rows[i].Cells[5].Value.ToString(),         //Max
+                                        dGVDecodeRule.Rows[i].Cells[6].Value.ToString(),         //flg Preview
+                                        dGVDecodeRule.Rows[i].Cells[7].Value.ToString(),         //flg Show
+                                        dGVDecodeRule.Rows[i].Cells[8].Value.ToString()          //flg Use Filter
+                                        );
             }
+
 
             //閉じる
             this.Close();
@@ -427,13 +410,13 @@ namespace MotoRecoViewer
         private void BtnEdit_Click(object sender, EventArgs e)
         {
             //ListViewで選択がなければ即抜ける
-            if (ListViewDecode.SelectedItems.Count == 0)
+            if (dGVDecodeRule.SelectedRows.Count == 0)
             {
                 return;
             }
             
             //選択中のListViewIdxを取得
-            int idx = ListViewDecode.SelectedIndices[0];
+            int idx = dGVDecodeRule.SelectedRows[0].Index;
 
             //線のカラーをINTに変換
             int i_color;
@@ -459,13 +442,13 @@ namespace MotoRecoViewer
         private void BtnDel_Click(object sender, EventArgs e)
         {
             //ListViewで選択がなければ即抜ける
-            if (ListViewDecode.SelectedItems.Count == 0)
+            if (dGVDecodeRule.SelectedRows.Count == 0)
             {
                 return;
             }
 
             //選択中のListViewIdxを取得
-            int idx = ListViewDecode.SelectedIndices[0];
+            int idx = dGVDecodeRule.SelectedRows[0].Index;
 
             //該当インデックスのdecodeRule削除
             this.decodeRule.DelData(idx);
@@ -576,22 +559,22 @@ namespace MotoRecoViewer
         private void BtnUp_Click(object sender, EventArgs e)
         {
             //アイテムが選択されていない場合抜ける
-            if (ListViewDecode.SelectedItems.Count == 0) { return; }
+            if (dGVDecodeRule.SelectedRows.Count == 0) { return; }
 
             //先頭のアイテムが選択されている場合抜ける
-            if (ListViewDecode.SelectedItems[0].Index == 0) { return; }
+            if (dGVDecodeRule.SelectedRows[0].Index == 0) { return; }
 
             //挿入先のインデックス
-            int insPos = ListViewDecode.SelectedItems[0].Index - 1;
+            int insPos = dGVDecodeRule.SelectedRows[0].Index - 1;
 
             //選択されたアイテム
-            ListViewItem selItem = ListViewDecode.SelectedItems[0];
+            DataGridViewRow selItem = dGVDecodeRule.SelectedRows[0];
 
             //選択されたアイテムを削除する
-            ListViewDecode.Items.Remove(selItem);
+            dGVDecodeRule.Rows.Remove(selItem);
 
             //アイテムを挿入する
-            ListViewDecode.Items.Insert(insPos, selItem);
+            dGVDecodeRule.Rows.Insert(insPos, selItem);
 
             //ListViewの内容をdecodeRuleにコピー
             ListViewToDecodeRule();
@@ -601,22 +584,22 @@ namespace MotoRecoViewer
         private void BtnDown_Click(object sender, EventArgs e)
         {
             //アイテムが選択されていない場合抜ける
-            if (ListViewDecode.SelectedItems.Count == 0) { return; }
+            if (dGVDecodeRule.SelectedRows.Count == 0) { return; }
 
             //末尾のアイテムが選択されている場合抜ける
-            if (ListViewDecode.SelectedItems[0].Index == ListViewDecode.Items.Count -1) { return; }
+            if (dGVDecodeRule.SelectedRows[0].Index == dGVDecodeRule.Rows.Count -1) { return; }
 
             //挿入先のインデックス
-            int insPos = ListViewDecode.SelectedItems[0].Index + 1;
+            int insPos = dGVDecodeRule.SelectedRows[0].Index + 1;
 
             //選択されたアイテム
-            ListViewItem selItem = ListViewDecode.SelectedItems[0];
+            DataGridViewRow selItem = dGVDecodeRule.SelectedRows[0];
 
             //選択されたアイテムを削除する
-            ListViewDecode.Items.Remove(selItem);
+            dGVDecodeRule.Rows.Remove(selItem);
 
             //アイテムを挿入する
-            ListViewDecode.Items.Insert(insPos, selItem);
+            dGVDecodeRule.Rows.Insert(insPos, selItem);
 
             //ListViewの内容をdecodeRuleにコピー
             ListViewToDecodeRule();
@@ -629,17 +612,7 @@ namespace MotoRecoViewer
             this.decodeRule.Clear();
 
             //List Viewクリア
-            ListViewDecode.Items.Clear();
-        }
-
-        private void ListViewDecode_MouseDoubleClick(object sender, MouseEventArgs e)
-        {
-            ListViewDecode.EditColumn();
-        }
-
-        private void ListViewDecode_DoubleClick(object sender, EventArgs e)
-        {
-
+            dGVDecodeRule.Rows.Clear();
         }
     }
 }
