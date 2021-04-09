@@ -33,7 +33,6 @@
             this.colorDialog = new System.Windows.Forms.ColorDialog();
             this.OpenFileDAT = new System.Windows.Forms.OpenFileDialog();
             this.panel1 = new System.Windows.Forms.Panel();
-            this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.CheckUseFilter = new System.Windows.Forms.CheckBox();
             this.BtnPreAna = new System.Windows.Forms.Button();
             this.BtnClear = new System.Windows.Forms.Button();
@@ -62,6 +61,7 @@
             this.BtnDel = new System.Windows.Forms.Button();
             this.BtnNew = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.dGVDecodeRule = new System.Windows.Forms.DataGridView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -71,7 +71,6 @@
             this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.dGVDecodeRule = new System.Windows.Forms.DataGridView();
             this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -102,7 +101,6 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.comboBox1);
             this.panel1.Controls.Add(this.CheckUseFilter);
             this.panel1.Controls.Add(this.BtnPreAna);
             this.panel1.Controls.Add(this.BtnClear);
@@ -136,14 +134,6 @@
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(1237, 191);
             this.panel1.TabIndex = 27;
-            // 
-            // comboBox1
-            // 
-            this.comboBox1.FormattingEnabled = true;
-            this.comboBox1.Location = new System.Drawing.Point(490, 100);
-            this.comboBox1.Name = "comboBox1";
-            this.comboBox1.Size = new System.Drawing.Size(121, 23);
-            this.comboBox1.TabIndex = 54;
             // 
             // CheckUseFilter
             // 
@@ -432,6 +422,8 @@
             // 
             // dGVDecodeRule
             // 
+            this.dGVDecodeRule.AllowUserToAddRows = false;
+            this.dGVDecodeRule.AllowUserToDeleteRows = false;
             this.dGVDecodeRule.AllowUserToOrderColumns = true;
             this.dGVDecodeRule.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dGVDecodeRule.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
@@ -446,11 +438,15 @@
             this.Column9});
             this.dGVDecodeRule.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dGVDecodeRule.Location = new System.Drawing.Point(0, 0);
+            this.dGVDecodeRule.MultiSelect = false;
             this.dGVDecodeRule.Name = "dGVDecodeRule";
+            this.dGVDecodeRule.RowHeadersVisible = false;
             this.dGVDecodeRule.RowHeadersWidth = 51;
             this.dGVDecodeRule.RowTemplate.Height = 24;
+            this.dGVDecodeRule.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dGVDecodeRule.Size = new System.Drawing.Size(1237, 459);
             this.dGVDecodeRule.TabIndex = 0;
+            this.dGVDecodeRule.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dGVDecodeRule_CellValueChanged);
             // 
             // Column1
             // 
@@ -464,13 +460,14 @@
             this.Column2.HeaderText = "CAN ID";
             this.Column2.MinimumWidth = 6;
             this.Column2.Name = "Column2";
-            this.Column2.Width = 125;
+            this.Column2.Width = 70;
             // 
             // Column3
             // 
             this.Column3.HeaderText = "Formula";
             this.Column3.MinimumWidth = 6;
             this.Column3.Name = "Column3";
+            this.Column3.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.Column3.Width = 125;
             // 
             // Column4
@@ -478,39 +475,39 @@
             this.Column4.HeaderText = "Color";
             this.Column4.MinimumWidth = 6;
             this.Column4.Name = "Column4";
-            this.Column4.Width = 125;
+            this.Column4.Width = 60;
             // 
             // Column5
             // 
             this.Column5.HeaderText = "Min";
             this.Column5.MinimumWidth = 6;
             this.Column5.Name = "Column5";
-            this.Column5.Width = 125;
+            this.Column5.Width = 60;
             // 
             // Column6
             // 
             this.Column6.HeaderText = "Max";
             this.Column6.MinimumWidth = 6;
             this.Column6.Name = "Column6";
-            this.Column6.Width = 125;
+            this.Column6.Width = 60;
             // 
             // Column7
             // 
-            this.Column7.HeaderText = "Show";
+            this.Column7.HeaderText = "Preview";
             this.Column7.MinimumWidth = 6;
             this.Column7.Name = "Column7";
             this.Column7.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.Column7.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.Column7.Width = 125;
+            this.Column7.Width = 60;
             // 
             // Column8
             // 
-            this.Column8.HeaderText = "Preview";
+            this.Column8.HeaderText = "Show";
             this.Column8.MinimumWidth = 6;
             this.Column8.Name = "Column8";
             this.Column8.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.Column8.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.Column8.Width = 125;
+            this.Column8.Width = 60;
             // 
             // Column9
             // 
@@ -519,7 +516,7 @@
             this.Column9.Name = "Column9";
             this.Column9.Resizable = System.Windows.Forms.DataGridViewTriState.True;
             this.Column9.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.Column9.Width = 125;
+            this.Column9.Width = 60;
             // 
             // FormDecodeOption
             // 
@@ -583,7 +580,6 @@
         private System.Windows.Forms.ColumnHeader columnHeader7;
         private System.Windows.Forms.ColumnHeader columnHeader8;
         private System.Windows.Forms.ColumnHeader columnHeader9;
-        private System.Windows.Forms.ComboBox comboBox1;
         private System.Windows.Forms.DataGridView dGVDecodeRule;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
