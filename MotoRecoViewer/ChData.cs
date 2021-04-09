@@ -44,6 +44,8 @@ namespace MotoRecoViewer
         public bool ChPreview { get; set; }
         public bool ChShow { get; set; }
         public bool ChFilter { get; set; }
+        public double ChFreq { get; set; }
+        public double ChFilterCutOff { get; set; }
         public List<TVData> LogData { get; set; }
 
         /// <summary>
@@ -55,7 +57,7 @@ namespace MotoRecoViewer
         /// <param name="chColor">Chart color</param>
         /// <param name="chPreview">Subchart display flag</param>
         /// <param name="chShow">Mainchart display flag</param>
-        public ChData(string chName, int chMin, int chMax, int chColor, bool chPreview, bool chShow, bool chUseFilter)
+        public ChData(string chName, int chMin, int chMax, int chColor, bool chPreview, bool chShow, bool chUseFilter, double chFreq, double chFilterCutOff)
         {
             this.ChName = chName;
             this.ChMin = chMin;
@@ -64,6 +66,8 @@ namespace MotoRecoViewer
             this.ChPreview = chPreview;
             this.ChShow = chShow;
             this.ChFilter = chUseFilter;
+            this.ChFreq = chFreq;
+            this.ChFilterCutOff = chFilterCutOff;
             this.LogData = new List<TVData>();
         }
 
@@ -211,22 +215,40 @@ namespace MotoRecoViewer
         /// </summary>
         public void FilterData()
         {
-            Double[] SrcData = new Double[LogData.Count];
+            double sum = 0.0;
 
-            //Copy LogData.DataValue to ArrayOfData
+            //calc freqency of data using first 100 samples.
+            int j = this.LogData.Count;
+
+            // maximum sample number is 100.
+            if (j > 100) { j = 100; };
+
             int i;
-            for (i=0; i < LogData.Count; i++)
+            for (i = 0; i < j - 1; i++)
             {
-                SrcData[i] = LogData[i].DataValue;
+                sum = LogData[i + 1].DataTime - LogData[i].DataTime;
             }
 
-            double[] filtered = Butterworth(SrcData, 0.01, 1);
+            double freq = sum / (double)(i);
+
+            this.ChFreq = freq; //ChFreq unit is sec
+
+
+            Double[] SrcData = new Double[this.LogData.Count];
+
+            //Copy LogData.DataValue to ArrayOfData
+            for (i=0; i < this.LogData.Count; i++)
+            {
+                SrcData[i] = this.LogData[i].DataValue;
+            }
+
+            double[] filtered = Butterworth(SrcData, this.ChFreq, this.ChFilterCutOff);
 
             //Copy filtered value to LogData
-            for (i = 0; i < LogData.Count; i++)
+            for (i = 0; i < this.LogData.Count; i++)
             {
                 TVData data;
-                data = LogData[i];
+                data = this.LogData[i];
                 data.DataValueFiltered = filtered[i];
                 LogData[i] = data;
             }

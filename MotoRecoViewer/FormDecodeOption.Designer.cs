@@ -132,7 +132,7 @@
             this.panel1.Location = new System.Drawing.Point(0, 459);
             this.panel1.Margin = new System.Windows.Forms.Padding(4);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(1237, 191);
+            this.panel1.Size = new System.Drawing.Size(904, 191);
             this.panel1.TabIndex = 27;
             // 
             // CheckUseFilter
@@ -417,7 +417,7 @@
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Margin = new System.Windows.Forms.Padding(4);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(1237, 459);
+            this.panel2.Size = new System.Drawing.Size(904, 459);
             this.panel2.TabIndex = 28;
             // 
             // dGVDecodeRule
@@ -444,7 +444,7 @@
             this.dGVDecodeRule.RowHeadersWidth = 51;
             this.dGVDecodeRule.RowTemplate.Height = 24;
             this.dGVDecodeRule.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dGVDecodeRule.Size = new System.Drawing.Size(1237, 459);
+            this.dGVDecodeRule.Size = new System.Drawing.Size(904, 459);
             this.dGVDecodeRule.TabIndex = 0;
             this.dGVDecodeRule.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dGVDecodeRule_CellValueChanged);
             // 
@@ -522,7 +522,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1237, 650);
+            this.ClientSize = new System.Drawing.Size(904, 650);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Margin = new System.Windows.Forms.Padding(4);

@@ -269,7 +269,8 @@ namespace MotoRecoViewer
                                 //DicChNameには、key:chName value:ListChDataのインデックスを登録
                                 DicChName.Add(chName, ListChData.Count);
 
-                                ChData newData = new ChData(chName, chMin, chMax, chColor, chPrev, chShow, chUseFilter);
+                                //ToDO CutOffはDecodeRuleから決めるように後で改良する
+                                ChData newData = new ChData(chName, chMin, chMax, chColor, chPrev, chShow, chUseFilter, 0.1, 1.0);
 
                                 ListChData.Add(newData);
                             }
