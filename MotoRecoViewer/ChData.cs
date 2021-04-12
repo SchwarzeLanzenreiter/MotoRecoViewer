@@ -223,15 +223,16 @@ namespace MotoRecoViewer
             // maximum sample number is 100.
             if (j > 100) { j = 100; };
 
+            // calc average sampling freqency
             int i;
             for (i = 0; i < j - 1; i++)
             {
-                sum = LogData[i + 1].DataTime - LogData[i].DataTime;
+                sum = sum + (LogData[i + 1].DataTime - LogData[i].DataTime);
             }
 
             double freq = sum / (double)(i);
 
-            this.ChFreq = freq; //ChFreq unit is sec
+            this.ChFreq = freq; //ChFreq's unit must be sec
 
 
             Double[] SrcData = new Double[this.LogData.Count];
