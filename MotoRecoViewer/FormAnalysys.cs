@@ -53,7 +53,8 @@ namespace MotoRecoViewer
                                               "255",                                    //Max
                                               "false",                                  //flg Preview
                                               "false",                                  //flg Show
-                                              "false");                                 //flg UseFilter
+                                              "false",                                  //flg UseFilter
+                                              "1");                                     //cut off
                     }
 
                     if (CBHigh.Checked)
@@ -66,7 +67,8 @@ namespace MotoRecoViewer
                                               "255",                                    //Max
                                               "false",                                  //flg Preview
                                               "false",                                  //flg Show
-                                              "false");                                 //flg UseFilter
+                                              "false",                                  //flg UseFilter
+                                              "1");                                     //cut off
                     }
 
                     if (CBLow.Checked)
@@ -79,7 +81,8 @@ namespace MotoRecoViewer
                                               "255",                                    //Max
                                               "false",                                  //flg Preview
                                               "false",                                  //flg Show
-                                              "false");                                 //flg UseFilter
+                                              "false",                                  //flg UseFilter
+                                              "1");                                     //cut off
                     }
                 }
             }

@@ -160,7 +160,8 @@ namespace MotoRecoViewer
                                                            this.decodeRule.GetChartMax(i).ToString(),
                                                            this.decodeRule.GetChartPreview(i).ToString(),
                                                            this.decodeRule.GetChartShow(i).ToString(),
-                                                           this.decodeRule.GetChartUseFilter(i).ToString()
+                                                           this.decodeRule.GetChartUseFilter(i).ToString(),
+                                                           this.decodeRule.GetChartCutOff(i).ToString()
                                                             });
 
                 Color color = Color.FromArgb(this.decodeRule.GetChartColor(i));
@@ -192,7 +193,8 @@ namespace MotoRecoViewer
                                         dGVDecodeRule.Rows[i].Cells[5].Value.ToString(),         //Max
                                         dGVDecodeRule.Rows[i].Cells[6].Value.ToString(),         //flg Preview
                                         dGVDecodeRule.Rows[i].Cells[7].Value.ToString(),         //flg Show
-                                        dGVDecodeRule.Rows[i].Cells[8].Value.ToString()          //flg Use Filter
+                                        dGVDecodeRule.Rows[i].Cells[8].Value.ToString(),         //flg Use Filter
+                                        dGVDecodeRule.Rows[i].Cells[9].Value.ToString()          //Cut off
                                         );
             }
         }
@@ -224,7 +226,8 @@ namespace MotoRecoViewer
                                         fm.decodeRule.GetChartMax(i).ToString(),           //Max
                                         fm.decodeRule.GetChartPreview(i).ToString(),       //flg Preview
                                         fm.decodeRule.GetChartShow(i).ToString(),          //flg Show
-                                        fm.decodeRule.GetChartUseFilter(i).ToString()      //flg UseFilter
+                                        fm.decodeRule.GetChartUseFilter(i).ToString(),     //flg UseFilter
+                                        fm.decodeRule.GetChartCutOff(i).ToString()         //Cut off
                                         );
             }
         }
@@ -259,7 +262,8 @@ namespace MotoRecoViewer
                                                             TextMax.Text,                                                 //Max
                                                             CheckPreview.Checked.ToString(),                              //flg Preview
                                                             CheckShow.Checked.ToString(),                                 //flg Show
-                                                            CheckUseFilter.Checked.ToString()                             //flg UseFilter
+                                                            CheckUseFilter.Checked.ToString(),                            //flg UseFilter
+                                                            textCutOff.Text                                               //Cut Off
                                                          });
                     Color color = Color.FromArgb(i_color);
                     dGVDecodeRule.Rows[newId].Cells[3].Style.BackColor = color;
@@ -276,7 +280,8 @@ namespace MotoRecoViewer
                                                             TextMax.Text,                                                 //Max
                                                             CheckPreview.Checked.ToString(),                              //flg Preview
                                                             CheckShow.Checked.ToString(),                                 //flg Show
-                                                            CheckUseFilter.Checked.ToString()                             //flg UseFilter
+                                                            CheckUseFilter.Checked.ToString(),                            //flg UseFilter
+                                                            textCutOff.Text                                               //Cut Off
                                                          });
                     Color color = Color.FromArgb(i_color);
                     dGVDecodeRule.Rows[dGVDecodeRule.SelectedRows[0].Index].Cells[3].Style.BackColor = color;
@@ -316,7 +321,6 @@ namespace MotoRecoViewer
                 while (reader.Peek() >= 0)
                 {
                     string[] cols = reader.ReadLine().Split(',');
-                    if (cols.Length == 9) {
                         decodeRule.AddData(cols[0],   //Ch Name
                                            cols[1],   //CAN ID
                                            cols[2],   //Formula
@@ -325,21 +329,9 @@ namespace MotoRecoViewer
                                            cols[5],   //Max
                                            cols[6],   //flg Preview
                                            cols[7],   //flg Show
-                                           cols[8]    //flg UseFilter
+                                           cols[8],   //flg UseFilter
+                                           cols[9]    //Filter Cut Off
                                            );
-                    } else
-                    {
-                        decodeRule.AddData(cols[0],   //Ch Name
-                                           cols[1],   //CAN ID
-                                           cols[2],   //Formula
-                                           cols[3],   //Ch Color
-                                           cols[4],   //Min
-                                           cols[5],   //Max
-                                           cols[6],   //flg Preview
-                                           cols[7],　 //flg Show
-                                           "false"    //flg UseFilter
-                                           );
-                    }
                 }
                 reader.Close();
             }
@@ -364,6 +356,7 @@ namespace MotoRecoViewer
                 CheckPreview.Checked = System.Convert.ToBoolean(dGVDecodeRule.SelectedRows[0].Cells[6].Value.ToString());
                 CheckShow.Checked = System.Convert.ToBoolean(dGVDecodeRule.SelectedRows[0].Cells[7].Value.ToString());
                 CheckUseFilter.Checked = System.Convert.ToBoolean(dGVDecodeRule.SelectedRows[0].Cells[8].Value.ToString());
+                textCutOff.Text = dGVDecodeRule.SelectedRows[0].Cells[9].Value.ToString();
             }
         }
 
@@ -385,7 +378,8 @@ namespace MotoRecoViewer
                                         dGVDecodeRule.Rows[i].Cells[5].Value.ToString(),         //Max
                                         dGVDecodeRule.Rows[i].Cells[6].Value.ToString(),         //flg Preview
                                         dGVDecodeRule.Rows[i].Cells[7].Value.ToString(),         //flg Show
-                                        dGVDecodeRule.Rows[i].Cells[8].Value.ToString()          //flg Use Filter
+                                        dGVDecodeRule.Rows[i].Cells[8].Value.ToString(),         //flg Use Filter
+                                        dGVDecodeRule.Rows[i].Cells[9].Value.ToString()          //Cut off
                                         );
             }
 
@@ -419,7 +413,8 @@ namespace MotoRecoViewer
                                 TextMax.Text,                     //Max
                                 CheckPreview.Checked.ToString(),  //flg Preview
                                 CheckShow.Checked.ToString(), 　  //flg Show                                                     
-                                CheckUseFilter.Checked.ToString() //flg UseFilter
+                                CheckUseFilter.Checked.ToString(),//flg UseFilter
+                                textCutOff.Text                   //Cut off
                                 );
 
             //ListViewをリロード

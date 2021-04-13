@@ -39,6 +39,7 @@ namespace MotoRecoViewer
         public bool ChPreview { get; set; }
         public bool ChShow { get; set; }
         public bool ChFilter { get; set; }
+        public double ChCutOff { get; set; }
     }
 
     class DecodeRule
@@ -517,7 +518,9 @@ namespace MotoRecoViewer
         /// <param name="chMax">チャンネル上限値</param>
         /// <param name="chPreview">SubChartに表示する/しない</param>
         /// <param name="chShow">MainChartに表示する/しない</param>
-        public void AddData(string chName, string id, string formula, string chColor, string chMin, string chMax, string chPreview, string chShow, string chUseFilter)
+        /// <param name="chUseFilter">LPFをする/しない</param>
+        /// <param name="chCutOff">LPFのカットオフ周波数</param>
+        public void AddData(string chName, string id, string formula, string chColor, string chMin, string chMax, string chPreview, string chShow, string chUseFilter, string chFilterCutoff)
         {
             DecodeData newData = new DecodeData
             {
@@ -529,46 +532,16 @@ namespace MotoRecoViewer
                 ChColor = int.Parse(chColor),
                 ChPreview = bool.Parse(chPreview),
                 ChShow = bool.Parse(chShow),
-                ChFilter = bool.Parse(chUseFilter)
+                ChFilter = bool.Parse(chUseFilter),
+                ChCutOff = double.Parse(chFilterCutoff)
             };
 
             Data.Add(newData);
         }
 
         /// <summary>
-        /// Decodeルールを追加する
-        /// </summary>
-        /// <param name="idx">編集するアイテムのインデックス</param>
-        /// <param name="chName">デコードルールの識別名。</param>
-        /// <param name="id">デコードルールのCAN ID（16進数表記）。</param>
-        /// <param name="formula">デコード計算式。</param>
-        /// <param name="chColor">チャンネル表示色</param>
-        /// <param name="chMin">チャンネル下限値</param>
-        /// <param name="chMax">チャンネル上限値</param>
-        /// <param name="chPreview">SubChartに表示する/しない</param>
-        /// <param name="chShow">MainChartに表示する/しない</param>
-        public void InsData(int idx, string chName, string id, string formula, string chColor, string chMin, string chMax, string chPreview, string chShow, string chUseFilter)
-        {
-            DecodeData newData = new DecodeData
-            {
-                ChName = chName,
-                Id = (ushort.Parse(id, System.Globalization.NumberStyles.HexNumber)),
-                Formula = formula,
-                ChMin = int.Parse(chMin),
-                ChMax = int.Parse(chMax),
-                ChColor = int.Parse(chColor),
-                ChPreview = bool.Parse(chPreview),
-                ChShow = bool.Parse(chShow),
-                ChFilter = bool.Parse(chUseFilter)
-            };
-
-            Data.Insert(idx, newData);
-        }
-
-        /// <summary>
         /// Decodeルールを編集する
         /// </summary>
-        /// <param name="idx">編集するアイテムのインデックス</param>
         /// <param name="chName">デコードルールの識別名。</param>
         /// <param name="id">デコードルールのCAN ID（16進数表記）。</param>
         /// <param name="formula">デコード計算式。</param>
@@ -577,7 +550,9 @@ namespace MotoRecoViewer
         /// <param name="chMax">チャンネル上限値</param>
         /// <param name="chPreview">SubChartに表示する/しない</param>
         /// <param name="chShow">MainChartに表示する/しない</param>
-        public void EditData(int idx,string chName, string id, string formula, string chColor, string chMin, string chMax, string chPreview, string chShow, string chUseFilter)
+        /// <param name="chUseFilter">LPFをする/しない</param>
+        /// <param name="chCutOff">LPFのカットオフ周波数</param>
+        public void EditData(int idx,string chName, string id, string formula, string chColor, string chMin, string chMax, string chPreview, string chShow, string chUseFilter, string chCutOff)
         {
             if (idx < 0)
             {
@@ -600,6 +575,7 @@ namespace MotoRecoViewer
             tempData.ChPreview = bool.Parse(chPreview);
             tempData.ChShow = bool.Parse(chShow);
             tempData.ChFilter = bool.Parse(chUseFilter);
+            tempData.ChCutOff = double.Parse(chCutOff);
 
             Data[idx] = tempData;
         }
@@ -755,12 +731,21 @@ namespace MotoRecoViewer
         }
 
         /// <summary>
-        /// 引数のインデックスのChartShowを返す
+        /// 引数のインデックスのUseFilterを返す
         /// </summary>
         /// <param name="index">データ取得するインデックス</param>
         public bool GetChartUseFilter(int index)
         {
             return Data[index].ChFilter;
+        }
+
+        /// <summary>
+        /// 引数のインデックスのCutOffを返す
+        /// </summary>
+        /// <param name="index">データ取得するインデックス</param>
+        public double GetChartCutOff(int index)
+        {
+            return Data[index].ChCutOff;
         }
     }
 }

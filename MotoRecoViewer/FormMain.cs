@@ -2113,6 +2113,7 @@ namespace MotoRecoViewer
                 ListChData[idx].ChPreview = decodeRule.GetChartPreview(i);
                 ListChData[idx].ChShow = decodeRule.GetChartShow(i);
                 ListChData[idx].ChFilter = decodeRule.GetChartUseFilter(i);
+                ListChData[idx].ChFilterCutOff = decodeRule.GetChartCutOff(i);
             }
 
             // もしListChDataには存在するが、decodeRuleに存在しない場合(一度データをロードした後、あるChを削除した場合)、
@@ -2131,6 +2132,12 @@ namespace MotoRecoViewer
                     j++;
                 }
             }
+
+            //フィルタ処理は各ch毎なので並列化可能
+            Parallel.For(0, ListChData.Count, i =>
+            {
+                ListChData[i].FilterData();
+            });
 
             // もし直前でListChDataがRemoveAtされる場合、DicChNameのKeyとValueの整合が崩れるため、DicChNameを再生成する
             DicChName.Clear();
