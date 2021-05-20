@@ -28,6 +28,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
+using System.Linq;
 using GMap.NET;
 using GMap.NET.MapProviders;
 using System.Net;
@@ -347,7 +348,18 @@ namespace MotoRecoViewer
             //Rangeを出すには、燃費が計算できていないといけない
             //走行可能距離を計算
             CalcRange();
-            
+
+            //ListChannelDataをChNameでソート
+            //ここでソートしておかないと、CANデータ読み込みのたびにChNameとIndexが変化する為、CSVエクスポート時、毎回列の位置が毎回変わってしまう。
+            ListChData.Sort((a, b) => a.ChName.CompareTo(b.ChName));
+
+            //DicChNameのKeyとValueの整合が崩れるため、DicChNameを再生成する
+            DicChName.Clear();
+
+            for (int i = 0; i < ListChData.Count; i++)
+            {
+                DicChName.Add(ListChData[i].ChName, i);
+            }
 
             //開始時間を計算しておく
             if (startTime == 0.0)

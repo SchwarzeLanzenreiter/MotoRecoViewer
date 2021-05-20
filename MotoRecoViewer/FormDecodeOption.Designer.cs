@@ -33,6 +33,8 @@
             this.colorDialog = new System.Windows.Forms.ColorDialog();
             this.OpenFileDAT = new System.Windows.Forms.OpenFileDialog();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.label4 = new System.Windows.Forms.Label();
+            this.textCutOff = new System.Windows.Forms.TextBox();
             this.CheckUseFilter = new System.Windows.Forms.CheckBox();
             this.BtnPreAna = new System.Windows.Forms.Button();
             this.BtnClear = new System.Windows.Forms.Button();
@@ -81,8 +83,6 @@
             this.columnHeader7 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader8 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader9 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
-            this.textCutOff = new System.Windows.Forms.TextBox();
-            this.label4 = new System.Windows.Forms.Label();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dGVDecodeRule)).BeginInit();
@@ -137,8 +137,26 @@
             this.panel1.Location = new System.Drawing.Point(0, 459);
             this.panel1.Margin = new System.Windows.Forms.Padding(4);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(904, 191);
+            this.panel1.Size = new System.Drawing.Size(960, 191);
             this.panel1.TabIndex = 27;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(450, 105);
+            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(56, 15);
+            this.label4.TabIndex = 55;
+            this.label4.Text = "Cut Off";
+            // 
+            // textCutOff
+            // 
+            this.textCutOff.Location = new System.Drawing.Point(516, 102);
+            this.textCutOff.Margin = new System.Windows.Forms.Padding(4);
+            this.textCutOff.Name = "textCutOff";
+            this.textCutOff.Size = new System.Drawing.Size(96, 22);
+            this.textCutOff.TabIndex = 54;
             // 
             // CheckUseFilter
             // 
@@ -422,7 +440,7 @@
             this.panel2.Location = new System.Drawing.Point(0, 0);
             this.panel2.Margin = new System.Windows.Forms.Padding(4);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(904, 459);
+            this.panel2.Size = new System.Drawing.Size(960, 459);
             this.panel2.TabIndex = 28;
             // 
             // dGVDecodeRule
@@ -450,7 +468,7 @@
             this.dGVDecodeRule.RowHeadersWidth = 51;
             this.dGVDecodeRule.RowTemplate.Height = 24;
             this.dGVDecodeRule.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dGVDecodeRule.Size = new System.Drawing.Size(904, 459);
+            this.dGVDecodeRule.Size = new System.Drawing.Size(960, 459);
             this.dGVDecodeRule.TabIndex = 0;
             this.dGVDecodeRule.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dGVDecodeRule_CellValueChanged);
             // 
@@ -531,29 +549,11 @@
             this.Column10.Name = "Column10";
             this.Column10.Width = 60;
             // 
-            // textCutOff
-            // 
-            this.textCutOff.Location = new System.Drawing.Point(516, 102);
-            this.textCutOff.Margin = new System.Windows.Forms.Padding(4);
-            this.textCutOff.Name = "textCutOff";
-            this.textCutOff.Size = new System.Drawing.Size(96, 22);
-            this.textCutOff.TabIndex = 54;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(450, 105);
-            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(56, 15);
-            this.label4.TabIndex = 55;
-            this.label4.Text = "Cut Off";
-            // 
             // FormDecodeOption
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(904, 650);
+            this.ClientSize = new System.Drawing.Size(960, 650);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
             this.Margin = new System.Windows.Forms.Padding(4);
