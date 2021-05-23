@@ -84,7 +84,8 @@ namespace MotoRecoViewer
                 sr.Write(Data[i].ChMax.ToString() + ",");
                 sr.Write(Data[i].ChPreview.ToString() + ",");
                 sr.Write(Data[i].ChShow.ToString() + ",");
-                sr.Write(Data[i].ChFilter.ToString());
+                sr.Write(Data[i].ChFilter.ToString() + ",");
+                sr.Write(Data[i].ChCutOff.ToString());
 
                 //改行する
                 sr.Write("\r\n");
