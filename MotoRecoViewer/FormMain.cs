@@ -1691,7 +1691,7 @@ namespace MotoRecoViewer
         /// <param name="DstFileName">エクスポートファイル名</param>
         /// <param name="Mode">0:ファイル全体 1:カーソル間</param>
         /// </summary>
-        private void ConvertDecodeData(string DstFileName, int Mode)
+        private void ConvertDecodeDataDashWare(string DstFileName, int Mode)
         {
             const int MODE_ALL = 0;
             const int MODE_CURSOR = 1;
@@ -1789,6 +1789,119 @@ namespace MotoRecoViewer
                 // 次のタイムスタンプ
                 timeStamp += 0.01;   // とりあえず10ms固定
             }  
+
+            //閉じる
+            sr.Close();
+
+            //プログレスバー初期化
+            progressBar.Value = 0;
+            this.statusLabel.Text = "";
+        }
+
+        /// <summary>
+        /// 画面に表示中のデコード済データをCSVに変換する
+        /// CSVのフォーマットは、"秒","ミリ秒","ch1 物理値","ch2物理値"...とする
+        /// <param name="DstFileName">エクスポートファイル名</param>
+        /// <param name="Mode">0:ファイル全体 1:カーソル間</param>
+        /// </summary>
+        private void ConvertDecodeDataTelemetryOverlay(string DstFileName, int Mode)
+        {
+            const int MODE_ALL = 0;
+            const int MODE_CURSOR = 1;
+
+            //開始時間と終了時間を取得
+            double exportStartTime;
+            double exportEndTime;
+
+            if (Mode == MODE_CURSOR)
+            {
+                // MainChartのカーソル位置1に対応するタイムスタンプを計算
+                // mainCur1Posは、PanelMainChart上の絶対的なX座標の為、グラフ描画領域幅に対するポジションに変換する
+                double ratioMainCurPos1 = (mainCur1Pos - chartMargin) / (PanelMainChart.Width - 2 * chartMargin);
+                exportStartTime = subPosTime + (divTime * 20) * ratioMainCurPos1;
+
+                double ratioMainCurPos2 = (mainCur2Pos - chartMargin) / (PanelMainChart.Width - 2 * chartMargin);
+                exportEndTime = subPosTime + (divTime * 20) * ratioMainCurPos2;
+            }
+            else
+            {
+                //デフォルトファイル全体
+                exportStartTime = startTime;
+                exportEndTime = endTime;
+            }
+
+            //プログレスバー計算用
+            long div_num = (long)(exportEndTime - exportStartTime);
+            int counter = 0;
+            progressBar.Value = 0;
+            progressBar.Maximum = (int)((exportEndTime - exportStartTime) * 100);
+
+            //CSVファイルに書き込むときに使うEncoding
+            System.Text.Encoding enc =
+                System.Text.Encoding.GetEncoding("Shift_JIS");
+
+            //書き込むファイルを開く
+            System.IO.StreamWriter sr =
+                new System.IO.StreamWriter(DstFileName, false, enc);
+
+            //レコードを書き込む
+            // ToDo fieldはStringBuilderに置き換えること
+            System.Text.StringBuilder field = new System.Text.StringBuilder("");
+
+            // CSVのヘッダー行を書き込む
+            field.Append("TO Custom v1\r\n");
+            field.Append("time (ms)" + ",");
+            for (int i = 0; i < ListChData.Count - 1; i++)
+            {
+                field.Append(ListChData[i].ChName + ",");
+            }
+            field.Append(ListChData[ListChData.Count - 1].ChName + "\r\n");
+
+            //フィールドを書き込む
+            sr.Write(field);
+
+            //field初期化
+            field.Clear();
+
+            // CSVはタイムスタンプごとにデータを保管して出力したいのでタイムスタンプでループする
+            // とりあえず10msごとのタイムスタンプにする
+            double timeStamp;
+
+            timeStamp = exportStartTime;
+
+            while (timeStamp < exportEndTime)
+            {
+                //毎ループメッセージ発行するとクソ遅いので、トータル100回送るようにする。
+                if ((int)(timeStamp * 100) % div_num == 0)
+                {
+                    progressBar.Value = (int)counter;
+                    this.statusLabel.Text = string.Format("{0}%", ((int)counter) * 100 / progressBar.Maximum);
+                    Application.DoEvents();
+                }
+                counter++;
+
+                field.Append((timeStamp*1000).ToString("F0") + ",");
+                for (int i = 0; i < ListChData.Count - 1; i++)
+                {
+                    // タイムスタンプに最も近いChDataのインデックスを取得
+                    int targetIdx = ListChData[i].FindLeftIndex(timeStamp);
+                    double value = ListChData[i].LogData[targetIdx].DataValue;
+                    field.Append(value.ToString() + ",");
+                }
+
+                int targetIdx2 = ListChData[ListChData.Count - 1].FindLeftIndex(timeStamp);
+                double value2 = ListChData[ListChData.Count - 1].LogData[targetIdx2].DataValue;
+                field.Append(value2.ToString() + "\r\n");
+
+                //フィールドを書き込む
+                sr.Write(field);
+
+                //field初期化
+                field.Clear();
+
+                // 次のタイムスタンプ
+                timeStamp += 0.01;   // とりあえず10ms固定
+            }
 
             //閉じる
             sr.Close();
@@ -2475,58 +2588,12 @@ namespace MotoRecoViewer
 
         private void MenuConvertDecodeDataWhole_Click(object sender, EventArgs e)
         {
-            // ファイルがOpenされていない
-            if (currentDatFile == "")
-            {
-                return;
-            }
 
-            // ファイルがOpenされたがデコード条件が空
-            if (decodeRule.Count == 0)
-            {
-                return;
-            }
-
-            // ファイルがOpenされたがデコードされたデータがない
-            if (ListChData.Count == 0)
-            { 
-                return;
-            }
-
-            // 現在保持している表示中のデコード済データをCSVエクスポートする
-            // 名前をつけて保存
-            if (saveFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                ConvertDecodeData(saveFileDialog.FileName, 0);
-            }
         }
 
         private void MenuConvertDecodeDataCursor_Click(object sender, EventArgs e)
         {
-            // ファイルがOpenされていない
-            if (currentDatFile == "")
-            {
-                return;
-            }
 
-            // ファイルがOpenされたがデコード条件が空
-            if (decodeRule.Count == 0)
-            {
-                return;
-            }
-
-            // ファイルがOpenされたがデコードされたデータがない
-            if (ListChData.Count == 0)
-            {
-                return;
-            }
-
-            // 現在保持している表示中のデコード済データをCSVエクスポートする
-            // 名前をつけて保存
-            if (saveFileDialog.ShowDialog() == DialogResult.OK)
-            {
-                ConvertDecodeData(saveFileDialog.FileName,1);
-            }
         }
 
         private void PanelMainChart_Paint(object sender, PaintEventArgs e)
@@ -2750,6 +2817,118 @@ namespace MotoRecoViewer
                     break;
             }
             this.DraggingButton = 0;
+        }
+
+        private void wholeToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // ファイルがOpenされていない
+            if (currentDatFile == "")
+            {
+                return;
+            }
+
+            // ファイルがOpenされたがデコード条件が空
+            if (decodeRule.Count == 0)
+            {
+                return;
+            }
+
+            // ファイルがOpenされたがデコードされたデータがない
+            if (ListChData.Count == 0)
+            {
+                return;
+            }
+
+            // 現在保持している表示中のデコード済データをCSVエクスポートする
+            // 名前をつけて保存
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                ConvertDecodeDataDashWare(saveFileDialog.FileName, 0);
+            }
+        }
+
+        private void cursorToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // ファイルがOpenされていない
+            if (currentDatFile == "")
+            {
+                return;
+            }
+
+            // ファイルがOpenされたがデコード条件が空
+            if (decodeRule.Count == 0)
+            {
+                return;
+            }
+
+            // ファイルがOpenされたがデコードされたデータがない
+            if (ListChData.Count == 0)
+            {
+                return;
+            }
+
+            // 現在保持している表示中のデコード済データをCSVエクスポートする
+            // 名前をつけて保存
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                ConvertDecodeDataDashWare(saveFileDialog.FileName, 1);
+            }
+        }
+
+        private void wholeToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            // ファイルがOpenされていない
+            if (currentDatFile == "")
+            {
+                return;
+            }
+
+            // ファイルがOpenされたがデコード条件が空
+            if (decodeRule.Count == 0)
+            {
+                return;
+            }
+
+            // ファイルがOpenされたがデコードされたデータがない
+            if (ListChData.Count == 0)
+            {
+                return;
+            }
+
+            // 現在保持している表示中のデコード済データをCSVエクスポートする
+            // 名前をつけて保存
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                ConvertDecodeDataTelemetryOverlay(saveFileDialog.FileName, 0);
+            }
+        }
+
+        private void cursorToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            // ファイルがOpenされていない
+            if (currentDatFile == "")
+            {
+                return;
+            }
+
+            // ファイルがOpenされたがデコード条件が空
+            if (decodeRule.Count == 0)
+            {
+                return;
+            }
+
+            // ファイルがOpenされたがデコードされたデータがない
+            if (ListChData.Count == 0)
+            {
+                return;
+            }
+
+            // 現在保持している表示中のデコード済データをCSVエクスポートする
+            // 名前をつけて保存
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                ConvertDecodeDataTelemetryOverlay(saveFileDialog.FileName, 1);
+            }
         }
     }
 }
