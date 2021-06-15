@@ -2249,6 +2249,9 @@ namespace MotoRecoViewer
                 UpdateMapMarker();
 
                 this.Text = openFileDialog.FileName;
+
+                // ListViewDataの表示/非表示を反映
+                ListViewData_ItemChecked(sender,null);
             }
         }
 
