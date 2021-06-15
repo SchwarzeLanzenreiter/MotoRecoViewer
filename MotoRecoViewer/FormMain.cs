@@ -1502,13 +1502,16 @@ namespace MotoRecoViewer
                             y = ListChData[i].LogData[targetIdx].DataValueFiltered;
                         }
 
+                        // データが表示設定のminとmaxに対する比率を計算
                         y = (y - ListChData[i].ChMin) / (ListChData[i].ChMax - ListChData[i].ChMin);
 
-                        // 0%以下もしくは100以上は0または100に丸める
-                        if (y > 100) { y = 1; }
+                        // 比率が0以下もしくは1以上は0または1に丸める
+                        if (y > 1) { 
+                            y = 1; 
+                        }
                         if (y < 0) { y = 0; }
 
-                        // %をY軸ピクセルに変換する.その際、グラフ上方が原点になるので、1-yとして計算する。
+                        // 比率をY軸ピクセルに変換する.その際、グラフ上方が原点になるので、1-yとして計算する。
                         y = (PanelMainChart.Height - chartMargin * 2) * (1 - y);
                         y += chartMargin;
 
