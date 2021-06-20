@@ -2127,6 +2127,7 @@ namespace MotoRecoViewer
                 newItem.SubItems.Add("");
                 newItem.SubItems.Add("");
                 newItem.Checked = decodeRule.GetChartShow(i);
+                newItem.BackColor = System.Drawing.Color.FromArgb(decodeRule.GetChartColor(i));
 
                 ListViewData.Items.Add(newItem);
             }
