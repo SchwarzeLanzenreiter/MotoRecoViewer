@@ -1144,12 +1144,12 @@ namespace MotoRecoViewer
                         // targetIdx相当分のXとYをラッチ
                         double x = j + chartMargin;
 
-                        // targetIdxのDataValueが、Ch設定のMax-Min幅に対して何%位置か算出する
+                        // targetIdxのDataValueが、Ch設定のMax-Min幅に対して比率を算出する
                         double y = ListChData[i].LogData[targetIdx].DataValue;
                         y = (y - ListChData[i].ChMin) / (ListChData[i].ChMax - ListChData[i].ChMin);
 
-                        // 0%以下もしくは100以上は0または100に丸める
-                        if (y > 100) { y = 1; }
+                        // 0以下もしくは1以上は0または1に丸める
+                        if (y > 1) { y = 1; }
                         if (y < 0) { y = 0; }
 
                         // %をY軸ピクセルに変換する.その際、グラフ上方が原点になるので、1-yとして計算する。
@@ -1550,7 +1550,14 @@ namespace MotoRecoViewer
                     SolidColorBrush brush = new SolidColorBrush(dxMainRenderTarget2D, SharpDX.Color.Red);
                     brush.Color = rc4;
 
+                    var style = new SharpDX.Direct2D1.StrokeStyleProperties();
+                    style.LineJoin = SharpDX.Direct2D1.LineJoin.Round;
+                    style.StartCap = SharpDX.Direct2D1.CapStyle.Round;
+                    style.EndCap = SharpDX.Direct2D1.CapStyle.Round;
+                    var stroke = new SharpDX.Direct2D1.StrokeStyle(dxMainD2dFactory, style);
+
                     //グラフ描画
+                    //dxMainRenderTarget2D.DrawGeometry(geo1, brush, 5f, stroke);
                     dxMainRenderTarget2D.DrawGeometry(geo1, brush);
 
                     //ブラシ破棄
