@@ -232,8 +232,11 @@ namespace MotoRecoViewer
                     {
                         context.Post(progress =>
                         {
-                            this.progressBar.Value = (int)progress;
-                            this.statusLabel.Text = string.Format("{0}%", ((int)progress) * 100 / arySize);
+                            if ((int)progress < this.progressBar.Maximum)
+                            {
+                                this.progressBar.Value = (int)progress;
+                                this.statusLabel.Text = string.Format("{0}%", ((int)progress) * 100 / arySize);
+                            }
                         }, counter);
                         Application.DoEvents();
                     }
@@ -2395,21 +2398,28 @@ namespace MotoRecoViewer
             GMapControl.Overlays.Add(GMapOverlayMarker);
             GMapControl.Overlays.Add(GMapOverlayRoute);
 
-            // Form位置ロード
-            System.Drawing.Point backLocation = this.Location;
-
-            this.Location = Properties.Settings.Default.FormMainLocation;
-            this.Size = Properties.Settings.Default.FormMainSize;
-
-            //デスクトップのワークエリアとウィンドウの矩形が重なっていなかったら位置を戻す
-            if (System.Windows.Forms.Screen.GetWorkingArea(this).IntersectsWith(this.Bounds) == false)
+            try
             {
-                this.Location = backLocation;
+                // Form位置ロード
+                System.Drawing.Point backLocation = this.Location;
+
+                this.Location = Properties.Settings.Default.FormMainLocation;
+                this.Size = Properties.Settings.Default.FormMainSize;
+
+                //デスクトップのワークエリアとウィンドウの矩形が重なっていなかったら位置を戻す
+                if (System.Windows.Forms.Screen.GetWorkingArea(this).IntersectsWith(this.Bounds) == false)
+                {
+                    this.Location = backLocation;
+                }
+
+ 
+                this.splitContainer1.SplitterDistance = Properties.Settings.Default.FormMainSplit1;
+                this.splitContainer2.SplitterDistance = Properties.Settings.Default.FormMainSplit2;
+                this.splitContainer3.SplitterDistance = Properties.Settings.Default.FormMainSplit3;
+            }
+            catch { 
             }
 
-            this.splitContainer1.SplitterDistance = Properties.Settings.Default.FormMainSplit1;
-            this.splitContainer2.SplitterDistance = Properties.Settings.Default.FormMainSplit2;
-            this.splitContainer3.SplitterDistance = Properties.Settings.Default.FormMainSplit3;
         }
 
         private void MenuConvertAscii_Click(object sender, EventArgs e)
@@ -2860,6 +2870,46 @@ namespace MotoRecoViewer
             if (saveFileDialog.ShowDialog() == DialogResult.OK)
             {
                 ConvertDecodeData(saveFileDialog.FileName, MODE_CURSOR,TYPE_TELEMETRYOVERLAY);
+            }
+        }
+
+        private void folderToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            // ファイルがOpenされたがデコード条件が空
+            if (decodeRule.Count == 0)
+            {
+                CANDecodeSettingToolStripMenuItem_Click(sender, e);
+            }
+
+            //フォルダ選択ダイアログ表示
+            if (folderBrowsDialog.ShowDialog() != DialogResult.OK) { return; }
+
+            //リストにサブフォルダ含めて*.dat一覧取得
+            string[] names = Directory.GetFiles(folderBrowsDialog.SelectedPath, "*.dat", System.IO.SearchOption.AllDirectories);
+            foreach (string name in names)
+            {
+                //選択したファイル名を保持する
+                currentDatFile = name;
+
+                //まずChDataをクリアする
+                for (int i = 0; i < ListChData.Count - 1; i++)
+                {
+                    ListChData[i].Clear();
+                }
+
+                ListChData.Clear();
+                DicChName.Clear();
+                initTimeOffset = 0.0;
+                startTime = 0.0;
+                endTime = 0.0;
+
+                // バイナリファイルからCANデータ抽出する
+                ReadCANData(name);
+
+                // 現在保持している表示中のデコード済データをCSVエクスポートする
+                // 名前をつけて保存
+                string newname = Path.ChangeExtension(name, ".csv");
+                ConvertDecodeData(newname, MODE_ALL, TYPE_DASHWARE);
             }
         }
     }
