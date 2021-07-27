@@ -1998,6 +1998,48 @@ namespace MotoRecoViewer
             }
         }
 
+        private void CSVConvertFolder(int Type)
+        {
+            // ファイルがOpenされたがデコード条件が空
+            if (decodeRule.Count == 0)
+            {
+                CANDecodeSettingToolStripMenuItem_Click(null, null);
+            }
+
+            //フォルダ選択ダイアログ表示
+            if (folderBrowsDialog.ShowDialog() != DialogResult.OK) { return; }
+
+            //リストにサブフォルダ含めて*.dat一覧取得
+            string[] names = Directory.GetFiles(folderBrowsDialog.SelectedPath, "*.dat", System.IO.SearchOption.AllDirectories);
+            foreach (string name in names)
+            {
+                //選択したファイル名を保持する
+                currentDatFile = name;
+
+                //まずChDataをクリアする
+                for (int i = 0; i < ListChData.Count - 1; i++)
+                {
+                    ListChData[i].Clear();
+                }
+
+                ListChData.Clear();
+                DicChName.Clear();
+                initTimeOffset = 0.0;
+                startTime = 0.0;
+                endTime = 0.0;
+
+                // バイナリファイルからCANデータ抽出する
+                ReadCANData(name);
+
+                // 現在保持している表示中のデコード済データをCSVエクスポートする
+                // 名前をつけて保存
+                string newname = Path.ChangeExtension(name, ".csv");
+                ConvertDecodeData(newname, MODE_ALL, Type);
+            }
+
+            return;
+        }
+
         //=================================================================================================================================
         //
         //  自動生成イベントハンドラ
@@ -2882,42 +2924,12 @@ namespace MotoRecoViewer
 
         private void folderToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            // ファイルがOpenされたがデコード条件が空
-            if (decodeRule.Count == 0)
-            {
-                CANDecodeSettingToolStripMenuItem_Click(sender, e);
-            }
+            CSVConvertFolder(TYPE_TELEMETRYOVERLAY);
+        }
 
-            //フォルダ選択ダイアログ表示
-            if (folderBrowsDialog.ShowDialog() != DialogResult.OK) { return; }
-
-            //リストにサブフォルダ含めて*.dat一覧取得
-            string[] names = Directory.GetFiles(folderBrowsDialog.SelectedPath, "*.dat", System.IO.SearchOption.AllDirectories);
-            foreach (string name in names)
-            {
-                //選択したファイル名を保持する
-                currentDatFile = name;
-
-                //まずChDataをクリアする
-                for (int i = 0; i < ListChData.Count - 1; i++)
-                {
-                    ListChData[i].Clear();
-                }
-
-                ListChData.Clear();
-                DicChName.Clear();
-                initTimeOffset = 0.0;
-                startTime = 0.0;
-                endTime = 0.0;
-
-                // バイナリファイルからCANデータ抽出する
-                ReadCANData(name);
-
-                // 現在保持している表示中のデコード済データをCSVエクスポートする
-                // 名前をつけて保存
-                string newname = Path.ChangeExtension(name, ".csv");
-                ConvertDecodeData(newname, MODE_ALL, TYPE_DASHWARE);
-            }
+        private void folderToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            CSVConvertFolder(TYPE_DASHWARE);
         }
     }
 }
