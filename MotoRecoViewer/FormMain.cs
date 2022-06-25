@@ -157,6 +157,9 @@ namespace MotoRecoViewer
                 arySize--;
             }
 
+            //ゼロ割防止
+            if (arySize <= 0) { return; }
+
             //バイナリーリーダー生成
             BinaryReader reader = new BinaryReader(fs);
 
@@ -228,19 +231,21 @@ namespace MotoRecoViewer
                 {
                     //毎ループメッセージ発行するとクソ遅いので、トータル100回送るようにする。そもそもプログレスバーのWidthも100なので100以上送っても意味なし
                     Interlocked.Increment(ref counter);
-                    if (i % div_num == 0)
+                    if (div_num > 0)
                     {
-                        context.Post(progress =>
+                        if (i % div_num == 0)
                         {
-                            if ((int)progress < this.progressBar.Maximum)
+                            context.Post(progress =>
                             {
-                                this.progressBar.Value = (int)progress;
-                                this.statusLabel.Text = string.Format("{0}%", ((int)progress) * 100 / arySize);
-                            }
-                        }, counter);
-                        Application.DoEvents();
+                                if ((int)progress < this.progressBar.Maximum)
+                                {
+                                    this.progressBar.Value = (int)progress;
+                                    this.statusLabel.Text = string.Format("{0}%", ((int)progress) * 100 / arySize);
+                                }
+                            }, counter);
+                            Application.DoEvents();
+                        }
                     }
-
                     //CanDataのCANIDが、DecodeRuleで一致するかチェック
                     int decodeRuleIdx;
                     decodeRuleIdx = decodeRule.IndexOf(aryCanData[i].id);
@@ -1629,13 +1634,16 @@ namespace MotoRecoViewer
             for (int i = 0; i < arySize; i++)
             {
                 //毎ループメッセージ発行するとクソ遅いので、トータル50回送るようにする。
-                if (i % div_num == 0)
+                if (div_num > 0)
                 {
-                    progressBar.Value = (int)counter;
-                    this.statusLabel.Text = string.Format("{0}%", ((int)counter) * 100 / arySize /2 );
-                    Application.DoEvents();
+                    if (i % div_num == 0)
+                    {
+                        progressBar.Value = (int)counter;
+                        this.statusLabel.Text = string.Format("{0}%", ((int)counter) * 100 / arySize / 2);
+                        Application.DoEvents();
+                    }
+                    counter++;
                 }
-                counter++;
 
                 aryCanData[i].timeSec = reader.ReadUInt32();
                 aryCanData[i].timeMSec = reader.ReadUInt16();
@@ -1665,13 +1673,16 @@ namespace MotoRecoViewer
             for (int i = 0; i < arySize; i++)
             {
                 //毎ループメッセージ発行するとクソ遅いので、トータル50回送るようにする。
-                if (i % div_num == 0)
+                if (div_num > 0)
                 {
-                    progressBar.Value = (int)counter;
-                    this.statusLabel.Text = string.Format("{0}%", ((int)counter) * 100 / arySize / 2);
-                    Application.DoEvents();
+                    if (i % div_num == 0)
+                    {
+                        progressBar.Value = (int)counter;
+                        this.statusLabel.Text = string.Format("{0}%", ((int)counter) * 100 / arySize / 2);
+                        Application.DoEvents();
+                    }
+                    counter++;
                 }
-                counter++;
 
                 field.Append(aryCanData[i].timeSec.ToString() + ",");
                 field.Append(aryCanData[i].timeMSec.ToString() + ",");
@@ -1787,13 +1798,16 @@ namespace MotoRecoViewer
             while (timeStamp < exportEndTime)
             {
                 //毎ループメッセージ発行するとクソ遅いので、トータル100回送るようにする。
-                if ( (int)(timeStamp*100) % div_num == 0)
+                if (div_num > 0)
                 {
-                    progressBar.Value = (int)counter;
-                    this.statusLabel.Text = string.Format("{0}%", ((int)counter) * 100 / progressBar.Maximum);
-                    Application.DoEvents();
+                    if ((int)(timeStamp * 100) % div_num == 0)
+                    {
+                        progressBar.Value = (int)counter;
+                        this.statusLabel.Text = string.Format("{0}%", ((int)counter) * 100 / progressBar.Maximum);
+                        Application.DoEvents();
+                    }
+                    counter++;
                 }
-                counter++;
 
                 //タイムスタンプ出力
                 if (Type == TYPE_DASHWARE)
@@ -2031,10 +2045,14 @@ namespace MotoRecoViewer
                 // バイナリファイルからCANデータ抽出する
                 ReadCANData(name);
 
-                // 現在保持している表示中のデコード済データをCSVエクスポートする
-                // 名前をつけて保存
-                string newname = Path.ChangeExtension(name, ".csv");
-                ConvertDecodeData(newname, MODE_ALL, Type);
+                //有効なデータを読み込めたらCSV変換する
+                if (ListChData.Count > 0) {
+
+                    // 現在保持している表示中のデコード済データをCSVエクスポートする
+                    // 名前をつけて保存
+                    string newname = Path.ChangeExtension(name, ".csv");
+                    ConvertDecodeData(newname, MODE_ALL, Type);
+                }
             }
 
             return;
