@@ -196,7 +196,9 @@ namespace MotoRecoViewer
                         double second = aryCanData[i].timeSec + aryCanData[i].timeMSec / 1000d + initTimeOffset;
 
                         //データ追加
-                        lock (lockobj) { channels[idxCh].AddData(second, value); }
+                        //iはdatファイル上のレコード番号。並列処理で積む順序は不定なので、
+                        //後段のSortが同一タイムスタンプを一意に並べられるよう記録しておく。
+                        lock (lockobj) { channels[idxCh].AddData(second, value, i); }
 
                         //続きのdecodeRuleを探索
                         if (decodeRuleIdx + 1 < decodeRule.Count)

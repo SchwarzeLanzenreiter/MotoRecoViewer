@@ -30,5 +30,11 @@ namespace MotoRecoViewer
         public double DataTime { get; set; }
         public double DataValue { get; set; }
         public double DataValueFiltered { get; set; }
+
+        /// <summary>
+        /// 元のdatファイル上での読み込み順。
+        /// 同一タイムスタンプのデータを一意な順序に並べるためだけに使う。
+        /// </summary>
+        public long Sequence { get; set; }
     }
 }

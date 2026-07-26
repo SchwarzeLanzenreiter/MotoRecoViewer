@@ -69,13 +69,15 @@ namespace MotoRecoViewer
         /// </summary>
         /// <param name="time">Timestamp</param>
         /// <param name="value">Data value</param>
-        public void AddData(double time, double value)
+        /// <param name="sequence">元のdatファイル上での読み込み順。Sortの同値時の順序決めに使う。</param>
+        public void AddData(double time, double value, long sequence)
         {
             TVData data = new TVData
             {
                 DataTime = time,
                 DataValue = value,
-                DataValueFiltered = 0.0
+                DataValueFiltered = 0.0,
+                Sequence = sequence
             };
 
             this.LogData.Add(data);
@@ -199,8 +201,16 @@ namespace MotoRecoViewer
         /// </summary>
         public void Sort()
         {
-            this.LogData.Sort((a, b) => (int)(a.DataTime*1000 - b.DataTime*1000));   //Since we want to be able to compare them in int type, we need to convert them to ms and then subtract them.
-
+            // タイムスタンプが同値のときは、元のdatファイル上の読み込み順で決める。
+            // List.Sortは不安定ソートなので、同値要素の順序を決めないと、
+            // 並列デコードで積まれた順(実行ごとに変わる)がそのまま結果に出てしまう。
+            // 積算チャンネルは一度順序が入れ替わると以降ずっとずれ続けるため、
+            // 実行のたびに走行距離が変わることになる。
+            this.LogData.Sort((a, b) =>
+            {
+                int byTime = a.DataTime.CompareTo(b.DataTime);
+                return byTime != 0 ? byTime : a.Sequence.CompareTo(b.Sequence);
+            });
         }
 
         /// <summary>
