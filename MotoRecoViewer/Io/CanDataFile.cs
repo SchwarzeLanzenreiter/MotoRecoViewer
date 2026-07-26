@@ -47,7 +47,6 @@ namespace MotoRecoViewer
         public static CanData[] ReadAll(string fileName, Action<long, long> onProgress)
         {
             using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
-            using (BinaryReader reader = new BinaryReader(fs))
             {
                 long arySize = CountRecords(fs.Length);
 
@@ -58,21 +57,80 @@ namespace MotoRecoViewer
 
                 CanData[] aryCanData = new CanData[arySize];
 
-                //毎レコード通知するとクソ遅いので、トータル100回程度に間引く
-                long div_num = arySize / 100;
+                //1レコードずつBinaryReaderで読むと呼び出し回数が嵩むので、
+                //ブロック単位でまとめて読んでから配列上で解釈する。
+                //ファイル全体を一度に読まないのは、2GB超のファイルでも扱える様にする為。
+                byte[] block = new byte[BlockRecords * RecordSize];
+                long done = 0;
 
-                for (long i = 0; i < arySize; i++)
+                while (done < arySize)
                 {
-                    if ((onProgress != null) && (div_num > 0) && (i % div_num == 0))
+                    if (onProgress != null)
                     {
-                        onProgress(i, arySize);
+                        onProgress(done, arySize);
                     }
 
-                    aryCanData[i] = ReadRecord(reader);
+                    int count = (int)Math.Min(BlockRecords, arySize - done);
+                    ReadFully(fs, block, count * RecordSize);
+
+                    for (int k = 0; k < count; k++)
+                    {
+                        aryCanData[done + k] = ParseRecord(block, k * RecordSize);
+                    }
+
+                    done += count;
                 }
 
                 return aryCanData;
             }
+        }
+
+        /// <summary>
+        /// 1回のReadでまとめて読むレコード数
+        /// </summary>
+        private const int BlockRecords = 64 * 1024;
+
+        /// <summary>
+        /// 指定バイト数を読み切る。FileStream.Readは要求より少なく返すことがある。
+        /// </summary>
+        private static void ReadFully(FileStream fs, byte[] buffer, int count)
+        {
+            int offset = 0;
+
+            while (offset < count)
+            {
+                int read = fs.Read(buffer, offset, count - offset);
+
+                if (read <= 0)
+                {
+                    throw new EndOfStreamException();
+                }
+
+                offset += read;
+            }
+        }
+
+        /// <summary>
+        /// バッファ上の1レコードを解釈する。datファイルはリトルエンディアン。
+        /// </summary>
+        private static CanData ParseRecord(byte[] block, int offset)
+        {
+            CanData record = new CanData();
+
+            record.timeSec = (uint)(block[offset] | (block[offset + 1] << 8) | (block[offset + 2] << 16) | (block[offset + 3] << 24));
+            record.timeMSec = (ushort)(block[offset + 4] | (block[offset + 5] << 8));
+            record.id = (ushort)(block[offset + 6] | (block[offset + 7] << 8));
+
+            record.d0 = block[offset + 8];
+            record.d1 = block[offset + 9];
+            record.d2 = block[offset + 10];
+            record.d3 = block[offset + 11];
+            record.d4 = block[offset + 12];
+            record.d5 = block[offset + 13];
+            record.d6 = block[offset + 14];
+            record.d7 = block[offset + 15];
+
+            return record;
         }
 
         /// <summary>
@@ -98,16 +156,15 @@ namespace MotoRecoViewer
         /// </summary>
         private static CanData ReadRecord(BinaryReader reader)
         {
-            CanData record;
+            CanData record = new CanData();
 
             record.timeSec = reader.ReadUInt32();
             record.timeMSec = reader.ReadUInt16();
             record.id = reader.ReadUInt16();
-            record.data = new byte[8];
 
             for (int j = 0; j < 8; j++)
             {
-                record.data[j] = reader.ReadByte();
+                record[j] = reader.ReadByte();
             }
 
             return record;

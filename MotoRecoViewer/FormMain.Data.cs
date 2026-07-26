@@ -61,7 +61,6 @@ namespace MotoRecoViewer
             //datファイルを全件読み込む
             CanData[] aryCanData = CanDataFile.ReadAll(FileName, null);
             long arySize = aryCanData.Length;
-
             //ゼロ割防止
             if (arySize <= 0) { return; }
 
@@ -76,12 +75,10 @@ namespace MotoRecoViewer
             int[] chIdxByRule = PrepareChannels(aryCanData);
 
             //プログレスバー進捗計算用
-            var context = SynchronizationContext.Current;
-            int counter = 0;
-            long div_num = arySize / 100;
+            //ReadCANDataはUIスレッドから呼ばれるので、進捗はこのスレッドから直接反映してよい
             progressBar.Value = 0;
             progressBar.Maximum = (int)arySize;
-                       
+
             //arySizeを1024個づつ処理したい。1024の根拠はあまりないけど…
             //Parallel.Forで並列化しているが、1 CanData毎に並列化するのは効率が悪く、あるまとまり毎に並列化するほうが良さそうな為
             const int CHUNK_SIZE = 1024;
@@ -101,14 +98,21 @@ namespace MotoRecoViewer
             //デコード結果は一旦チャンク毎のバッファに積み、後でチャンク順にマージする。
             //こうすると共有ロックが要らなくなり、かつマージ結果がファイル順で決定的になる。
             //全チャンク分のバッファを同時に抱えるとログデータ2個分のメモリを使うので、
-            //BATCH_CHUNKS個ずつ処理してはマージする。
-            const int BATCH_CHUNKS = 256;
+            //batchChunks個ずつ処理してはマージする。
+            //進捗表示もこのバッチ単位で行う。全体で100回程度になるようバッチ幅を決めるが、
+            //1バッチが小さすぎると並列化の効率が落ちるので下限を設ける。
+            long batchChunks = Math.Max(64, numChunk / 100);
             int chCount = channels.Count;
-            List<TVData>[][] chunkBuf = new List<TVData>[BATCH_CHUNKS][];
+            List<TVData>[][] chunkBuf = new List<TVData>[batchChunks][];
 
-            for (long batchStart = 0; batchStart < numChunk; batchStart += BATCH_CHUNKS)
+            for (long batchStart = 0; batchStart < numChunk; batchStart += batchChunks)
             {
-                long batchEnd = Math.Min(batchStart + BATCH_CHUNKS, numChunk);
+                long batchEnd = Math.Min(batchStart + batchChunks, numChunk);
+
+                //進捗表示。バッチ単位なのでデコードループ自体には何の負荷もかからない
+                progressBar.Value = (int)Math.Min(batchStart * CHUNK_SIZE, arySize);
+                statusLabel.Text = string.Format("{0}%", progressBar.Value * 100L / arySize);
+                Application.DoEvents();
 
                 //CHUNK_SIZE毎の塊でデコード処理を実施
                 Parallel.For(batchStart, batchEnd, j =>
@@ -130,23 +134,6 @@ namespace MotoRecoViewer
 
                     for (long i = start; i < end; i++)
                     {
-                        //毎ループメッセージ発行するとクソ遅いので、トータル100回送るようにする。そもそもプログレスバーのWidthも100なので100以上送っても意味なし
-                        Interlocked.Increment(ref counter);
-                        if (div_num > 0)
-                        {
-                            if (i % div_num == 0)
-                            {
-                                context.Post(progress =>
-                                {
-                                    if ((int)progress < this.progressBar.Maximum)
-                                    {
-                                        this.progressBar.Value = (int)progress;
-                                        this.statusLabel.Text = string.Format("{0}%", ((int)progress) * 100 / arySize);
-                                    }
-                                }, counter);
-                                Application.DoEvents();
-                            }
-                        }
                         //CanDataのCANIDに該当するDecodeRuleを引く。
                         //なお、DecodeRuleには、同一CANIDのルールは複数存在し得ることに注意。
                         //該当が無ければ空配列が返るので、そのまま次のデータへ進む。
@@ -250,11 +237,8 @@ namespace MotoRecoViewer
             IsReadingCanData = false;
 
             //進捗初期化
-            context.Post(progress =>
-            {
-                this.progressBar.Value = 0;
-                this.statusLabel.Text ="";
-            }, null);
+            progressBar.Value = 0;
+            statusLabel.Text = "";
         }
 
 

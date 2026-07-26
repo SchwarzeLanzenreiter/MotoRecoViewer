@@ -108,14 +108,14 @@ namespace MotoRecoViewer
                 field.Append(aryCanData[i].timeSec.ToString() + ",");
                 field.Append(aryCanData[i].timeMSec.ToString() + ",");
                 field.Append(aryCanData[i].id.ToString("X3") + ",");
-                field.Append(aryCanData[i].data[0].ToString("X2") + ",");
-                field.Append(aryCanData[i].data[1].ToString("X2") + ",");
-                field.Append(aryCanData[i].data[2].ToString("X2") + ",");
-                field.Append(aryCanData[i].data[3].ToString("X2") + ",");
-                field.Append(aryCanData[i].data[4].ToString("X2") + ",");
-                field.Append(aryCanData[i].data[5].ToString("X2") + ",");
-                field.Append(aryCanData[i].data[6].ToString("X2") + ",");
-                field.Append(aryCanData[i].data[7].ToString("X2") + "\r\n");
+                field.Append(aryCanData[i][0].ToString("X2") + ",");
+                field.Append(aryCanData[i][1].ToString("X2") + ",");
+                field.Append(aryCanData[i][2].ToString("X2") + ",");
+                field.Append(aryCanData[i][3].ToString("X2") + ",");
+                field.Append(aryCanData[i][4].ToString("X2") + ",");
+                field.Append(aryCanData[i][5].ToString("X2") + ",");
+                field.Append(aryCanData[i][6].ToString("X2") + ",");
+                field.Append(aryCanData[i][7].ToString("X2") + "\r\n");
 
                 //フィールドを書き込む
                 sr.Write(field);
