@@ -158,6 +158,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Model\CanData.cs" />
+    <Compile Include="Model\ChannelStore.cs" />
     <Compile Include="Model\ChData.cs" />
     <Compile Include="Model\TVData.cs" />
     <Compile Include="DecodeRule.cs" />

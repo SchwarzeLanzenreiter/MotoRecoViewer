@@ -69,8 +69,7 @@ namespace MotoRecoViewer
 
         private const double chartMargin = 15;      // グリッドとpictureSubの余白
                
-        private Dictionary<String, int> DicChName;  // ListChDataに格納しているChData.Nameと、ListChData上のインデックスを保持
-        private List<ChData> ListChData;            // ChDataのリスト
+        private ChannelStore channels;              // 読み込み済みチャンネルの集合
 
         private double startTime;                   //CANデータ最初のタイムスタンプ
         private double endTime;                     //CANデータ最終データのタイムスタンプ
@@ -264,7 +263,7 @@ namespace MotoRecoViewer
                             string chName = decodeRule.GetChName(decodeRuleIdx);
 
                             //存在しない場合追加する
-                            if (!DicChName.ContainsKey(chName))
+                            if (!channels.Contains(chName))
                             {
                                 int chMax = decodeRule.GetChartMax(decodeRuleIdx);
                                 int chMin = decodeRule.GetChartMin(decodeRuleIdx);
@@ -272,16 +271,14 @@ namespace MotoRecoViewer
                                 int chColor = decodeRule.GetChartColor(decodeRuleIdx);
                                 bool chShow = decodeRule.GetChartShow(decodeRuleIdx);
                                 bool chUseFilter = decodeRule.GetChartUseFilter(decodeRuleIdx);
-                                //DicChNameには、key:chName value:ListChDataのインデックスを登録
-                                DicChName.Add(chName, ListChData.Count);
 
                                 //ToDO CutOffはDecodeRuleから決めるように後で改良する
                                 ChData newData = new ChData(chName, chMin, chMax, chColor, chPrev, chShow, chUseFilter, 0.1, 1.0);
 
-                                ListChData.Add(newData);
+                                channels.Add(newData);
                             }
 
-                            idxCh = DicChName[chName];
+                            idxCh = channels.IndexOf(chName);
                         }
 
                         double value;
@@ -307,7 +304,7 @@ namespace MotoRecoViewer
                         double second = aryCanData[i].timeSec + aryCanData[i].timeMSec / 1000d + initTimeOffset;
 
                         //データ追加
-                        lock (lockobj) { ListChData[idxCh].AddData(second, value); }
+                        lock (lockobj) { channels[idxCh].AddData(second, value); }
 
                         //続きのdecodeRuleを探索
                         if (decodeRuleIdx + 1 < decodeRule.Count)
@@ -326,15 +323,15 @@ namespace MotoRecoViewer
 
             //スレッド処理した関係でデータがソートできてないのでソートする
             //ソートは各ch毎なので並列化可能
-            Parallel.For(0, ListChData.Count, i =>
+            Parallel.For(0, channels.Count, i =>
             {
-                ListChData[i].Sort();
+                channels[i].Sort();
             });
 
             //フィルタ処理は各ch毎なので並列化可能
-            Parallel.For(0, ListChData.Count, i =>
+            Parallel.For(0, channels.Count, i =>
             {
-                ListChData[i].FilterData();
+                channels[i].FilterData();
             });
 
             // この4関数は依存関係なし→並列処理可
@@ -354,17 +351,9 @@ namespace MotoRecoViewer
             //走行可能距離を計算
             CalcRange();
 
-            //ListChannelDataをChNameでソート
+            //ChNameでソート
             //ここでソートしておかないと、CANデータ読み込みのたびにChNameとIndexが変化する為、CSVエクスポート時、毎回列の位置が毎回変わってしまう。
-            ListChData.Sort((a, b) => a.ChName.CompareTo(b.ChName));
-
-            //DicChNameのKeyとValueの整合が崩れるため、DicChNameを再生成する
-            DicChName.Clear();
-
-            for (int i = 0; i < ListChData.Count; i++)
-            {
-                DicChName.Add(ListChData[i].ChName, i);
-            }
+            channels.SortByName();
 
             //開始時間を計算しておく
             if (startTime == 0.0)
@@ -403,11 +392,11 @@ namespace MotoRecoViewer
 
             //　該当CAN IDが存在しないケースも有りうることに注意
             // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
-            if (!DicChName.ContainsKey(chNameDistCount))
+            if (!channels.Contains(chNameDistCount))
             {
                 return -1;
             }
-            return DicChName[chNameDistCount];
+            return channels.IndexOf(chNameDistCount);
         }
 
         /// <summary>
@@ -426,23 +415,23 @@ namespace MotoRecoViewer
             //#GPS_Distanceの積分計算
             TVData tvData;
 
-            tvData = ListChData[idx_GPSDistance].LogData[0];
+            tvData = channels[idx_GPSDistance].LogData[0];
             tvData.DataValue = 0.0;
-            ListChData[idx_GPSDistance].LogData[0] = tvData;
+            channels[idx_GPSDistance].LogData[0] = tvData;
 
-            for (int i=1; i<ListChData[idx_GPSSpeed].Count; i++)
+            for (int i=1; i<channels[idx_GPSSpeed].Count; i++)
             { 
                 // GPSSpeed unit:km/h
-                double dSpeed = ListChData[idx_GPSSpeed].LogData[i].DataValue;
+                double dSpeed = channels[idx_GPSSpeed].LogData[i].DataValue;
 
                 // time diff unit:sec
-                double timeDiff = ListChData[idx_GPSSpeed].LogData[i].DataTime - ListChData[idx_GPSSpeed].LogData[i-1].DataTime;
+                double timeDiff = channels[idx_GPSSpeed].LogData[i].DataTime - channels[idx_GPSSpeed].LogData[i-1].DataTime;
 
-                tvData = ListChData[idx_GPSDistance].LogData[i];
+                tvData = channels[idx_GPSDistance].LogData[i];
 
                 // 積算距離は km で考える
-                tvData.DataValue = ListChData[idx_GPSDistance].LogData[i - 1].DataValue + (dSpeed / 3600) * timeDiff;
-                ListChData[idx_GPSDistance].LogData[i] = tvData;
+                tvData.DataValue = channels[idx_GPSDistance].LogData[i - 1].DataValue + (dSpeed / 3600) * timeDiff;
+                channels[idx_GPSDistance].LogData[i] = tvData;
             }
         }
 
@@ -462,23 +451,23 @@ namespace MotoRecoViewer
             //#GPS_Distanceの積分計算
             TVData tvData;
 
-            tvData = ListChData[idx_DistFrSpeed].LogData[0];
+            tvData = channels[idx_DistFrSpeed].LogData[0];
             tvData.DataValue = 0.0;
-            ListChData[idx_DistFrSpeed].LogData[0] = tvData;
+            channels[idx_DistFrSpeed].LogData[0] = tvData;
 
-            for (int i = 1; i < ListChData[idx_FrSpeed].Count; i++)
+            for (int i = 1; i < channels[idx_FrSpeed].Count; i++)
             {
                 // GPSSpeed unit:km/h
-                double dSpeed = ListChData[idx_FrSpeed].LogData[i].DataValue;
+                double dSpeed = channels[idx_FrSpeed].LogData[i].DataValue;
 
                 // time diff unit:sec
-                double timeDiff = ListChData[idx_FrSpeed].LogData[i].DataTime - ListChData[idx_FrSpeed].LogData[i - 1].DataTime;
+                double timeDiff = channels[idx_FrSpeed].LogData[i].DataTime - channels[idx_FrSpeed].LogData[i - 1].DataTime;
 
-                tvData = ListChData[idx_DistFrSpeed].LogData[i];
+                tvData = channels[idx_DistFrSpeed].LogData[i];
 
                 // 積算距離は km で考える
-                tvData.DataValue = ListChData[idx_DistFrSpeed].LogData[i - 1].DataValue + (dSpeed / 3600) * timeDiff;
-                ListChData[idx_DistFrSpeed].LogData[i] = tvData;
+                tvData.DataValue = channels[idx_DistFrSpeed].LogData[i - 1].DataValue + (dSpeed / 3600) * timeDiff;
+                channels[idx_DistFrSpeed].LogData[i] = tvData;
             }
         }
 
@@ -499,14 +488,14 @@ namespace MotoRecoViewer
             TVData tvData;
             double AccumulatedCounter = 0.0;
 
-            tvData = ListChData[idx_AccumulatedDistCount].LogData[0];
+            tvData = channels[idx_AccumulatedDistCount].LogData[0];
             tvData.DataValue = AccumulatedCounter;
-            ListChData[idx_AccumulatedDistCount].LogData[0] = tvData;
+            channels[idx_AccumulatedDistCount].LogData[0] = tvData;
 
-            for (int i = 1; i < ListChData[idx_DistCount].Count; i++)
+            for (int i = 1; i < channels[idx_DistCount].Count; i++)
             {
                 // DistCount unit:?
-                double dCounter = ListChData[idx_DistCount].LogData[i].DataValue - ListChData[idx_DistCount].LogData[i-1].DataValue;
+                double dCounter = channels[idx_DistCount].LogData[i].DataValue - channels[idx_DistCount].LogData[i-1].DataValue;
 
                 //ToDo File Append時、工夫が必要
 
@@ -527,12 +516,12 @@ namespace MotoRecoViewer
 
                 AccumulatedCounter += dCounter;
 
-                tvData = ListChData[idx_AccumulatedDistCount].LogData[i];
+                tvData = channels[idx_AccumulatedDistCount].LogData[i];
 
                 // 積算カウンタ
                 // カウンタ値に0.000255掛けると、ちょうどFr車速を積分した積算距離に等しくなっている
                 tvData.DataValue = AccumulatedCounter * 0.000255;
-                ListChData[idx_AccumulatedDistCount].LogData[i] = tvData;
+                channels[idx_AccumulatedDistCount].LogData[i] = tvData;
             }
         }
 
@@ -553,14 +542,14 @@ namespace MotoRecoViewer
             TVData tvData;
             double AccumulatedCounter = 0.0;
 
-            tvData = ListChData[idx_AccumulatedDistCount].LogData[0];
+            tvData = channels[idx_AccumulatedDistCount].LogData[0];
             tvData.DataValue = AccumulatedCounter;
-            ListChData[idx_AccumulatedDistCount].LogData[0] = tvData;
+            channels[idx_AccumulatedDistCount].LogData[0] = tvData;
 
-            for (int i = 1; i < ListChData[idx_DistCount].Count; i++)
+            for (int i = 1; i < channels[idx_DistCount].Count; i++)
             {
                 // DistCount unit:?
-                double dCounter = ListChData[idx_DistCount].LogData[i].DataValue - ListChData[idx_DistCount].LogData[i - 1].DataValue;
+                double dCounter = channels[idx_DistCount].LogData[i].DataValue - channels[idx_DistCount].LogData[i - 1].DataValue;
 
                 //ToDo File Append時、工夫が必要
 
@@ -581,13 +570,13 @@ namespace MotoRecoViewer
 
                 AccumulatedCounter += dCounter;
 
-                tvData = ListChData[idx_AccumulatedDistCount].LogData[i];
+                tvData = channels[idx_AccumulatedDistCount].LogData[i];
 
                 // 積算カウンタ
                 // カウンタ値に0.004掛けると、大体Fr車速を積分した積算距離に等しくなっている。
                 // Rrは加速中Fr車速よりSlipするため早くなるので、Fr車速の積分よりは多少距離が伸びる
                 tvData.DataValue = AccumulatedCounter * 0.004;
-                ListChData[idx_AccumulatedDistCount].LogData[i] = tvData;
+                channels[idx_AccumulatedDistCount].LogData[i] = tvData;
             }
         }
 
@@ -608,14 +597,14 @@ namespace MotoRecoViewer
             TVData tvData;
             double AccumulatedCounter = 0.0;
 
-            tvData = ListChData[idx_AccumulatedFuelCount].LogData[0];
+            tvData = channels[idx_AccumulatedFuelCount].LogData[0];
             tvData.DataValue = AccumulatedCounter;
-            ListChData[idx_AccumulatedFuelCount].LogData[0] = tvData;
+            channels[idx_AccumulatedFuelCount].LogData[0] = tvData;
 
-            for (int i = 1; i < ListChData[idx_FuelCount].Count; i++)
+            for (int i = 1; i < channels[idx_FuelCount].Count; i++)
             {
                 // DistCount unit:?
-                double dCounter = ListChData[idx_FuelCount].LogData[i].DataValue - ListChData[idx_FuelCount].LogData[i - 1].DataValue;
+                double dCounter = channels[idx_FuelCount].LogData[i].DataValue - channels[idx_FuelCount].LogData[i - 1].DataValue;
 
                 //ToDo File Append時、工夫が必要
 
@@ -633,12 +622,12 @@ namespace MotoRecoViewer
 
                 AccumulatedCounter += dCounter;
 
-                tvData = ListChData[idx_AccumulatedFuelCount].LogData[i];
+                tvData = channels[idx_AccumulatedFuelCount].LogData[i];
 
                 // 積算カウンタ
                 // 燃料カウンタは1000000で割るとちょうど良さそう
                 tvData.DataValue = AccumulatedCounter / 1000000;
-                ListChData[idx_AccumulatedFuelCount].LogData[i] = tvData;
+                channels[idx_AccumulatedFuelCount].LogData[i] = tvData;
             }
         }
 
@@ -663,17 +652,17 @@ namespace MotoRecoViewer
             //燃費計算
             TVData tvData;
             
-            for (int i = 0; i < ListChData[idx_FuelConsumption].Count; i++)
+            for (int i = 0; i < channels[idx_FuelConsumption].Count; i++)
             {
                 //積算燃料量取得
-                double time = ListChData[idx_AccumulatedFuelCount].LogData[i].DataTime;
-                double fuel = ListChData[idx_AccumulatedFuelCount].LogData[i].DataValue;
+                double time = channels[idx_AccumulatedFuelCount].LogData[i].DataTime;
+                double fuel = channels[idx_AccumulatedFuelCount].LogData[i].DataValue;
 
                 //積算燃料取得時間に対応した、積算距離を取得
-                int idx_dist = ListChData[idx_AccumulatedDistCount].FindLeftIndex(time);
-                double dist = ListChData[idx_AccumulatedDistCount].LogData[idx_dist].DataValue;
+                int idx_dist = channels[idx_AccumulatedDistCount].FindLeftIndex(time);
+                double dist = channels[idx_AccumulatedDistCount].LogData[idx_dist].DataValue;
 
-                tvData = ListChData[idx_FuelConsumption].LogData[i];
+                tvData = channels[idx_FuelConsumption].LogData[i];
 
                 // 燃費
                 if (fuel != 0) {
@@ -682,7 +671,7 @@ namespace MotoRecoViewer
                 {
                     tvData.DataValue = 0;
                 }
-                ListChData[idx_FuelConsumption].LogData[i] = tvData;
+                channels[idx_FuelConsumption].LogData[i] = tvData;
             }
         }
 
@@ -709,17 +698,17 @@ namespace MotoRecoViewer
             //Range計算
             TVData tvData;
 
-            for (int i = 0; i < ListChData[idx_Range].Count; i++)
+            for (int i = 0; i < channels[idx_Range].Count; i++)
             {
                 //燃費取得
-                double time = ListChData[idx_FuelConsumption].LogData[i].DataTime;
-                double fuelConsump = ListChData[idx_FuelConsumption].LogData[i].DataValue;
+                double time = channels[idx_FuelConsumption].LogData[i].DataTime;
+                double fuelConsump = channels[idx_FuelConsumption].LogData[i].DataValue;
 
                 //燃費計算時点のFuelLevel取得
-                int idx_dist = ListChData[idx_FuelLevel].FindLeftIndex(time);
-                double fuelLevel = ListChData[idx_FuelLevel].LogData[idx_dist].DataValue;
+                int idx_dist = channels[idx_FuelLevel].FindLeftIndex(time);
+                double fuelLevel = channels[idx_FuelLevel].LogData[idx_dist].DataValue;
 
-                tvData = ListChData[idx_Range].LogData[i];
+                tvData = channels[idx_Range].LogData[i];
 
                 // 燃費
                 if (fuelConsump != 0)
@@ -730,7 +719,7 @@ namespace MotoRecoViewer
                 {
                     tvData.DataValue = 0;
                 }
-                ListChData[idx_Range].LogData[i] = tvData;
+                channels[idx_Range].LogData[i] = tvData;
             }
         }
 
@@ -770,20 +759,20 @@ namespace MotoRecoViewer
             {
                 //　該当CAN IDが存在しないケースも有りうることに注意
                 // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
-                if (!DicChName.ContainsKey(ListViewData.Items[i].Text))
+                if (!channels.Contains(ListViewData.Items[i].Text))
                 {
                     continue;
                 }
 
-                int idx = DicChName[ListViewData.Items[i].Text];
-                int targetIdx = ListChData[idx].FindLeftIndex(targetTime1);
+                int idx = channels.IndexOf(ListViewData.Items[i].Text);
+                int targetIdx = channels[idx].FindLeftIndex(targetTime1);
 
-                if (ListChData[idx].ChFilter == false)
+                if (channels[idx].ChFilter == false)
                 {
-                    ListViewData.Items[i].SubItems[1].Text = ListChData[idx].LogData[targetIdx].DataValue.ToString();
+                    ListViewData.Items[i].SubItems[1].Text = channels[idx].LogData[targetIdx].DataValue.ToString();
                 } else
                 {
-                    ListViewData.Items[i].SubItems[1].Text = ListChData[idx].LogData[targetIdx].DataValueFiltered.ToString();
+                    ListViewData.Items[i].SubItems[1].Text = channels[idx].LogData[targetIdx].DataValueFiltered.ToString();
                 }
             }
 
@@ -796,21 +785,21 @@ namespace MotoRecoViewer
             {
                 //　該当CAN IDが存在しないケースも有りうることに注意
                 // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
-                if (!DicChName.ContainsKey(ListViewData.Items[i].Text))
+                if (!channels.Contains(ListViewData.Items[i].Text))
                 {
                     continue;
                 }
 
-                int idx = DicChName[ListViewData.Items[i].Text];
-                int targetIdx = ListChData[idx].FindLeftIndex(targetTime2);
+                int idx = channels.IndexOf(ListViewData.Items[i].Text);
+                int targetIdx = channels[idx].FindLeftIndex(targetTime2);
 
-                if (ListChData[idx].ChFilter == false)
+                if (channels[idx].ChFilter == false)
                 {
-                    ListViewData.Items[i].SubItems[2].Text = ListChData[idx].LogData[targetIdx].DataValue.ToString();
+                    ListViewData.Items[i].SubItems[2].Text = channels[idx].LogData[targetIdx].DataValue.ToString();
                 }
                 else
                 {
-                    ListViewData.Items[i].SubItems[2].Text = ListChData[idx].LogData[targetIdx].DataValueFiltered.ToString();
+                    ListViewData.Items[i].SubItems[2].Text = channels[idx].LogData[targetIdx].DataValueFiltered.ToString();
                 }
             }
 
@@ -832,29 +821,29 @@ namespace MotoRecoViewer
             {
                 //　該当CAN IDが存在しないケースも有りうることに注意
                 // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
-                if (!DicChName.ContainsKey(decodeRule.GetChName(i)))
+                if (!channels.Contains(decodeRule.GetChName(i)))
                 {
                     //Parallel.Forの中では、continueはreturnとなる
                     return;
                 }
 
-               int idx = DicChName[decodeRule.GetChName(i)];
-               int targetIdxStart = ListChData[idx].FindLeftIndex(targetTime1);
-               int targetIdxEnd = ListChData[idx].FindLeftIndex(targetTime2);
+               int idx = channels.IndexOf(decodeRule.GetChName(i));
+               int targetIdxStart = channels[idx].FindLeftIndex(targetTime1);
+               int targetIdxEnd = channels[idx].FindLeftIndex(targetTime2);
 
                double dataMax = double.MinValue;
                double dataMin = double.MaxValue;
 
                for (int j = targetIdxStart; j <= targetIdxEnd; j++)
                {
-                    if (ListChData[idx].ChFilter == false)
+                    if (channels[idx].ChFilter == false)
                     {
-                        if (ListChData[idx].LogData[j].DataValue > dataMax) { dataMax = ListChData[idx].LogData[j].DataValue; }
-                        if (ListChData[idx].LogData[j].DataValue < dataMin) { dataMin = ListChData[idx].LogData[j].DataValue; }
+                        if (channels[idx].LogData[j].DataValue > dataMax) { dataMax = channels[idx].LogData[j].DataValue; }
+                        if (channels[idx].LogData[j].DataValue < dataMin) { dataMin = channels[idx].LogData[j].DataValue; }
                     } else
                     {
-                        if (ListChData[idx].LogData[j].DataValue > dataMax) { dataMax = ListChData[idx].LogData[j].DataValueFiltered; }
-                        if (ListChData[idx].LogData[j].DataValue < dataMin) { dataMin = ListChData[idx].LogData[j].DataValueFiltered; }
+                        if (channels[idx].LogData[j].DataValue > dataMax) { dataMax = channels[idx].LogData[j].DataValueFiltered; }
+                        if (channels[idx].LogData[j].DataValue < dataMin) { dataMin = channels[idx].LogData[j].DataValueFiltered; }
                     }
                }
 
@@ -867,7 +856,7 @@ namespace MotoRecoViewer
             {
                 //　該当CAN IDが存在しないケースも有りうることに注意
                 // 例えば、実際データ読み込んだらDecodeRuleのデータがなかった場合
-                if (!DicChName.ContainsKey(ListViewData.Items[i].Text))
+                if (!channels.Contains(ListViewData.Items[i].Text))
                 {
                     continue;
                 }
@@ -900,11 +889,11 @@ namespace MotoRecoViewer
             double mainChartCenterTime = subPosTime + (divTime * 20) / 2;
 
             // MainCharの中央に応じたデータidx取得
-            int mainChartCenterIdx = ListChData[idx_lat].FindLeftIndex(mainChartCenterTime);
+            int mainChartCenterIdx = channels[idx_lat].FindLeftIndex(mainChartCenterTime);
 
             // MainChartの中央に応じた緯度経度取得
-            float fl_lon = (float)ListChData[idx_lon].LogData[mainChartCenterIdx].DataValue;
-            float fl_lat = (float)ListChData[idx_lat].LogData[mainChartCenterIdx].DataValue;
+            float fl_lon = (float)channels[idx_lon].LogData[mainChartCenterIdx].DataValue;
+            float fl_lat = (float)channels[idx_lat].LogData[mainChartCenterIdx].DataValue;
 
             // 緯度経度に変化がなければリターンで抜ける
             if ((fl_lon == prev_lon) && (fl_lat == prev_lat))
@@ -924,8 +913,8 @@ namespace MotoRecoViewer
             double mainChartRightTime = subPosTime + (divTime * 20);
 
             // MainChartの両端に対応するデータidx取得。緯度経度はデータ数同等なので、longitudeで代表する
-            int mainChartLeftIdx = ListChData[idx_lat].FindLeftIndex(subPosTime);
-            int mainChartRightIdx = ListChData[idx_lat].FindLeftIndex(mainChartRightTime);
+            int mainChartLeftIdx = channels[idx_lat].FindLeftIndex(subPosTime);
+            int mainChartRightIdx = channels[idx_lat].FindLeftIndex(mainChartRightTime);
 
             // ルートをMapに追加
             // まず既存ルートをクリア
@@ -935,8 +924,8 @@ namespace MotoRecoViewer
             List<PointLatLng> points = new List<PointLatLng>();
             for (int i = mainChartLeftIdx; i <= mainChartRightIdx; i++)
             {
-                fl_lon = (float)ListChData[idx_lon].LogData[i].DataValue;
-                fl_lat = (float)ListChData[idx_lat].LogData[i].DataValue;
+                fl_lon = (float)channels[idx_lon].LogData[i].DataValue;
+                fl_lat = (float)channels[idx_lat].LogData[i].DataValue;
 
                 points.Add(new PointLatLng(fl_lat, fl_lon));
             }
@@ -983,26 +972,26 @@ namespace MotoRecoViewer
             double cur1PosTime = subPosTime + (divTime * 20) / (PanelMainChart.Width - 2 * chartMargin) * mainCur1Pos;
 
             // カーソル位置左側データidx取得
-            int leftIdx = ListChData[idx_lat].FindLeftIndex(cur1PosTime);
-            double leftTime = ListChData[idx_lat].LogData[leftIdx].DataTime;
+            int leftIdx = channels[idx_lat].FindLeftIndex(cur1PosTime);
+            double leftTime = channels[idx_lat].LogData[leftIdx].DataTime;
 
             // カーソル位置右側データidx取得
             int rightIdx;
-            if (leftIdx == ListChData[idx_lat].LogData.Count - 1)
+            if (leftIdx == channels[idx_lat].LogData.Count - 1)
             {
                 rightIdx = leftIdx;
             } else
             {
                 rightIdx = leftIdx + 1;   // ToDo 経度緯度データが、重複してロギングされているため.CanLogger側を治す 
             }
-            double rightTime = ListChData[idx_lat].LogData[rightIdx].DataTime;
+            double rightTime = channels[idx_lat].LogData[rightIdx].DataTime;
 
             // 緯度経度取得
-            double leftLon = ListChData[idx_lon].LogData[leftIdx].DataValue;
-            double leftLat = ListChData[idx_lat].LogData[leftIdx].DataValue;
+            double leftLon = channels[idx_lon].LogData[leftIdx].DataValue;
+            double leftLat = channels[idx_lat].LogData[leftIdx].DataValue;
 
-            double rightLon = ListChData[idx_lon].LogData[rightIdx].DataValue;
-            double rightLat = ListChData[idx_lat].LogData[rightIdx].DataValue;
+            double rightLon = channels[idx_lon].LogData[rightIdx].DataValue;
+            double rightLat = channels[idx_lat].LogData[rightIdx].DataValue;
 
             // 経度緯度を前後2点データから線形補間する
             double liLat = LinearInterpolation(leftTime, leftLat, rightTime, rightLat, cur1PosTime);
@@ -1019,11 +1008,11 @@ namespace MotoRecoViewer
             double cur2PosTime = subPosTime + (divTime * 20) / (PanelMainChart.Width - 2 * chartMargin) * mainCur2Pos;
 
             // カーソル位置左側データidx取得
-            leftIdx = ListChData[idx_lat].FindLeftIndex(cur2PosTime);
-            leftTime = ListChData[idx_lat].LogData[leftIdx].DataTime;
+            leftIdx = channels[idx_lat].FindLeftIndex(cur2PosTime);
+            leftTime = channels[idx_lat].LogData[leftIdx].DataTime;
 
             // カーソル位置右側データidx取得
-            if (leftIdx == ListChData[idx_lat].LogData.Count - 1)
+            if (leftIdx == channels[idx_lat].LogData.Count - 1)
             {
                 rightIdx = leftIdx;
             }
@@ -1031,14 +1020,14 @@ namespace MotoRecoViewer
             {
                 rightIdx = leftIdx + 1;   // ToDo 経度緯度データが、重複してロギングされているため.CanLogger側を治す 
             }
-            rightTime = ListChData[idx_lat].LogData[rightIdx].DataTime;
+            rightTime = channels[idx_lat].LogData[rightIdx].DataTime;
 
             // 緯度経度取得
-            leftLon = ListChData[idx_lon].LogData[leftIdx].DataValue;
-            leftLat = ListChData[idx_lat].LogData[leftIdx].DataValue;
+            leftLon = channels[idx_lon].LogData[leftIdx].DataValue;
+            leftLat = channels[idx_lat].LogData[leftIdx].DataValue;
 
-            rightLon = ListChData[idx_lon].LogData[rightIdx].DataValue;
-            rightLat = ListChData[idx_lat].LogData[rightIdx].DataValue;
+            rightLon = channels[idx_lon].LogData[rightIdx].DataValue;
+            rightLat = channels[idx_lat].LogData[rightIdx].DataValue;
 
             // 経度緯度を前後2点データから線形補間する
             liLat = LinearInterpolation(leftTime, leftLat, rightTime, rightLat, cur2PosTime);
@@ -1115,11 +1104,11 @@ namespace MotoRecoViewer
                 aryTimeStamp[i] = startTime + (endTime - startTime) / (PanelSubChart.Width - 2d * chartMargin) * i;
             }
 
-            //for (int i = 0; i < ListChData.Count; i++)
-            Parallel.For(0, ListChData.Count, i =>
+            //for (int i = 0; i < channels.Count; i++)
+            Parallel.For(0, channels.Count, i =>
             {
                 // Subチャートに表示するのは、ChData.ChPreviewがTrueの物のみ
-                if (ListChData[i].ChPreview)
+                if (channels[i].ChPreview)
                 {
                     // 座標格納用
                     // データ追加ごとにResizeするとCPUリソース食うので、想定される最大数確保し、最後に縮小する
@@ -1133,7 +1122,7 @@ namespace MotoRecoViewer
                     for (int j = 0; j <= PanelSubChart.Width - 2 * chartMargin; j++)
                     {
                         // タイムスタンプに最も近いChDataのインデックスを取得
-                        int targetIdx = ListChData[i].FindLeftIndex(aryTimeStamp[j]);
+                        int targetIdx = channels[i].FindLeftIndex(aryTimeStamp[j]);
 
                         // 1つ前のインデックスと同じ場合、スキップする
                         if ((targetIdxPrev == targetIdx) || (targetIdx == 0))
@@ -1145,8 +1134,8 @@ namespace MotoRecoViewer
                         double x = j + chartMargin;
 
                         // targetIdxのDataValueが、Ch設定のMax-Min幅に対して比率を算出する
-                        double y = ListChData[i].LogData[targetIdx].DataValue;
-                        y = (y - ListChData[i].ChMin) / (ListChData[i].ChMax - ListChData[i].ChMin);
+                        double y = channels[i].LogData[targetIdx].DataValue;
+                        y = (y - channels[i].ChMin) / (channels[i].ChMax - channels[i].ChMin);
 
                         // 0以下もしくは1以上は0または1に丸める
                         if (y > 1) { y = 1; }
@@ -1179,7 +1168,7 @@ namespace MotoRecoViewer
 
                     //Chごとの色をブラシにセット
                     System.Drawing.Color c;
-                    c = System.Drawing.Color.FromArgb(ListChData[i].ChColor);
+                    c = System.Drawing.Color.FromArgb(channels[i].ChColor);
 
                     SharpDX.Mathematics.Interop.RawColor4 rc4;
                     rc4 = ColorToRaw4(c);
@@ -1249,7 +1238,7 @@ namespace MotoRecoViewer
 
             DrawSubChartGridD2D();
 
-            //pictureSubのWidth分だけ、ListChDataからデータをピックアップして描画する
+            //pictureSubのWidth分だけ、channelsからデータをピックアップして描画する
             DrawSubChartDataD2D();
 
             //サブチャートに現在位置を反転表示で表示
@@ -1390,12 +1379,12 @@ namespace MotoRecoViewer
             }
 
             // ListChNameの項目数すべて描画する
-            Parallel.For(0, ListChData.Count, i =>
-            //for (int i = 0; i < ListChData.Count; i++)
+            Parallel.For(0, channels.Count, i =>
+            //for (int i = 0; i < channels.Count; i++)
             {
                 int targetIdxPrev = 0;
 
-                if (ListChData[i].ChShow)
+                if (channels[i].ChShow)
                 {
                     // 座標格納用
                     // データ追加ごとにResizeするとCPUリソース食うので、想定される最大数確保し、最後に縮小する
@@ -1404,11 +1393,11 @@ namespace MotoRecoViewer
                     int drawCount = 0;
 
                     //タイムスタンプ最初に対応したChDataインデックス取得
-                    int minIdx = ListChData[i].FindLeftIndex(aryTimeStamp[0]);
+                    int minIdx = channels[i].FindLeftIndex(aryTimeStamp[0]);
                     targetIdxPrev = minIdx - 1;                                          // 1引くのは、初回は描画を絶対したいから
   
                     //タイムスタンプ最後に対応したChDataインデックス取得
-                    int maxIdx = ListChData[i].FindLeftIndex(aryTimeStamp[arySize - 1]);
+                    int maxIdx = channels[i].FindLeftIndex(aryTimeStamp[arySize - 1]);
 
                     int startIdx, endIdx;
 
@@ -1422,7 +1411,7 @@ namespace MotoRecoViewer
                     for (int j = 0; j < arySize; j++)
                     {
                         // targetTimeに対応したタイムスタンプに最も近いChDataのインデックスを取得
-                        int targetIdx = ListChData[i].FindLeftIndex(aryTimeStamp[j], startIdx, endIdx);
+                        int targetIdx = channels[i].FindLeftIndex(aryTimeStamp[j], startIdx, endIdx);
 
                         if (targetIdx != 0)
                         {
@@ -1459,7 +1448,7 @@ namespace MotoRecoViewer
                             // 次のタイムスタンプの時刻が次の検索スタートの時刻より小さい場合は調整する
                             if (j != arySize - 1)
                             {
-                                if (aryTimeStamp[j + 1] < ListChData[i].LogData[startIdx].DataTime)
+                                if (aryTimeStamp[j + 1] < channels[i].LogData[startIdx].DataTime)
                                 {
                                     startIdx = targetIdx + 1;
                                 }
@@ -1474,7 +1463,7 @@ namespace MotoRecoViewer
                             // 次のタイムスタンプの時刻が次の検索終了の時刻より大きい場合は調整する
                             if (j != arySize - 1)
                             {
-                                if (aryTimeStamp[j + 1] > ListChData[i].LogData[endIdx].DataTime)
+                                if (aryTimeStamp[j + 1] > channels[i].LogData[endIdx].DataTime)
                                 {
                                     endIdx = maxIdx;
                                 }
@@ -1494,16 +1483,16 @@ namespace MotoRecoViewer
                         double y;
 
                         // Filterなしの場合は生データ参照
-                        if (ListChData[i].ChFilter==false)
+                        if (channels[i].ChFilter==false)
                         {
-                            y = ListChData[i].LogData[targetIdx].DataValue;
+                            y = channels[i].LogData[targetIdx].DataValue;
                         // Filterありの場合Filteredデータ参照
                         } else {
-                            y = ListChData[i].LogData[targetIdx].DataValueFiltered;
+                            y = channels[i].LogData[targetIdx].DataValueFiltered;
                         }
 
                         // データが表示設定のminとmaxに対する比率を計算
-                        y = (y - ListChData[i].ChMin) / (ListChData[i].ChMax - ListChData[i].ChMin);
+                        y = (y - channels[i].ChMin) / (channels[i].ChMax - channels[i].ChMin);
 
                         // 比率が0以下もしくは1以上は0または1に丸める
                         if (y > 1) { 
@@ -1541,7 +1530,7 @@ namespace MotoRecoViewer
 
                     //Chごとの色をブラシにセット
                     System.Drawing.Color c;
-                    c = System.Drawing.Color.FromArgb(ListChData[i].ChColor);
+                    c = System.Drawing.Color.FromArgb(channels[i].ChColor);
 
                     SharpDX.Mathematics.Interop.RawColor4 rc4;
                     rc4 = ColorToRaw4(c);
@@ -1580,7 +1569,7 @@ namespace MotoRecoViewer
             //Grid描画
             DrawMainChartGridD2D();
 
-            //pictureSubのWidth分だけ、ListChDataからデータをピックアップして描画する
+            //pictureSubのWidth分だけ、channelsからデータをピックアップして描画する
             DrawMainChartDataD2D();
 
             //各種情報描画
@@ -1769,11 +1758,11 @@ namespace MotoRecoViewer
 
 
 
-            for (int i=0; i < ListChData.Count - 1 ; i++)
+            for (int i=0; i < channels.Count - 1 ; i++)
             {
-                field.Append(ListChData[i].ChName + ",");
+                field.Append(channels[i].ChName + ",");
             }
-            field.Append(ListChData[ListChData.Count - 1].ChName  + "\r\n");
+            field.Append(channels[channels.Count - 1].ChName  + "\r\n");
 
             //フィールドを書き込む
             sr.Write(field);
@@ -1809,14 +1798,14 @@ namespace MotoRecoViewer
                 {
                     field.Append((timeStamp*1000).ToString("F0") + ",");
                 }
-                for (int i=0; i< ListChData.Count-1; i++)
+                for (int i=0; i< channels.Count-1; i++)
                 {
                     // タイムスタンプに最も近いChDataのインデックスを取得
-                    int targetIdx = ListChData[i].FindLeftIndex(timeStamp);
-                    double value = ListChData[i].LogData[targetIdx].DataValue;
-                    double valueFiltered = ListChData[i].LogData[targetIdx].DataValueFiltered;
+                    int targetIdx = channels[i].FindLeftIndex(timeStamp);
+                    double value = channels[i].LogData[targetIdx].DataValue;
+                    double valueFiltered = channels[i].LogData[targetIdx].DataValueFiltered;
 
-                    if (ListChData[i].ChFilter)
+                    if (channels[i].ChFilter)
                     {
                         field.Append(valueFiltered.ToString() + ",");
                     } else
@@ -1825,11 +1814,11 @@ namespace MotoRecoViewer
                     }
                 }
 
-                int targetIdx2 = ListChData[ListChData.Count-1].FindLeftIndex(timeStamp);
-                double value2 = ListChData[ListChData.Count-1].LogData[targetIdx2].DataValue;
-                double value2Filtered = ListChData[ListChData.Count - 1].LogData[targetIdx2].DataValueFiltered;
+                int targetIdx2 = channels[channels.Count-1].FindLeftIndex(timeStamp);
+                double value2 = channels[channels.Count-1].LogData[targetIdx2].DataValue;
+                double value2Filtered = channels[channels.Count - 1].LogData[targetIdx2].DataValueFiltered;
 
-                if (ListChData[ListChData.Count - 1].ChFilter)
+                if (channels[channels.Count - 1].ChFilter)
                 {
                     field.Append(value2Filtered.ToString() + "\r\n");
                 } else
@@ -2023,13 +2012,7 @@ namespace MotoRecoViewer
                 currentDatFile = name;
 
                 //まずChDataをクリアする
-                for (int i = 0; i < ListChData.Count - 1; i++)
-                {
-                    ListChData[i].Clear();
-                }
-
-                ListChData.Clear();
-                DicChName.Clear();
+                channels.Clear();
                 initTimeOffset = 0.0;
                 startTime = 0.0;
                 endTime = 0.0;
@@ -2038,7 +2021,7 @@ namespace MotoRecoViewer
                 ReadCANData(name);
 
                 //有効なデータを読み込めたらCSV変換する
-                if (ListChData.Count > 0) {
+                if (channels.Count > 0) {
 
                     // 現在保持している表示中のデコード済データをCSVエクスポートする
                     // 名前をつけて保存
@@ -2060,8 +2043,7 @@ namespace MotoRecoViewer
             InitializeComponent();
 
             // Formコンストラクタで、Private変数のClassをnewしておく
-            DicChName = new Dictionary<String, int>();
-            ListChData = new List<ChData>();
+            channels = new ChannelStore();
             decodeRule = new DecodeRule();
             IsReadingCanData = false;
 
@@ -2201,12 +2183,12 @@ namespace MotoRecoViewer
             ListViewData.EndUpdate();
 
             // データロードなければ何もしない
-            if (ListChData.Count == 0)
+            if (channels.Count == 0)
             {
                 return;
             }
 
-            // もしデータがロード済だった場合は、ListChDataのチャンネル情報をアップデートする
+            // もしデータがロード済だった場合は、channelsのチャンネル情報をアップデートする
             for (int i=0; i < decodeRule.Count; i++)
             {
                 int idx;
@@ -2214,54 +2196,34 @@ namespace MotoRecoViewer
 
                 chName = decodeRule.GetChName(i);
 
-                // decodeRule.ChName[i]と同じChNameのListChDataのidxを取得
-                if (!DicChName.ContainsKey(chName))
+                // decodeRule.ChName[i]と同じChNameのchannelsのidxを取得
+                if (!channels.Contains(chName))
                 {
-                    //decodeRuleのChName[i]がDicChNameになければ何もしない
+                    //decodeRuleのChName[i]がchannelsになければ何もしない
                     continue;
                 }
 
-                idx = DicChName[chName];
+                idx = channels.IndexOf(chName);
 
-                ListChData[idx].ChColor = decodeRule.GetChartColor(i);
-                ListChData[idx].ChMax = decodeRule.GetChartMax(i);
-                ListChData[idx].ChMin = decodeRule.GetChartMin(i);
-                ListChData[idx].ChPreview = decodeRule.GetChartPreview(i);
-                ListChData[idx].ChShow = decodeRule.GetChartShow(i);
-                ListChData[idx].ChFilter = decodeRule.GetChartUseFilter(i);
-                ListChData[idx].ChFilterCutOff = decodeRule.GetChartCutOff(i);
+                channels[idx].ChColor = decodeRule.GetChartColor(i);
+                channels[idx].ChMax = decodeRule.GetChartMax(i);
+                channels[idx].ChMin = decodeRule.GetChartMin(i);
+                channels[idx].ChPreview = decodeRule.GetChartPreview(i);
+                channels[idx].ChShow = decodeRule.GetChartShow(i);
+                channels[idx].ChFilter = decodeRule.GetChartUseFilter(i);
+                channels[idx].ChFilterCutOff = decodeRule.GetChartCutOff(i);
             }
 
-            // もしListChDataには存在するが、decodeRuleに存在しない場合(一度データをロードした後、あるChを削除した場合)、
-            // ListChDataからデータを削除する。
-            int j = 0;
-            while (j < ListChData.Count)
-            {
-                int idx = decodeRule.ChNameIndexOf(ListChData[j].ChName);
-
-                if (idx == -1)
-                {
-                    ListChData[j].Clear();
-                    ListChData.RemoveAt(j);
-                } else
-                {
-                    j++;
-                }
-            }
+            // もしchannelsには存在するが、decodeRuleに存在しない場合(一度データをロードした後、あるChを削除した場合)、
+            // channelsからデータを削除する。
+            // 削除に伴うChName→インデックスの貼り直しはChannelStoreが行う。
+            channels.RemoveAllExcept(ch => decodeRule.ChNameIndexOf(ch.ChName) != -1);
 
             //フィルタ処理は各ch毎なので並列化可能
-            Parallel.For(0, ListChData.Count, i =>
+            Parallel.For(0, channels.Count, i =>
             {
-                ListChData[i].FilterData();
+                channels[i].FilterData();
             });
-
-            // もし直前でListChDataがRemoveAtされる場合、DicChNameのKeyとValueの整合が崩れるため、DicChNameを再生成する
-            DicChName.Clear();
-
-            for (int i = 0; i<ListChData.Count; i++)
-            {
-                DicChName.Add(ListChData[i].ChName, i);
-            }
 
             //　グラフ再描画
             PanelMainChart.Refresh();
@@ -2274,12 +2236,12 @@ namespace MotoRecoViewer
 
             for (int i = 0; i < ListViewData.Items.Count; i++)
             {
-                if (!DicChName.ContainsKey(ListViewData.Items[i].Text)) {
+                if (!channels.Contains(ListViewData.Items[i].Text)) {
                     continue; 
                 }
 
-                int idx = DicChName[ListViewData.Items[i].Text];
-                ListChData[idx].ChShow = ListViewData.Items[i].Checked;
+                int idx = channels.IndexOf(ListViewData.Items[i].Text);
+                channels[idx].ChShow = ListViewData.Items[i].Checked;
             }
 
             PanelMainChart.Refresh();
@@ -2294,13 +2256,7 @@ namespace MotoRecoViewer
                 currentDatFile = openFileDialog.FileName;
 
                 //まずChDataをクリアする
-                for (int i = 0; i < ListChData.Count - 1; i++)
-                {
-                    ListChData[i].Clear();
-                }
-
-                ListChData.Clear();
-                DicChName.Clear();
+                channels.Clear();
                 initTimeOffset = 0.0;
                 startTime = 0.0;
                 endTime = 0.0;
@@ -2603,10 +2559,10 @@ namespace MotoRecoViewer
             if (IsReadingCanData) { return; }
 
             // ListChNameがNULL→即抜ける
-            if (DicChName == null) { return; }
+            if (channels == null) { return; }
 
             // ListChNameが0＝CANデータ未読み込み→即抜ける
-            if (DicChName.Count < 1) { return; }
+            if (channels.Count < 1) { return; }
 
             dxMainRenderTarget2D.BeginDraw();
             //=======================================================================================================================
@@ -2727,10 +2683,10 @@ namespace MotoRecoViewer
             if (IsReadingCanData) { return; }
 
             // ListChNameがNULL→即抜ける
-            if (DicChName == null) { return; }
+            if (channels == null) { return; }
 
             // ListChNameが0＝CANデータ未読み込み→即抜ける
-            if (DicChName.Count < 1) { return; }
+            if (channels.Count < 1) { return; }
             
             dxSubRenderTarget2D.BeginDraw();
             //=======================================================================================================================
@@ -2835,7 +2791,7 @@ namespace MotoRecoViewer
             }
 
             // ファイルがOpenされたがデコードされたデータがない
-            if (ListChData.Count == 0)
+            if (channels.Count == 0)
             {
                 return;
             }
@@ -2863,7 +2819,7 @@ namespace MotoRecoViewer
             }
 
             // ファイルがOpenされたがデコードされたデータがない
-            if (ListChData.Count == 0)
+            if (channels.Count == 0)
             {
                 return;
             }
@@ -2891,7 +2847,7 @@ namespace MotoRecoViewer
             }
 
             // ファイルがOpenされたがデコードされたデータがない
-            if (ListChData.Count == 0)
+            if (channels.Count == 0)
             {
                 return;
             }
@@ -2919,7 +2875,7 @@ namespace MotoRecoViewer
             }
 
             // ファイルがOpenされたがデコードされたデータがない
-            if (ListChData.Count == 0)
+            if (channels.Count == 0)
             {
                 return;
             }
