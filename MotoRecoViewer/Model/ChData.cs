@@ -28,13 +28,6 @@ using System.Threading.Tasks;
 
 namespace MotoRecoViewer
 {
-    public struct TVData   //tv means Time and Value
-    {
-        public double DataTime { get; set; }
-        public double DataValue { get; set; }
-        public double DataValueFiltered { get; set; }
-    }
-
     class ChData
     {
         public string ChName { get; set; }

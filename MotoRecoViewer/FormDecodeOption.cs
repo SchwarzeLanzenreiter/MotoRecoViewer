@@ -500,7 +500,7 @@ namespace MotoRecoViewer
             BinaryReader reader = new BinaryReader(fs);
 
             //CANデータを1フレーム分読み込む
-            FormMain.CanData tempCanData = new FormMain.CanData();
+            CanData tempCanData = new CanData();
 
             List<ushort> ListCANID = new List<ushort>();
 

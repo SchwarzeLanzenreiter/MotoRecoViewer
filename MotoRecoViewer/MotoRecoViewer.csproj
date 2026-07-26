@@ -157,7 +157,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ChData.cs" />
+    <Compile Include="Model\CanData.cs" />
+    <Compile Include="Model\ChData.cs" />
+    <Compile Include="Model\TVData.cs" />
     <Compile Include="DecodeRule.cs" />
     <Compile Include="FormAbout.cs">
       <SubType>Form</SubType>

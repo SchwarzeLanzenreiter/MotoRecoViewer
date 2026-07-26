@@ -100,7 +100,7 @@ namespace MotoRecoViewer
         /// </summary>
         /// <param name="Formula">計算式</param>
         /// <param name="Data">CANデータ</param>
-        public string DecodeFormula(string Formula, FormMain.CanData data)
+        public string DecodeFormula(string Formula, CanData data)
         {
             //計算式
             System.Text.StringBuilder exp = new System.Text.StringBuilder(Formula);
@@ -141,7 +141,7 @@ namespace MotoRecoViewer
         /// </summary>
         /// <param name="Formula">計算式</param>
         /// <param name="Data">CANデータ</param>
-        public double FixedFormula(string Formula, FormMain.CanData data)
+        public double FixedFormula(string Formula, CanData data)
         {
             // nibble計算用
             byte nibble = (byte)(0x0F);

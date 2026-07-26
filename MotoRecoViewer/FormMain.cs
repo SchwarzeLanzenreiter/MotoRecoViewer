@@ -60,14 +60,6 @@ namespace MotoRecoViewer
         //==========================
         internal DecodeRule decodeRule;
 
-        internal struct CanData
-        {
-            public uint timeSec;
-            public ushort timeMSec;
-            public ushort id;
-            public byte[] data;
-        }
-
         //==========================
         //
         //  Private変数
