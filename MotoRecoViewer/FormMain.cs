@@ -119,45 +119,12 @@ namespace MotoRecoViewer
             //CANデータ読み取り中フラグ
             IsReadingCanData = true;
 
-            //ファイルサイズを調べる
-            FileStream fs = new FileStream(FileName, FileMode.Open, FileAccess.Read);
-            long fileSize = fs.Length;
-
-            //CANDataは1データ16バイトなので、用意する配列は　( ファイルサイズ / 16 - 1)
-            long arySize = fileSize / 16;
-
-            //CANDataが壊れていると、16で割り切れないかもしれないのでチェックしておき、あまりが出たら読み込む個数を1減らす
-            long checkSize = fileSize % 16;
-
-            if (checkSize != 0)
-            {
-                arySize--;
-            }
+            //datファイルを全件読み込む
+            CanData[] aryCanData = CanDataFile.ReadAll(FileName, null);
+            long arySize = aryCanData.Length;
 
             //ゼロ割防止
             if (arySize <= 0) { return; }
-
-            //バイナリーリーダー生成
-            BinaryReader reader = new BinaryReader(fs);
-
-            //canDataの配列にファイル内容コピーする
-            //本当はメモリにマルッとコピーしたくないが、後でParallel.Forで処理する都合で配列に確保する。
-            CanData[] aryCanData = new CanData[arySize];
-
-            for (int i = 0; i < arySize; i++)
-            {
-                aryCanData[i].timeSec = reader.ReadUInt32();
-                aryCanData[i].timeMSec = reader.ReadUInt16();
-                aryCanData[i].id = reader.ReadUInt16();
-                aryCanData[i].data = new byte[8];
-
-                for (int j = 0; j < 8; j++)
-                {
-                    aryCanData[i].data[j] = reader.ReadByte();
-                }
-            }
-
-            reader.Close();
 
             //動的数式計算用にDataTableオブジェクト生成
             System.Data.DataTable dt = new System.Data.DataTable();
@@ -1212,59 +1179,25 @@ namespace MotoRecoViewer
             //CANデータ読み取り中フラグ
             IsReadingCanData = true;
 
-            //ファイルサイズを調べる
-            FileStream fs = new FileStream(SrcFileName, FileMode.Open, FileAccess.Read);
-            long fileSize = fs.Length;
+            //プログレスバーは1回目ループ(読み込み)で50%, 2回目ループ(書き込み)で100%にしたい。
+            //先に全体レコード数がわからないので、Maximumは読み込み後に設定する。
+            progressBar.Value = 0;
 
-            //CANDataは1データ16バイトなので、用意する配列は　( ファイルサイズ / 16 - 1)
-            long arySize = fileSize / 16;
-
-            //CANDataが壊れていると、16で割り切れないかもしれないのでチェックしておき、あまりが出たら読み込む個数を1減らす
-            long checkSize = fileSize % 16;
-
-            if (checkSize != 0)
+            //datファイルを全件読み込む
+            CanData[] aryCanData = CanDataFile.ReadAll(SrcFileName, (read, total) =>
             {
-                arySize--;
-            }
+                progressBar.Maximum = (int)total * 2;
+                progressBar.Value = (int)read;
+                this.statusLabel.Text = string.Format("{0}%", read * 100 / total / 2);
+                Application.DoEvents();
+            });
 
-            //バイナリーリーダー生成
-            BinaryReader reader = new BinaryReader(fs);
-
-            //canDataの配列にファイル内容コピーする
-            CanData[] aryCanData = new CanData[arySize];
+            long arySize = aryCanData.Length;
 
             //プログレスバー計算用
             long div_num = arySize / 100;
-            int counter = 0;
-            progressBar.Value = 0;
-            progressBar.Maximum = (int)arySize*2;  // 1回目ループで50%, 2回目ループで100%にしたいので、2倍の設定をしておく
-
-            for (int i = 0; i < arySize; i++)
-            {
-                //毎ループメッセージ発行するとクソ遅いので、トータル50回送るようにする。
-                if (div_num > 0)
-                {
-                    if (i % div_num == 0)
-                    {
-                        progressBar.Value = (int)counter;
-                        this.statusLabel.Text = string.Format("{0}%", ((int)counter) * 100 / arySize / 2);
-                        Application.DoEvents();
-                    }
-                    counter++;
-                }
-
-                aryCanData[i].timeSec = reader.ReadUInt32();
-                aryCanData[i].timeMSec = reader.ReadUInt16();
-                aryCanData[i].id = reader.ReadUInt16();
-                aryCanData[i].data = new byte[8];
-
-                for (int j = 0; j < 8; j++)
-                {
-                    aryCanData[i].data[j] = reader.ReadByte();
-                }
-            }
-
-            reader.Close();
+            int counter = (int)arySize;   // 読み込み分で50%消化済
+            progressBar.Maximum = (int)arySize * 2;
 
             //CSVファイルに書き込むときに使うEncoding
             System.Text.Encoding enc =

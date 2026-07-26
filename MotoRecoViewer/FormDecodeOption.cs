@@ -481,54 +481,22 @@ namespace MotoRecoViewer
             
             string FileName = OpenFileDAT.FileName;
 
-            //ファイルサイズを調べる
-            FileStream fs = new FileStream(FileName, FileMode.Open, FileAccess.Read);
-            long fileSize = fs.Length;
+            //datファイルを全件読み込む
+            CanData[] aryCanData = CanDataFile.ReadAll(FileName, null);
 
-            //CANDataは1データ16バイトなので、用意する配列は　( ファイルサイズ / 16 - 1)
-            long arySize = fileSize / 16;
-
-            //CANDataが壊れていると、16で割り切れないかもしれないのでチェックしておき、あまりが出たら読み込む個数を1減らす
-            long checkSize = fileSize % 16;
-
-            if (checkSize != 0)
-            {
-                arySize--;
-            }
-
-            //バイナリーリーダー生成
-            BinaryReader reader = new BinaryReader(fs);
-
-            //CANデータを1フレーム分読み込む
-            CanData tempCanData = new CanData();
-
+            //ファイル内に出現するCAN IDを収集する
             List<ushort> ListCANID = new List<ushort>();
 
-            for (int i = 0; i < arySize; i++)
+            for (int i = 0; i < aryCanData.Length; i++)
             {
-                tempCanData.timeSec = reader.ReadUInt32();
-                tempCanData.timeMSec = reader.ReadUInt16();
-                tempCanData.id = reader.ReadUInt16();
-                tempCanData.data = new byte[8];
-
-                for (int j = 0; j < 8; j++)
-                {
-                    tempCanData.data[j] = reader.ReadByte();
-                }
-
-                //ここで1フレーム分読み込み終了
-
                 //CANIDがListに既存でなければ追加する
-                if (ListCANID.IndexOf(tempCanData.id) == -1)
+                if (ListCANID.IndexOf(aryCanData[i].id) == -1)
                 {
-                    ListCANID.Add(tempCanData.id);
+                    ListCANID.Add(aryCanData[i].id);
                 }
             }
 
             ListCANID.Sort();
-
-            // fileクローズ
-            reader.Close();
 
             // 収集したCANIDの選択ダイアログを表示
             FormAnalysys f = new FormAnalysys
