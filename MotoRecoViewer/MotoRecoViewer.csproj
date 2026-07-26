@@ -157,6 +157,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Analysis\ChannelAnalyzer.cs" />
     <Compile Include="Model\CanData.cs" />
     <Compile Include="Model\ChannelStore.cs" />
     <Compile Include="Model\ChData.cs" />
