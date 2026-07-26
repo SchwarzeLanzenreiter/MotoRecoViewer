@@ -21,6 +21,7 @@
 // SOFTWARE.
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace MotoRecoViewer
@@ -67,19 +68,49 @@ namespace MotoRecoViewer
                         onProgress(i, arySize);
                     }
 
-                    aryCanData[i].timeSec = reader.ReadUInt32();
-                    aryCanData[i].timeMSec = reader.ReadUInt16();
-                    aryCanData[i].id = reader.ReadUInt16();
-                    aryCanData[i].data = new byte[8];
-
-                    for (int j = 0; j < 8; j++)
-                    {
-                        aryCanData[i].data[j] = reader.ReadByte();
-                    }
+                    aryCanData[i] = ReadRecord(reader);
                 }
 
                 return aryCanData;
             }
+        }
+
+        /// <summary>
+        /// datファイルを1件ずつ読み出す。
+        /// 全件をメモリに載せる必要がない用途はこちらを使う。
+        /// </summary>
+        public static IEnumerable<CanData> Read(string fileName)
+        {
+            using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+            using (BinaryReader reader = new BinaryReader(fs))
+            {
+                long arySize = CountRecords(fs.Length);
+
+                for (long i = 0; i < arySize; i++)
+                {
+                    yield return ReadRecord(reader);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 現在位置から1レコード読み出す
+        /// </summary>
+        private static CanData ReadRecord(BinaryReader reader)
+        {
+            CanData record;
+
+            record.timeSec = reader.ReadUInt32();
+            record.timeMSec = reader.ReadUInt16();
+            record.id = reader.ReadUInt16();
+            record.data = new byte[8];
+
+            for (int j = 0; j < 8; j++)
+            {
+                record.data[j] = reader.ReadByte();
+            }
+
+            return record;
         }
 
         /// <summary>

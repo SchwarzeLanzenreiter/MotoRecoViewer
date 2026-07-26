@@ -481,18 +481,16 @@ namespace MotoRecoViewer
             
             string FileName = OpenFileDAT.FileName;
 
-            //datファイルを全件読み込む
-            CanData[] aryCanData = CanDataFile.ReadAll(FileName, null);
-
             //ファイル内に出現するCAN IDを収集する
+            //IDが分かればよいだけなので、全件をメモリに載せず1件ずつ読み流す
             List<ushort> ListCANID = new List<ushort>();
 
-            for (int i = 0; i < aryCanData.Length; i++)
+            foreach (CanData canData in CanDataFile.Read(FileName))
             {
                 //CANIDがListに既存でなければ追加する
-                if (ListCANID.IndexOf(aryCanData[i].id) == -1)
+                if (ListCANID.IndexOf(canData.id) == -1)
                 {
-                    ListCANID.Add(aryCanData[i].id);
+                    ListCANID.Add(canData.id);
                 }
             }
 
