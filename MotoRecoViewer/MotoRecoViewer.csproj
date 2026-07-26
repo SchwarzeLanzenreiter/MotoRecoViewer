@@ -183,6 +183,7 @@
     <Compile Include="Model\CanData.cs" />
     <Compile Include="Model\ChannelStore.cs" />
     <Compile Include="Model\ChData.cs" />
+    <Compile Include="Model\DecodeRuleIndex.cs" />
     <Compile Include="Model\TVData.cs" />
     <Compile Include="DecodeRule.cs" />
     <Compile Include="FormAbout.cs">

@@ -68,8 +68,12 @@ namespace MotoRecoViewer
             //動的数式計算用にDataTableオブジェクト生成
             System.Data.DataTable dt = new System.Data.DataTable();
 
-            //スレッド調停用
-            object lockobj = new object();
+            //CAN ID→該当ルールの索引を先に作る。1件ごとにDecodeRule.IndexOfを呼ぶと線形探索になる為
+            DecodeRuleIndex ruleIndex = new DecodeRuleIndex(decodeRule);
+
+            //実際にデータが来るチャンネルを先に作っておく。
+            //こうしておくとデコードループ内でチャンネル生成の排他が要らなくなる
+            int[] chIdxByRule = PrepareChannels(aryCanData);
 
             //プログレスバー進捗計算用
             var context = SynchronizationContext.Current;
@@ -94,128 +98,124 @@ namespace MotoRecoViewer
                 extra = CHUNK_SIZE;
             }
 
-            //CHUNK_SIZE毎の塊でデコード処理を実施
-            Parallel.For(0, numChunk, j =>
+            //デコード結果は一旦チャンク毎のバッファに積み、後でチャンク順にマージする。
+            //こうすると共有ロックが要らなくなり、かつマージ結果がファイル順で決定的になる。
+            //全チャンク分のバッファを同時に抱えるとログデータ2個分のメモリを使うので、
+            //BATCH_CHUNKS個ずつ処理してはマージする。
+            const int BATCH_CHUNKS = 256;
+            int chCount = channels.Count;
+            List<TVData>[][] chunkBuf = new List<TVData>[BATCH_CHUNKS][];
+
+            for (long batchStart = 0; batchStart < numChunk; batchStart += BATCH_CHUNKS)
             {
-                long start, end;
-                start = j * CHUNK_SIZE;
+                long batchEnd = Math.Min(batchStart + BATCH_CHUNKS, numChunk);
 
-                if (j < numChunk - 1)
+                //CHUNK_SIZE毎の塊でデコード処理を実施
+                Parallel.For(batchStart, batchEnd, j =>
                 {
-                    end = start + CHUNK_SIZE;
-                }
-                else
-                {
-                    end = start + extra;
-                }
-                
+                    long start, end;
+                    start = j * CHUNK_SIZE;
 
-                for (long i = start; i < end; i++)
-                {
-                    //毎ループメッセージ発行するとクソ遅いので、トータル100回送るようにする。そもそもプログレスバーのWidthも100なので100以上送っても意味なし
-                    Interlocked.Increment(ref counter);
-                    if (div_num > 0)
+                    if (j < numChunk - 1)
                     {
-                        if (i % div_num == 0)
+                        end = start + CHUNK_SIZE;
+                    }
+                    else
+                    {
+                        end = start + extra;
+                    }
+
+                    //このチャンクのデコード結果。添字はチャンネル番号
+                    List<TVData>[] local = new List<TVData>[chCount];
+
+                    for (long i = start; i < end; i++)
+                    {
+                        //毎ループメッセージ発行するとクソ遅いので、トータル100回送るようにする。そもそもプログレスバーのWidthも100なので100以上送っても意味なし
+                        Interlocked.Increment(ref counter);
+                        if (div_num > 0)
                         {
-                            context.Post(progress =>
+                            if (i % div_num == 0)
                             {
-                                if ((int)progress < this.progressBar.Maximum)
+                                context.Post(progress =>
                                 {
-                                    this.progressBar.Value = (int)progress;
-                                    this.statusLabel.Text = string.Format("{0}%", ((int)progress) * 100 / arySize);
-                                }
-                            }, counter);
-                            Application.DoEvents();
-                        }
-                    }
-                    //CanDataのCANIDが、DecodeRuleで一致するかチェック
-                    int decodeRuleIdx;
-                    decodeRuleIdx = decodeRule.IndexOf(aryCanData[i].id);
-
-                    //もしCANIDが対象外なら即抜ける
-                    if (decodeRuleIdx == -1)
-                    {
-                        // ToDo どう考えても捨てるしかないCANIDは、MotoReco側でフィルターかけるのも有り
-                        continue;
-
-                    }
-                    
-                    //１データ読み込んだらデコード処理にわたす
-                    int idxCh;
-
-                    //CAN IDが対象なら、DecodeRuleに従ってデコードする。
-                    //なお、DecodeRuleには、同一CANIDのルールは複数存在し得ることに注意。
-                    bool running = true;
-                    while ((0 <= decodeRuleIdx) & running)
-                    {
-                        lock (lockobj)
-                        {
-                            //decodeRuleIdxのChNameが登録済かCheck
-                            string chName = decodeRule.GetChName(decodeRuleIdx);
-
-                            //存在しない場合追加する
-                            if (!channels.Contains(chName))
-                            {
-                                int chMax = decodeRule.GetChartMax(decodeRuleIdx);
-                                int chMin = decodeRule.GetChartMin(decodeRuleIdx);
-                                bool chPrev = decodeRule.GetChartPreview(decodeRuleIdx);
-                                int chColor = decodeRule.GetChartColor(decodeRuleIdx);
-                                bool chShow = decodeRule.GetChartShow(decodeRuleIdx);
-                                bool chUseFilter = decodeRule.GetChartUseFilter(decodeRuleIdx);
-
-                                //ToDO CutOffはDecodeRuleから決めるように後で改良する
-                                ChData newData = new ChData(chName, chMin, chMax, chColor, chPrev, chShow, chUseFilter, 0.1, 1.0);
-
-                                channels.Add(newData);
+                                    if ((int)progress < this.progressBar.Maximum)
+                                    {
+                                        this.progressBar.Value = (int)progress;
+                                        this.statusLabel.Text = string.Format("{0}%", ((int)progress) * 100 / arySize);
+                                    }
+                                }, counter);
+                                Application.DoEvents();
                             }
-
-                            idxCh = channels.IndexOf(chName);
                         }
+                        //CanDataのCANIDに該当するDecodeRuleを引く。
+                        //なお、DecodeRuleには、同一CANIDのルールは複数存在し得ることに注意。
+                        //該当が無ければ空配列が返るので、そのまま次のデータへ進む。
+                        // ToDo どう考えても捨てるしかないCANIDは、MotoReco側でフィルターかけるのも有り
+                        int[] ruleIdxList = ruleIndex[aryCanData[i].id];
 
-                        double value;
-
-                        //計算式が固定式なら（DecodeRuleの1文字目が#なら、固定式とする）
-                        if (decodeRule.GetDecodeRule(decodeRuleIdx)[0] == '#')
+                        for (int ri = 0; ri < ruleIdxList.Length; ri++)
                         {
-                            value = decodeRule.FixedFormula(decodeRule.GetDecodeRule(decodeRuleIdx), aryCanData[i]);
-                        }
-                        //計算式がユーザー定義なら
-                        else
-                        {
-                            //計算式
-                            string exp = decodeRule.DecodeFormula(decodeRule.GetDecodeRule(decodeRuleIdx), aryCanData[i]);
+                            int decodeRuleIdx = ruleIdxList[ri];
 
-                            //式を計算する
-                            value = System.Convert.ToDouble(dt.Compute(exp, ""));
+                            //チャンネルは事前生成済みなので排他不要
+                            int idxCh = chIdxByRule[decodeRuleIdx];
 
-                        }
-                        //時間計算
-                        // timeMSecの/1000dは、RAM値→物理値変換
-                        // initTimeOffsetには、Menu→File→Append時に直前データの最終タイムスタンプが入ってくる
-                        double second = aryCanData[i].timeSec + aryCanData[i].timeMSec / 1000d + initTimeOffset;
+                            double value;
 
-                        //データ追加
-                        //iはdatファイル上のレコード番号。並列処理で積む順序は不定なので、
-                        //後段のSortが同一タイムスタンプを一意に並べられるよう記録しておく。
-                        lock (lockobj) { channels[idxCh].AddData(second, value, i); }
+                            //計算式が固定式なら（DecodeRuleの1文字目が#なら、固定式とする）
+                            if (decodeRule.GetDecodeRule(decodeRuleIdx)[0] == '#')
+                            {
+                                value = decodeRule.FixedFormula(decodeRule.GetDecodeRule(decodeRuleIdx), aryCanData[i]);
+                            }
+                            //計算式がユーザー定義なら
+                            else
+                            {
+                                //計算式
+                                string exp = decodeRule.DecodeFormula(decodeRule.GetDecodeRule(decodeRuleIdx), aryCanData[i]);
 
-                        //続きのdecodeRuleを探索
-                        if (decodeRuleIdx + 1 < decodeRule.Count)
-                        {
-                            //次の要素を検索する
-                            decodeRuleIdx = decodeRule.IndexOf(aryCanData[i].id, decodeRuleIdx + 1);
-                        }
-                        else
-                        {
-                            //最後まで検索したときはループを抜ける
-                            running = false;
+                                //式を計算する
+                                value = System.Convert.ToDouble(dt.Compute(exp, ""));
+
+                            }
+                            //時間計算
+                            // timeMSecの/1000dは、RAM値→物理値変換
+                            // initTimeOffsetには、Menu→File→Append時に直前データの最終タイムスタンプが入ってくる
+                            double second = aryCanData[i].timeSec + aryCanData[i].timeMSec / 1000d + initTimeOffset;
+
+                            //データ追加
+                            //iはdatファイル上のレコード番号。後段のSortが同一タイムスタンプを
+                            //一意に並べられるよう記録しておく。
+                            if (local[idxCh] == null) { local[idxCh] = new List<TVData>(); }
+
+                            local[idxCh].Add(new TVData
+                            {
+                                DataTime = second,
+                                DataValue = value,
+                                DataValueFiltered = 0.0,
+                                Sequence = i
+                            });
                         }
                     }
-                }
-            });
 
-            //スレッド処理した関係でデータがソートできてないのでソートする
+                    chunkBuf[j - batchStart] = local;
+                });
+
+                //チャンク順にマージする
+                for (long j = batchStart; j < batchEnd; j++)
+                {
+                    List<TVData>[] local = chunkBuf[j - batchStart];
+
+                    for (int c = 0; c < chCount; c++)
+                    {
+                        if (local[c] != null) { channels[c].LogData.AddRange(local[c]); }
+                    }
+
+                    chunkBuf[j - batchStart] = null;
+                }
+            }
+
+            //マージはチャンク順なのでファイル順に並んでいるが、datファイル自体の
+            //タイムスタンプが単調とは限らないのでソートしておく
             //ソートは各ch毎なので並列化可能
             Parallel.For(0, channels.Count, i =>
             {
@@ -257,6 +257,56 @@ namespace MotoRecoViewer
             }, null);
         }
 
+
+        /// <summary>
+        /// 読み込んだCANデータに実際に出現するCAN IDを調べ、対応するチャンネルを生成する。
+        /// デコードループに入る前に済ませておくことで、ループ内でチャンネル生成の排他が不要になる。
+        /// </summary>
+        /// <param name="aryCanData">読み込み済みのCANデータ</param>
+        /// <returns>DecodeRuleのインデックス→チャンネル番号の対応表。データが来ないルールは-1。</returns>
+        private int[] PrepareChannels(CanData[] aryCanData)
+        {
+            //ファイル内に実在するCAN IDを調べる。CAN IDはushortなので添字表で足りる
+            bool[] idPresent = new bool[ushort.MaxValue + 1];
+
+            for (long i = 0; i < aryCanData.LongLength; i++)
+            {
+                idPresent[aryCanData[i].id] = true;
+            }
+
+            int[] chIdxByRule = new int[decodeRule.Count];
+
+            for (int i = 0; i < decodeRule.Count; i++)
+            {
+                //該当CAN IDがファイルに無いルールは、チャンネルを作らない。
+                //データが1件も来ないチャンネルを作らないという元の挙動に合わせる為。
+                if (!idPresent[decodeRule.GetCANID(i)])
+                {
+                    chIdxByRule[i] = -1;
+                    continue;
+                }
+
+                string chName = decodeRule.GetChName(i);
+
+                if (!channels.Contains(chName))
+                {
+                    //ToDO CutOffはDecodeRuleから決めるように後で改良する
+                    channels.Add(new ChData(chName,
+                                            decodeRule.GetChartMin(i),
+                                            decodeRule.GetChartMax(i),
+                                            decodeRule.GetChartColor(i),
+                                            decodeRule.GetChartPreview(i),
+                                            decodeRule.GetChartShow(i),
+                                            decodeRule.GetChartUseFilter(i),
+                                            0.1,
+                                            1.0));
+                }
+
+                chIdxByRule[i] = channels.IndexOf(chName);
+            }
+
+            return chIdxByRule;
+        }
 
         /// <summary>
         /// PanelMainChart上のカーソル位置のデータをListViewに反映する
