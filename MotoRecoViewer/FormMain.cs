@@ -96,23 +96,8 @@ namespace MotoRecoViewer
         private string currentDatFile = "";
 
         // DirectX関連
-        private SharpDX.Direct3D11.Device       dxMainDevice;
-        private SharpDX.DXGI.SwapChain          dxMainSwapChain;
-        private SharpDX.Direct3D11.Texture2D    dxMainBackBuffer;
-        private SharpDX.Direct2D1.Factory       dxMainD2dFactory;
-        private SharpDX.Direct2D1.RenderTarget  dxMainRenderTarget2D;
-        private SharpDX.DirectWrite.Factory     dxMainFactoryDWrite;
-        private TextFormat                      dxMainTextFont;
-        private SharpDX.DXGI.Surface            dxMainSurface;
-
-        private SharpDX.Direct3D11.Device       dxSubDevice;
-        private SharpDX.DXGI.SwapChain          dxSubSwapChain;
-        private SharpDX.Direct3D11.Texture2D    dxSubBackBuffer;
-        private SharpDX.Direct2D1.Factory       dxSubD2dFactory;
-        private SharpDX.Direct2D1.RenderTarget  dxSubRenderTarget2D;
-        private SharpDX.DirectWrite.Factory     dxSubFactoryDWrite;
-        private TextFormat                      dxSubTextFont;
-        private SharpDX.DXGI.Surface            dxSubSurface;
+        private D2DCanvas mainCanvas;               // PanelMainChartへの描画先
+        private D2DCanvas subCanvas;                // PanelSubChartへの描画先
 
         private const int MODE_ALL = 0;
         private const int MODE_CURSOR = 1;
@@ -686,7 +671,7 @@ namespace MotoRecoViewer
         /// </summary>
         private void DrawSubChartGridD2D()
         {
-            SolidColorBrush brush = new SolidColorBrush(dxSubRenderTarget2D, SharpDX.Color.Green);
+            SolidColorBrush brush = new SolidColorBrush(subCanvas.RenderTarget, SharpDX.Color.Green);
 
             //サブチャートエリアの枠を書く
 
@@ -704,7 +689,7 @@ namespace MotoRecoViewer
                 float y2 = (float)PanelSubChart.Height - (float)chartMargin;
 
                 // グリッドカラーも設定できるようにする
-                dxSubRenderTarget2D.DrawLine(new Vector2(x, y1), new Vector2(x, y2), brush);
+                subCanvas.RenderTarget.DrawLine(new Vector2(x, y1), new Vector2(x, y2), brush);
             }
 
             //縦線
@@ -722,7 +707,7 @@ namespace MotoRecoViewer
                 float x2 = (float)PanelSubChart.Width - (float)chartMargin;
 
                 // ToDo グリッドカラーも設定できるようにする
-                dxSubRenderTarget2D.DrawLine(new Vector2(x1, y), new Vector2(x2, y), brush);
+                subCanvas.RenderTarget.DrawLine(new Vector2(x1, y), new Vector2(x2, y), brush);
             }
         }
 
@@ -801,7 +786,7 @@ namespace MotoRecoViewer
                     Array.Resize(ref points, drawCount);
 
                     //描画ポイントを多角形として扱うため、ジオメトリーにセットする
-                    PathGeometry geo1 = new PathGeometry(dxSubD2dFactory);
+                    PathGeometry geo1 = new PathGeometry(subCanvas.Factory);
                     GeometrySink sink1 = geo1.Open();
                     sink1.BeginFigure(points[0], new FigureBegin());
                     sink1.AddLines(points);
@@ -816,11 +801,11 @@ namespace MotoRecoViewer
                     rc4 = ColorToRaw4(c);
 
                     //ブラシ生成
-                    SolidColorBrush brush = new SolidColorBrush(dxSubRenderTarget2D, SharpDX.Color.Red);
+                    SolidColorBrush brush = new SolidColorBrush(subCanvas.RenderTarget, SharpDX.Color.Red);
                     brush.Color = rc4;
 
                     //グラフ描画
-                    dxSubRenderTarget2D.DrawGeometry(geo1, brush);
+                    subCanvas.RenderTarget.DrawGeometry(geo1, brush);
 
                     //ブラシ破棄
                     brush.Dispose();
@@ -859,13 +844,13 @@ namespace MotoRecoViewer
             double y2 = PanelSubChart.Height - chartMargin;
 
             //ブラシ生成
-            SolidColorBrush brush = new SolidColorBrush(dxSubRenderTarget2D, SharpDX.Color.White);
+            SolidColorBrush brush = new SolidColorBrush(subCanvas.RenderTarget, SharpDX.Color.White);
 
             //rect生成
             SharpDX.Mathematics.Interop.RawRectangleF rect = new SharpDX.Mathematics.Interop.RawRectangleF((float)x1, (float)y1, (float)x2, (float)y2);
 
             //選択ポジション白枠描画
-            dxSubRenderTarget2D.DrawRectangle(rect, brush);
+            subCanvas.RenderTarget.DrawRectangle(rect, brush);
 
             brush.Dispose();
         }
@@ -876,7 +861,7 @@ namespace MotoRecoViewer
         private void DrawSubChartD2D()
         {
             //サブチャートエリアを黒く塗りつぶす
-            dxSubRenderTarget2D.Clear(SharpDX.Color.Black);
+            subCanvas.RenderTarget.Clear(SharpDX.Color.Black);
 
             DrawSubChartGridD2D();
 
@@ -893,7 +878,7 @@ namespace MotoRecoViewer
         /// </summary>
         private void DrawMainChartGridD2D()
         {
-            SolidColorBrush brush = new SolidColorBrush(dxMainRenderTarget2D, SharpDX.Color.Green);
+            SolidColorBrush brush = new SolidColorBrush(mainCanvas.RenderTarget, SharpDX.Color.Green);
 
             //メインチャートエリアの枠を書く
 
@@ -910,7 +895,7 @@ namespace MotoRecoViewer
                 float y1 = (float)chartMargin;
                 float y2 = (float)PanelMainChart.Height - (float)chartMargin;
 
-                dxMainRenderTarget2D.DrawLine(new Vector2(x,y1), new Vector2(x,y2),brush);
+                mainCanvas.RenderTarget.DrawLine(new Vector2(x,y1), new Vector2(x,y2),brush);
             }
 
             //縦線
@@ -927,18 +912,18 @@ namespace MotoRecoViewer
                 float x1 = (float)chartMargin;
                 float x2 = (float)PanelMainChart.Width - (float)chartMargin;
 
-                dxMainRenderTarget2D.DrawLine(new Vector2(x1, y), new Vector2(x2, y), brush);
+                mainCanvas.RenderTarget.DrawLine(new Vector2(x1, y), new Vector2(x2, y), brush);
             }
 
             brush.Color = SharpDX.Color.White;
 
             //カーソル1
-            var strokeStyle_dashed1 = new StrokeStyle(dxMainD2dFactory, new StrokeStyleProperties() { DashOffset = 5, DashCap = CapStyle.Square, DashStyle = SharpDX.Direct2D1.DashStyle.DashDot });
-            dxMainRenderTarget2D.DrawLine(new Vector2((float)mainCur1Pos, (float)chartMargin), new Vector2((float)mainCur1Pos, PanelMainChart.Height - (float)chartMargin), brush, 3, strokeStyle_dashed1);
+            var strokeStyle_dashed1 = new StrokeStyle(mainCanvas.Factory, new StrokeStyleProperties() { DashOffset = 5, DashCap = CapStyle.Square, DashStyle = SharpDX.Direct2D1.DashStyle.DashDot });
+            mainCanvas.RenderTarget.DrawLine(new Vector2((float)mainCur1Pos, (float)chartMargin), new Vector2((float)mainCur1Pos, PanelMainChart.Height - (float)chartMargin), brush, 3, strokeStyle_dashed1);
 
             //カーソル2
-            var strokeStyle_dashed2 = new StrokeStyle(dxMainD2dFactory, new StrokeStyleProperties() { DashOffset = 5, DashCap = CapStyle.Square, DashStyle = SharpDX.Direct2D1.DashStyle.DashDotDot });
-            dxMainRenderTarget2D.DrawLine(new Vector2((float)mainCur2Pos, (float)chartMargin), new Vector2((float)mainCur2Pos, PanelMainChart.Height - (float)chartMargin), brush, 3, strokeStyle_dashed2);
+            var strokeStyle_dashed2 = new StrokeStyle(mainCanvas.Factory, new StrokeStyleProperties() { DashOffset = 5, DashCap = CapStyle.Square, DashStyle = SharpDX.Direct2D1.DashStyle.DashDotDot });
+            mainCanvas.RenderTarget.DrawLine(new Vector2((float)mainCur2Pos, (float)chartMargin), new Vector2((float)mainCur2Pos, PanelMainChart.Height - (float)chartMargin), brush, 3, strokeStyle_dashed2);
 
             brush.Dispose();
         }
@@ -964,7 +949,7 @@ namespace MotoRecoViewer
 
             //TimeDivを表示する
             string str = "1Div:" + divTime.ToString() + "sec";
-            DrawText(str, new Vector2(1.0f, 1.0f));
+            mainCanvas.DrawText(str, new Vector2(1.0f, 1.0f));
 
             // divTimeの小数点以下桁数を計算
             int pres = GetPrecision(divTime);
@@ -990,7 +975,7 @@ namespace MotoRecoViewer
 
                 str = targetTime.ToString("F" + pres.ToString());
 
-                DrawText(str, new Vector2((float)x - 5, (float)y2 + 1));
+                mainCanvas.DrawText(str, new Vector2((float)x - 5, (float)y2 + 1));
             }
         }
 
@@ -1163,7 +1148,7 @@ namespace MotoRecoViewer
                     if (drawCount == 0) { return; }
 
                     //描画ポイントを多角形として扱うため、ジオメトリーにセットする
-                    PathGeometry geo1 = new PathGeometry(dxMainD2dFactory);
+                    PathGeometry geo1 = new PathGeometry(mainCanvas.Factory);
                     GeometrySink sink1 = geo1.Open();
                     sink1.BeginFigure(points[0], new FigureBegin());
                     sink1.AddLines(points);
@@ -1178,18 +1163,18 @@ namespace MotoRecoViewer
                     rc4 = ColorToRaw4(c);
 
                     //ブラシ生成
-                    SolidColorBrush brush = new SolidColorBrush(dxMainRenderTarget2D, SharpDX.Color.Red);
+                    SolidColorBrush brush = new SolidColorBrush(mainCanvas.RenderTarget, SharpDX.Color.Red);
                     brush.Color = rc4;
 
                     var style = new SharpDX.Direct2D1.StrokeStyleProperties();
                     style.LineJoin = SharpDX.Direct2D1.LineJoin.Round;
                     style.StartCap = SharpDX.Direct2D1.CapStyle.Round;
                     style.EndCap = SharpDX.Direct2D1.CapStyle.Round;
-                    var stroke = new SharpDX.Direct2D1.StrokeStyle(dxMainD2dFactory, style);
+                    var stroke = new SharpDX.Direct2D1.StrokeStyle(mainCanvas.Factory, style);
 
                     //グラフ描画
-                    //dxMainRenderTarget2D.DrawGeometry(geo1, brush, 5f, stroke);
-                    dxMainRenderTarget2D.DrawGeometry(geo1, brush);
+                    //mainCanvas.RenderTarget.DrawGeometry(geo1, brush, 5f, stroke);
+                    mainCanvas.RenderTarget.DrawGeometry(geo1, brush);
 
                     //ブラシ破棄
                     brush.Dispose();
@@ -1206,7 +1191,7 @@ namespace MotoRecoViewer
         private void DrawMainChartD2D()
         {
             //メインチャートエリアを黒く塗りつぶす
-            dxMainRenderTarget2D.Clear(SharpDX.Color.Black);
+            mainCanvas.RenderTarget.Clear(SharpDX.Color.Black);
 
             //Grid描画
             DrawMainChartGridD2D();
@@ -1521,118 +1506,13 @@ namespace MotoRecoViewer
         }
 
         /// <summary>
-        /// DirectX初期化
-        /// </summary>
-        private void InitializeMainDirextX()
-        {
-            //バックバッファの作成
-            dxMainBackBuffer = Texture2D.FromSwapChain<Texture2D>(dxMainSwapChain, 0);
-
-            //D2Dレンダーターゲットの作成
-            dxMainD2dFactory = new SharpDX.Direct2D1.Factory(SharpDX.Direct2D1.FactoryType.MultiThreaded);　　　　　　　　　　　　//ToDo これで良いのか？
-            dxMainSurface = dxMainBackBuffer.QueryInterface<Surface>();
-            SharpDX.Direct2D1.PixelFormat pixelFormat = new PixelFormat(Format.Unknown, SharpDX.Direct2D1.AlphaMode.Premultiplied);
-            SharpDX.Direct2D1.RenderTargetProperties targetProp = new RenderTargetProperties(pixelFormat);
-            dxMainRenderTarget2D = new RenderTarget(dxMainD2dFactory, dxMainSurface, targetProp);
-            dxMainRenderTarget2D.AntialiasMode = AntialiasMode.Aliased;
-            dxMainRenderTarget2D.TextAntialiasMode = SharpDX.Direct2D1.TextAntialiasMode.Cleartype;
-
-            //DirectWriteオブジェクトを生成するために必要なファクトリオブジェクトを生成
-            dxMainFactoryDWrite = new SharpDX.DirectWrite.Factory();
-
-            //D2Dフォント作成
-            dxMainTextFont = new TextFormat(dxMainFactoryDWrite, "MS UI Gothic", 9.0f)
-            {
-                // レイアウトに沿った文字の左右配置
-                // ※読み方向軸に沿った段落テキストの相対的な配置を指定します
-                TextAlignment = TextAlignment.Leading,
-                // レイアウトに沿った文字の上下配置
-                // ※相対フロー方向軸に沿った段落テキストの配置を指定します
-                ParagraphAlignment = ParagraphAlignment.Near,
-            };
-        }
-
-        /// <summary>
-        /// DirectX初期化
-        /// </summary>
-        private void InitializeSubDirextX()
-        {
-            //バックバッファの作成
-            dxSubBackBuffer = Texture2D.FromSwapChain<Texture2D>(dxSubSwapChain, 0);
-
-            //D2Dレンダーターゲットの作成
-            dxSubD2dFactory = new SharpDX.Direct2D1.Factory(SharpDX.Direct2D1.FactoryType.MultiThreaded);　　　　　　　　　　　　//ToDo これで良いのか？
-            dxSubSurface = dxSubBackBuffer.QueryInterface<Surface>();
-            SharpDX.Direct2D1.PixelFormat pixelFormat = new PixelFormat(Format.Unknown, SharpDX.Direct2D1.AlphaMode.Premultiplied);
-            SharpDX.Direct2D1.RenderTargetProperties targetProp = new RenderTargetProperties(pixelFormat);
-            dxSubRenderTarget2D = new RenderTarget(dxSubD2dFactory, dxSubSurface, targetProp);
-            dxSubRenderTarget2D.AntialiasMode = AntialiasMode.Aliased;
-            dxSubRenderTarget2D.TextAntialiasMode = SharpDX.Direct2D1.TextAntialiasMode.Cleartype;
-
-            //DirectWriteオブジェクトを生成するために必要なファクトリオブジェクトを生成
-            dxSubFactoryDWrite = new SharpDX.DirectWrite.Factory();
-
-            //D2Dフォント作成
-            dxSubTextFont = new TextFormat(dxSubFactoryDWrite, "MS UI Gothic", 9.0f)
-            {
-                // レイアウトに沿った文字の左右配置
-                // ※読み方向軸に沿った段落テキストの相対的な配置を指定します
-                TextAlignment = TextAlignment.Leading,
-                // レイアウトに沿った文字の上下配置
-                // ※相対フロー方向軸に沿った段落テキストの配置を指定します
-                ParagraphAlignment = ParagraphAlignment.Near,
-            };
-        }
-
-        /// <summary>
         /// DirectXをリサイズする
+        /// 片方のパネルのリサイズは他方のレイアウトにも影響するため、常に両方まとめてリサイズする
         /// </summary>
         private void ResizeDirectX()
         {
-            dxMainDevice.ImmediateContext.ClearState();
-            dxSubDevice.ImmediateContext.ClearState();
-
-            //ResizeBufferする前に、backBuffer含めすべての関係するリソースを開放する必要がある。
-            dxMainRenderTarget2D.Dispose();
-            dxMainBackBuffer.Dispose();
-            dxMainD2dFactory.Dispose();
-            dxMainFactoryDWrite.Dispose();
-            dxMainTextFont.Dispose();
-            dxMainSurface.Dispose();
-
-            dxSubRenderTarget2D.Dispose();
-            dxSubBackBuffer.Dispose();
-            dxSubD2dFactory.Dispose();
-            dxSubFactoryDWrite.Dispose();
-            dxSubTextFont.Dispose();
-            dxSubSurface.Dispose();
-
-            //SwapChainのりサイズ
-            dxMainSwapChain.ResizeBuffers(2, 0, 0, Format.R8G8B8A8_UNorm, SwapChainFlags.AllowModeSwitch);
-            dxSubSwapChain.ResizeBuffers(2, 0, 0, Format.R8G8B8A8_UNorm, SwapChainFlags.AllowModeSwitch);
-
-            //再度初期化
-            InitializeMainDirextX();
-            InitializeSubDirextX();
-        }
-
-        /// <summary>
-        /// 文字を画面上に描画
-        /// </summary>
-        private void DrawText(string text, Vector2 pos)
-        {
-            if (dxMainRenderTarget2D != null)
-            {
-                // 文字を描画する領域
-                // ※「改行の目安」や「文字のAlignment」などで使用される
-                float maxWidth = 1000.0f;
-                float maxHeight = 1000.0f;
-
-                // 文字描画
-                dxMainRenderTarget2D.DrawText(text, dxMainTextFont, 
-                                              new SharpDX.Mathematics.Interop.RawRectangleF(pos.X, pos.Y, pos.X + maxWidth, pos.Y + maxHeight),
-                                              new SolidColorBrush(dxMainRenderTarget2D, SharpDX.Color.White));
-            }
+            mainCanvas.Resize();
+            subCanvas.Resize();
         }
 
         private void CSVConvertFolder(int Type)
@@ -1718,42 +1598,8 @@ namespace MotoRecoViewer
                 += new System.Windows.Forms.MouseEventHandler(this.PanelSubChart_MouseWheel);
 
             // DirectX初期化
-            //SwapChain description
-            SharpDX.DXGI.SwapChainDescription descMain = new SharpDX.DXGI.SwapChainDescription()
-            {
-                BufferCount = 2,                                                                 //ToDo これで良いのか？
-                ModeDescription = new SharpDX.DXGI.ModeDescription(0, 0, new SharpDX.DXGI.Rational(60, 1), SharpDX.DXGI.Format.R8G8B8A8_UNorm),
-                IsWindowed = true,
-                OutputHandle = PanelMainChart.Handle,                                           //パネルに描画する
-                SampleDescription = new SharpDX.DXGI.SampleDescription(1, 0),
-                SwapEffect = SharpDX.DXGI.SwapEffect.FlipSequential,
-                Usage = SharpDX.DXGI.Usage.RenderTargetOutput
-            };
-
-            //D3Dデバイスとスワップチェーンの作成
-            SharpDX.Direct3D11.Device.CreateWithSwapChain(SharpDX.Direct3D.DriverType.Hardware
-                , DeviceCreationFlags.BgraSupport, descMain
-                , out dxMainDevice, out dxMainSwapChain);
-
-            //SwapChain description
-            SharpDX.DXGI.SwapChainDescription descSub = new SharpDX.DXGI.SwapChainDescription()
-            {
-                BufferCount = 2,                                                                 //ToDo これで良いのか？
-                ModeDescription = new SharpDX.DXGI.ModeDescription(0, 0, new SharpDX.DXGI.Rational(60, 1), SharpDX.DXGI.Format.R8G8B8A8_UNorm),
-                IsWindowed = true,
-                OutputHandle = PanelSubChart.Handle,                                           //パネルに描画する
-                SampleDescription = new SharpDX.DXGI.SampleDescription(1, 0),
-                SwapEffect = SharpDX.DXGI.SwapEffect.FlipSequential,
-                Usage = SharpDX.DXGI.Usage.RenderTargetOutput
-            };
-
-            //D3Dデバイスとスワップチェーンの作成
-            SharpDX.Direct3D11.Device.CreateWithSwapChain(SharpDX.Direct3D.DriverType.Hardware
-                , DeviceCreationFlags.BgraSupport, descSub
-                , out dxSubDevice, out dxSubSwapChain);
-
-            InitializeMainDirextX();
-            InitializeSubDirextX();
+            mainCanvas = new D2DCanvas(PanelMainChart.Handle);
+            subCanvas = new D2DCanvas(PanelSubChart.Handle);
 
             this.Disposed += (sender, e) => DisposeDevice();
 
@@ -1761,21 +1607,8 @@ namespace MotoRecoViewer
 
         public void DisposeDevice()
         {
-            dxMainRenderTarget2D.Dispose();
-            dxMainD2dFactory.Dispose();
-            dxMainBackBuffer.Dispose();
-            dxMainSwapChain.Dispose();
-            dxMainDevice.Dispose();
-            dxMainFactoryDWrite.Dispose();
-            dxMainTextFont.Dispose();
-
-            dxSubRenderTarget2D.Dispose();
-            dxSubD2dFactory.Dispose();
-            dxSubBackBuffer.Dispose();
-            dxSubSwapChain.Dispose();
-            dxSubDevice.Dispose();
-            dxSubFactoryDWrite.Dispose();
-            dxSubTextFont.Dispose();
+            mainCanvas.Dispose();
+            subCanvas.Dispose();
         }
 
         private void 終了ToolStripMenuItem_Click(object sender, EventArgs e)
@@ -2207,7 +2040,7 @@ namespace MotoRecoViewer
             // ListChNameが0＝CANデータ未読み込み→即抜ける
             if (channels.Count < 1) { return; }
 
-            dxMainRenderTarget2D.BeginDraw();
+            mainCanvas.RenderTarget.BeginDraw();
             //=======================================================================================================================
             // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓　　　　BeginDrawとEndDrawの間で描画すること　↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
             // ======================================================================================================================
@@ -2217,8 +2050,8 @@ namespace MotoRecoViewer
             //=======================================================================================================================
             // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑　　　　BeginDrawとEndDrawの間で描画すること　↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
             // ======================================================================================================================
-            dxMainRenderTarget2D.EndDraw();
-            dxMainSwapChain.Present(0, PresentFlags.None);
+            mainCanvas.RenderTarget.EndDraw();
+            mainCanvas.Present();
 
             UpdateListViewData();
         }
@@ -2312,7 +2145,7 @@ namespace MotoRecoViewer
 
         private void PanelMainChart_Resize(object sender, EventArgs e)
         {
-            if (dxMainDevice == null)
+            if (mainCanvas == null)
             {
                 return;
             }
@@ -2331,7 +2164,7 @@ namespace MotoRecoViewer
             // ListChNameが0＝CANデータ未読み込み→即抜ける
             if (channels.Count < 1) { return; }
             
-            dxSubRenderTarget2D.BeginDraw();
+            subCanvas.RenderTarget.BeginDraw();
             //=======================================================================================================================
             // ↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓　　　　BeginDrawとEndDrawの間で描画すること　↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓↓
             // ======================================================================================================================
@@ -2341,14 +2174,14 @@ namespace MotoRecoViewer
             //=======================================================================================================================
             // ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑　　　　BeginDrawとEndDrawの間で描画すること　↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑
             // ======================================================================================================================
-            dxSubRenderTarget2D.EndDraw();
-            dxSubSwapChain.Present(0, PresentFlags.None);
+            subCanvas.RenderTarget.EndDraw();
+            subCanvas.Present();
 
         }
 
         private void PanelSubChart_Resize(object sender, EventArgs e)
         {
-            if (dxMainDevice == null)
+            if (mainCanvas == null)
             {
                 return;
             }
