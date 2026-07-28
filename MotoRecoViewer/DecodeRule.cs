@@ -414,9 +414,12 @@ namespace MotoRecoViewer
 
                 // CANID 7FE
                 // GPS Altitude
-                // (Data4*16777216+Data3*65536+Data2*256+Data1-1000000000)/1000000
+                // (Data4*16777216+Data3*65536+Data2*256+Data1-10000000)/10000
+                // MotoReco側は int_alt = altitude*10000 + 10000000 で格納している。
+                // 旧仕様は altitude*1000000 + 1000000000 で、高度3295mで
+                // uint32が飽和していた。旧仕様で記録したdatファイルは正しくデコードできない。
                 case "#GPS_Altitude":
-                    return (data[3] * 16777216d + data[2] * 65536d + data[1] * 256d + data[0] - 1000000000d) / 1000000d;
+                    return (data[3] * 16777216d + data[2] * 65536d + data[1] * 256d + data[0] - 10000000d) / 10000d;
 
                 // CANID 7FE
                 // GPS Distance
