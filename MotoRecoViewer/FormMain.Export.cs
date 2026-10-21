@@ -143,8 +143,8 @@ namespace MotoRecoViewer
         /// </summary>
         private void ConvertDecodeData(string DstFileName, int Mode, int Type)
         {
-            const int MODE_ALL = 0;
-            const int MODE_CURSOR = 1;
+            //MODE_ALL / MODE_CURSOR はクラス側の定数を使う。
+            //以前はここで同名のローカル定数を再宣言しており、MODE_ALLが未使用で警告が出ていた。
 
             //開始時間と終了時間を取得
             double exportStartTime;
