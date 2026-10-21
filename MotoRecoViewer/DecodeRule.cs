@@ -293,7 +293,7 @@ namespace MotoRecoViewer
                 // BMW_YAxisG
                 // (Data6+Data5/256-128)/32 
                 case "#BMW_YAxisG":
-                    return (data[5] + (data[4] / 255d) - 128d) / 32d;
+                    return (data[5] + (data[4] / 256d) - 128d) / 32d;
 
                 // CANID 178
                 // BMW_RollRate
@@ -307,13 +307,13 @@ namespace MotoRecoViewer
                 // BMW_XAxisG
                 // (Data6+Data5/256-128)/32
                 case "#BMW_XAxisG":
-                    return (data[5] + (data[4] / 255d) - 128d) / 32d;
+                    return (data[5] + (data[4] / 256d) - 128d) / 32d;
 
                 // CANID 17C
                 // BMW_ZAxisG
                 // (Data6+Data5/256-128)/32
                 case "#BMW_ZAxisG":
-                    return (data[5] + (data[4] / 255d) - 128d) / 32d;
+                    return (data[5] + (data[4] / 256d) - 128d) / 32d;
 
 
                 // CANID 3FA
