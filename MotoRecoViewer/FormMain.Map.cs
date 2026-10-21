@@ -62,7 +62,7 @@ namespace MotoRecoViewer
             int idx_lon = channelAnalyzer.IndexOfFixedFormula("#GPS_Longitude");
 
             //どちらかなければ何もしない
-            if ((idx_lat < 0) || (idx_lat < 0))
+            if ((idx_lat < 0) || (idx_lon < 0))
             {
                 return;
             }
@@ -145,7 +145,7 @@ namespace MotoRecoViewer
             int idx_lon = channelAnalyzer.IndexOfFixedFormula("#GPS_Longitude");
 
             //どちらかなければ何もしない
-            if ((idx_lat < 0) || (idx_lat < 0))
+            if ((idx_lat < 0) || (idx_lon < 0))
             {
                 return;
             }

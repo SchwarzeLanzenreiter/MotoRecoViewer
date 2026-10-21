@@ -62,7 +62,12 @@ namespace MotoRecoViewer
             CanData[] aryCanData = CanDataFile.ReadAll(FileName, null);
             long arySize = aryCanData.Length;
             //ゼロ割防止
-            if (arySize <= 0) { return; }
+            //読み取り中フラグを下ろさずに抜けると、以降チャートが描画されなくなる
+            if (arySize <= 0)
+            {
+                IsReadingCanData = false;
+                return;
+            }
 
             //動的数式計算用にDataTableオブジェクト生成
             System.Data.DataTable dt = new System.Data.DataTable();
@@ -403,17 +408,17 @@ namespace MotoRecoViewer
                double dataMax = double.MinValue;
                double dataMin = double.MaxValue;
 
+               //フィルタ有効chはフィルタ後の値で比較する。
+               //以前は比較にDataValue、代入にDataValueFilteredを使っていてMax-Minが狂っていた。
+               bool useFiltered = channels[idx].ChFilter;
+
                for (int j = targetIdxStart; j <= targetIdxEnd; j++)
                {
-                    if (channels[idx].ChFilter == false)
-                    {
-                        if (channels[idx].LogData[j].DataValue > dataMax) { dataMax = channels[idx].LogData[j].DataValue; }
-                        if (channels[idx].LogData[j].DataValue < dataMin) { dataMin = channels[idx].LogData[j].DataValue; }
-                    } else
-                    {
-                        if (channels[idx].LogData[j].DataValue > dataMax) { dataMax = channels[idx].LogData[j].DataValueFiltered; }
-                        if (channels[idx].LogData[j].DataValue < dataMin) { dataMin = channels[idx].LogData[j].DataValueFiltered; }
-                    }
+                    double value = useFiltered ? channels[idx].LogData[j].DataValueFiltered
+                                               : channels[idx].LogData[j].DataValue;
+
+                    if (value > dataMax) { dataMax = value; }
+                    if (value < dataMin) { dataMin = value; }
                }
 
                double diff = dataMax - dataMin;
