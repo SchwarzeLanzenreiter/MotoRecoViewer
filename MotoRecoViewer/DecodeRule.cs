@@ -283,9 +283,11 @@ namespace MotoRecoViewer
 
                 // CANID 174
                 // BMW_YawRate
-                // Data2*125/128+Data1/256-125
+                // (Data2*125/127+Data1/255-125) * 4/3
+                // 末尾の4/3は、デコード結果が真値の3/4になっていたのを補正するもの。
+                // 実測で判明した係数で、センサ仕様から導いたものではない。
                 case "#BMW_YawRate":
-                    return data[1] * 125d / 127d + data[0] / 255d - 125d;
+                    return (data[1] * 125d / 127d + data[0] / 255d - 125d) * 4d / 3d;
 
                 // CANID 174
                 // BMW_YAxisG
@@ -295,9 +297,11 @@ namespace MotoRecoViewer
 
                 // CANID 178
                 // BMW_RollRate
-                // Data2*125/128+Data1/256-125
+                // (Data2*125/127+Data1/255-125) * 4/3
+                // 末尾の4/3は、デコード結果が真値の3/4になっていたのを補正するもの。
+                // 実測で判明した係数で、センサ仕様から導いたものではない。
                 case "#BMW_RollRate":
-                    return data[1] * 125d / 127d + data[0] / 255d - 125d;
+                    return (data[1] * 125d / 127d + data[0] / 255d - 125d) * 4d / 3d;
 
                 // CANID 178
                 // BMW_XAxisG
