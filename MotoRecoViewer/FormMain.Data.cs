@@ -69,9 +69,6 @@ namespace MotoRecoViewer
                 return;
             }
 
-            //動的数式計算用にDataTableオブジェクト生成
-            System.Data.DataTable dt = new System.Data.DataTable();
-
             //CAN ID→該当ルールの索引を先に作る。1件ごとにDecodeRule.IndexOfを呼ぶと線形探索になる為
             DecodeRuleIndex ruleIndex = new DecodeRuleIndex(decodeRule);
 
@@ -137,6 +134,11 @@ namespace MotoRecoViewer
                     //このチャンクのデコード結果。添字はチャンネル番号
                     List<TVData>[] local = new List<TVData>[chCount];
 
+                    //ユーザー定義式の計算に使うDataTable。
+                    //DataTableはスレッドセーフでないので、スレッド間で共有せずチャンク毎に持つ。
+                    //固定式(#始まり)だけのDecodeRuleなら1つも生成されない。
+                    System.Data.DataTable dt = null;
+
                     for (long i = start; i < end; i++)
                     {
                         //CanDataのCANIDに該当するDecodeRuleを引く。
@@ -166,6 +168,7 @@ namespace MotoRecoViewer
                                 string exp = decodeRule.DecodeFormula(decodeRule.GetDecodeRule(decodeRuleIdx), aryCanData[i]);
 
                                 //式を計算する
+                                if (dt == null) { dt = new System.Data.DataTable(); }
                                 value = System.Convert.ToDouble(dt.Compute(exp, ""));
 
                             }

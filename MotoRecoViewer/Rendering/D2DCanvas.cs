@@ -1,4 +1,4 @@
-// MIT License
+﻿// MIT License
 //
 // Copyright (c) 2019 Schwarze Lanzenreiter
 //
@@ -54,6 +54,7 @@ namespace MotoRecoViewer
         private Surface surface;
         private RenderTarget renderTarget;
         private TextFormat textFont;
+        private SolidColorBrush textBrush;
 
         /// <summary>
         /// Direct2Dの描画対象
@@ -125,6 +126,9 @@ namespace MotoRecoViewer
             //DirectWriteオブジェクトを生成するために必要なファクトリオブジェクトを生成
             factoryDWrite = new DWriteFactory();
 
+            //文字描画用のブラシ。DrawText毎に作ると破棄されないまま溜まるので1本持っておく
+            textBrush = new SolidColorBrush(renderTarget, SharpDX.Color.White);
+
             //D2Dフォント作成
             textFont = new TextFormat(factoryDWrite, FontFamily, FontSize)
             {
@@ -143,6 +147,7 @@ namespace MotoRecoViewer
         /// </summary>
         private void ReleaseSizeDependentResources()
         {
+            textBrush.Dispose();
             renderTarget.Dispose();
             backBuffer.Dispose();
             d2dFactory.Dispose();
@@ -193,7 +198,7 @@ namespace MotoRecoViewer
             // 文字描画
             renderTarget.DrawText(text, textFont,
                                   new SharpDX.Mathematics.Interop.RawRectangleF(pos.X, pos.Y, pos.X + maxWidth, pos.Y + maxHeight),
-                                  new SolidColorBrush(renderTarget, SharpDX.Color.White));
+                                  textBrush);
         }
 
         public void Dispose()
