@@ -55,7 +55,7 @@
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(43, 12);
             this.label2.TabIndex = 4;
-            this.label2.Text = "Ver1.30";
+            this.label2.Text = "Ver1.40";
             this.label2.Click += new System.EventHandler(this.FormAbout_Click);
             // 
             // label3
