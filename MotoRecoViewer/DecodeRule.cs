@@ -44,6 +44,21 @@ namespace MotoRecoViewer
 
     class DecodeRule
     {
+        // CAN ID 0x174 / 0x178 / 0x17C は Bosch Motorsport MM5.10 IMU のメッセージ。
+        // データシート記載の仕様は以下。
+        //   Offset (all signals)     0x8000 hex
+        //   Quantization Yaw Rate    0.005     [deg/s/digit]
+        //   Quantization Roll Rate   0.005     [deg/s/digit]
+        //   Quantization Acc X/Y/Z   0.0001274 [g/digit]
+        //   Application I  ±163 deg/s (roll rate / yaw rate)
+        //   Application II ±4.2 g     (X, Y and Z acceleration)
+        // いずれも16bitのオフセットバイナリで、0x8000が0点。
+        // データシートは加速度をByte2-3に置いているが、実車のログではByte4-5で
+        // Z軸の平均がちょうど1g(重力)になるため、こちらはByte4-5を採用している。
+        private const double ImuOffset = 32768d;        // 0x8000
+        private const double ImuRateQuantize = 0.005d;  // deg/s/digit
+        private const double ImuAccQuantize = 0.0001274d;  // g/digit
+
         private List<DecodeData> Data;
 
         /// <summary>
@@ -283,41 +298,33 @@ namespace MotoRecoViewer
 
                 // CANID 174
                 // BMW_YawRate
-                // (Data2*125/128+Data1/256-125) * 4/3
-                // Data2=128を0点とするオフセットバイナリ(128*125/128=125なので-125で0になる)。
-                // Data1は上位1カウントの小数部なので除数は256。
-                // 末尾の4/3は、デコード結果が真値の3/4になっていたのを補正するもの。
-                // 実測で判明した係数で、センサ仕様から導いたものではない。
+                // (Data2*256+Data1-0x8000) * 0.005
                 case "#BMW_YawRate":
-                    return (data[1] * 125d / 128d + data[0] / 256d - 125d) * 4d / 3d;
+                    return (data[1] * 256d + data[0] - ImuOffset) * ImuRateQuantize;
 
                 // CANID 174
                 // BMW_YAxisG
-                // (Data6+Data5/256-128)/32 
+                // (Data6*256+Data5-0x8000) * 0.0001274 
                 case "#BMW_YAxisG":
-                    return (data[5] + (data[4] / 256d) - 128d) / 32d;
+                    return (data[5] * 256d + data[4] - ImuOffset) * ImuAccQuantize;
 
                 // CANID 178
                 // BMW_RollRate
-                // (Data2*125/128+Data1/256-125) * 4/3
-                // Data2=128を0点とするオフセットバイナリ(128*125/128=125なので-125で0になる)。
-                // Data1は上位1カウントの小数部なので除数は256。
-                // 末尾の4/3は、デコード結果が真値の3/4になっていたのを補正するもの。
-                // 実測で判明した係数で、センサ仕様から導いたものではない。
+                // (Data2*256+Data1-0x8000) * 0.005
                 case "#BMW_RollRate":
-                    return (data[1] * 125d / 128d + data[0] / 256d - 125d) * 4d / 3d;
+                    return (data[1] * 256d + data[0] - ImuOffset) * ImuRateQuantize;
 
                 // CANID 178
                 // BMW_XAxisG
-                // (Data6+Data5/256-128)/32
+                // (Data6*256+Data5-0x8000) * 0.0001274
                 case "#BMW_XAxisG":
-                    return (data[5] + (data[4] / 256d) - 128d) / 32d;
+                    return (data[5] * 256d + data[4] - ImuOffset) * ImuAccQuantize;
 
                 // CANID 17C
                 // BMW_ZAxisG
-                // (Data6+Data5/256-128)/32
+                // (Data6*256+Data5-0x8000) * 0.0001274
                 case "#BMW_ZAxisG":
-                    return (data[5] + (data[4] / 256d) - 128d) / 32d;
+                    return (data[5] * 256d + data[4] - ImuOffset) * ImuAccQuantize;
 
 
                 // CANID 3FA
