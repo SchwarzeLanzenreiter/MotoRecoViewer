@@ -230,10 +230,13 @@ namespace MotoRecoViewer
                     string[] item221 = { "Z_Axis_G", "17C", "#BMW_ZAxisG", "-16744448", "-2", "2" };
                     ListViewItem.Items.Add(new ListViewItem(item221));
                     
-                    string[] item222 = { "RollRate", "178", "#BMW_RollRate", "-32768", "-125", "125" };
+                    // レンジはフルスケール ±163.84 deg/s に合わせた。
+                    // Bosch MM5.10の 0.005 deg/s/digit × 0x8000 = 163.84 deg/s。
+                    // 旧 ±125 はデコードが真値の3/4だった頃の値で、今はピークが切れる。
+                    string[] item222 = { "RollRate", "178", "#BMW_RollRate", "-32768", "-170", "170" };
                     ListViewItem.Items.Add(new ListViewItem(item222));
 
-                    string[] item223 = { "YawRate", "174", "#BMW_YawRate", "-65281", "-125", "125" };
+                    string[] item223 = { "YawRate", "174", "#BMW_YawRate", "-65281", "-170", "170" };
                     ListViewItem.Items.Add(new ListViewItem(item223));
 
 
