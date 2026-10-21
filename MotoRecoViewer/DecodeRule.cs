@@ -238,8 +238,11 @@ namespace MotoRecoViewer
                 // CANID 10C
                 // BMW LeanAngle
                 // (Data5*90/128-90)
+                // Data5=128を0点とする8bitオフセットバイナリ。フルスケール±90度。
+                // 0x10CはIMU(0x174/0x178/0x17C)とは別モジュールなのでデータシートの
+                // 裏付けはないが、0点は2^7=128と見るのが自然で、IMU側の0x8000とも整合する。
                 case "#BMW_LeanAngle":
-                    return (((double)data[4] * 90d / 127d) - 90d);
+                    return (((double)data[4] * 90d / 128d) - 90d);
 
                 // CANID 293
                 // BMW RrSpeed
